@@ -5,11 +5,23 @@ package, how to build, install, and run the provided sample applications,
 and the library API.
 
 # Installation
+
+## Dependencies
+This library has a header file dependency on the TI OSRT library and the following should have been installed
+prior to compiling this library. The associated libraries are needed for successfully linking all examples.
+
+- onnxruntime
+- tensorflow
+- neo-ai-dlr
+- dlpack
+
+## Compilation on target
+
 Clone this repository, build it, and install it.
 ```
 git clone https://github.com/TexasInstruments/edgeai-dl-inferer
-mkdir build
-cd build
+cd edgeai-dl-inferer
+mkdir build && cd build
 cmake ..
 make
 make install
@@ -31,6 +43,7 @@ make install
 - **Library**: path/to/install/**lib**
 
 ## Cross-Compilation for the target
+
 The library can be cross-compiled on an x86_64 machine for the target. Here are the steps for cross-compilation.
 ```
 git clone https://github.com/TexasInstruments/edgeai-dl-inferer
