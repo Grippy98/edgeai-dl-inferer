@@ -251,13 +251,27 @@ function(build_lib lib_name lib_type lib_ver)
         VERSION "${lib_ver}"
         COMPATIBILITY AnyNewerVersion
     )
-    
+
     # install the package configuration files
-    install(FILES 
+    install(FILES
       ${CMAKE_CURRENT_BINARY_DIR}/${lib_name}Config.cmake
       ${CMAKE_CURRENT_BINARY_DIR}/${lib_name}ConfigVersion.cmake
       DESTINATION ${CONFIG_PACKAGE_LOCATION}
     )
+
+endfunction()
+
+# Function for Installing a Python module
+# module_name: Name of the module
+function(install_python_module module_name)
+
+    FILE(GLOB MODULE ${CMAKE_CURRENT_SOURCE_DIR}/${module_name}.py)
+
+    set(PYTHON_MAJOR_VERSION "3")
+    set(PYTHON_MINOR_VERSION "8")
+    set(CMAKE_INSTALL_PYTHON_LIBDIR ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/python${PYTHON_MAJOR_VERSION}.${PYTHON_MINOR_VERSION}/site-packages)
+
+    install(FILES ${MODULE} DESTINATION ${CMAKE_INSTALL_PYTHON_LIBDIR})
 
 endfunction()
 
