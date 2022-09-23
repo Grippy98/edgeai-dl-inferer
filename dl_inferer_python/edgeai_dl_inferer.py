@@ -154,12 +154,8 @@ try:
             """
             if enable_tidl:
                 runtime_options = {
-                    "tidl_platform": "J7",
-                    "tidl_version": "7.2",
                     "tidl_tools_path": "null",
                     "artifacts_folder": artifacts,
-                    "tensor_bits": 8,
-                    "import": "no",
                 }
                 sess_options = _onnxruntime.SessionOptions()
                 ep_list = ["TIDLExecutionProvider", "CPUExecutionProvider"]
