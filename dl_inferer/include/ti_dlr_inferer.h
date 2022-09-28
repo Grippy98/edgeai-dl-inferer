@@ -68,7 +68,10 @@ namespace ti::dl_inferer
              * @param devId    Id of the device. Please refer to the DLR API
              *                 documentation for the valid range of this field.
              */
-            DLRInferer(const std::string &fileName, int32_t devType, int32_t devId);
+            DLRInferer(const std::string &fileName, 
+                       int32_t            devType, 
+                       int32_t            devId,
+                       bool               enableTidl);
 
             /**
              * Runs the model. This should be called only after all the inputs
@@ -125,6 +128,9 @@ namespace ti::dl_inferer
 
             /** Device Identifier. */
             int32_t                     m_devId;
+
+            /** Enable TIDL. */
+            bool                        m_enableTidl;
 
             /** Handle to the model inference engine. */
             DLRModelHandle              m_handle;

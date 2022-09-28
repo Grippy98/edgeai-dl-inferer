@@ -145,17 +145,23 @@ namespace ti::dl_inferer
          */
         std::string rtType{};
 
-        /** Type of the device. This field is specific to the DLR API and is
+        /** Type of the device. This field is specific to the DLR API and
          * is not looked at for the other ones. Please refer to the DLR API
          * specification for valid values this field can take.
          */
         std::string devType{};
 
-        /** Id of the device. This field is specific to the DLR API and is
+        /** Id of the device. This field is specific to the DLR API and
          * is not looked at for the other ones. Please refer to the DLR API
          * specification for valid values this field can take.
          */
         int32_t     devId{DLR_DEVID_INVALID};
+
+        /** Should TIDL be enabled. This field is specific to the DLR API and 
+         * is not looked at for the other ones. Please refer to the DLR API
+         * specification for valid values this field can take.
+         */
+        bool        enableTidl{};
 
         /**
          * Helper function to dump the configuration information.

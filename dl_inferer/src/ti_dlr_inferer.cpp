@@ -93,11 +93,18 @@ static int32_t type2Size(const char *s, DlInferType &tiType)
 
 DLRInferer::DLRInferer(const std::string   &fileName,
                        int32_t              devType,
-                       int32_t              devId):
+                       int32_t              devId,
+                       bool                 enableTidl):
     m_name(fileName),
     m_devType(devType),
-    m_devId(devId)
+    m_devId(devId),
+    m_enableTidl(enableTidl)
 {
+    if (m_enableTidl == false)
+    {
+        throw std::runtime_error("CPU Execution mode is not supported for TVM.\n");
+    }
+
     int32_t status = 0;
 
     status = CreateDLRModel(&m_handle,

@@ -180,6 +180,8 @@ int32_t InfererConfig::getInfererConfig(const YAML::Node   &config,
     const YAML::Node   &n = config["session"];
     int32_t             status = 0;
 
+    enableTidl = true;
+
     // Validate the parsed yaml configuration and create the configuration 
     // for the inference object creation.
     if (!n)
@@ -267,7 +269,9 @@ DLInferer* DLInferer::makeInferer(const InfererConfig &config)
         }
         else
         {
-            inter = new TFLiteInferer(config.modelFile, config.artifactsPath);
+            inter = new TFLiteInferer(config.modelFile, 
+                                      config.artifactsPath,
+                                      config.enableTidl);
         }
     }
 #endif
@@ -303,7 +307,10 @@ DLInferer* DLInferer::makeInferer(const InfererConfig &config)
 
         if (status == 0)
         {
-            inter = new DLRInferer(config.artifactsPath, devType, config.devId);
+            inter = new DLRInferer(config.artifactsPath, 
+                                   devType, 
+                                   config.devId, 
+                                   config.enableTidl);
         }
     }
 #endif
@@ -319,7 +326,8 @@ DLInferer* DLInferer::makeInferer(const InfererConfig &config)
         else
         {
             inter = new ORTInferer(config.modelFile,
-                                   config.artifactsPath);
+                                   config.artifactsPath,
+                                   config.enableTidl);
         }
     }
 #endif

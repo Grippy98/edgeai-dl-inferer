@@ -120,9 +120,11 @@ int32_t Onnx2TiInferType(ONNXTensorElementDataType  type,
 }
 
 ORTInferer::ORTInferer(const std::string &modelPath,
-                       const std::string &artifactPath):
+                       const std::string &artifactPath,
+                       bool               enableTidl):
     m_modelPath(modelPath),
     m_artifactPath(artifactPath),
+    m_enableTidl(enableTidl),
     m_env(ORT_LOGGING_LEVEL_ERROR, __FUNCTION__),
     m_memInfo(Ort::MemoryInfo::CreateCpu(OrtArenaAllocator, OrtMemTypeDefault))
 {
@@ -136,13 +138,19 @@ ORTInferer::ORTInferer(const std::string &modelPath,
     sessionOpts.SetGraphOptimizationLevel(
             GraphOptimizationLevel::ORT_ENABLE_EXTENDED);
 
-    strcpy(tidlOpts.artifacts_folder, m_artifactPath.c_str());
+    if (m_enableTidl)
+    {
+        strcpy(tidlOpts.artifacts_folder, m_artifactPath.c_str());
+        ortStatus = OrtSessionOptionsAppendExecutionProvider_Tidl(sessionOpts,
+                                                                &tidlOpts);
+    }
+    else
+    {
+        ortStatus = NULL;
+    }
 
-    ortStatus = OrtSessionOptionsAppendExecutionProvider_Tidl(sessionOpts,
-                                                              &tidlOpts);
     if (ortStatus == NULL)
     {
-        //m_session = new Ort::Session(m_env, m_modelPath, sessionOpts);
         m_session = new Ort::Session(m_env, m_modelPath.c_str(), sessionOpts);
 
         // Query the input information

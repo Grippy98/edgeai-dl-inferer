@@ -95,9 +95,11 @@ DlInferType Tflite2TiInferType(TfLiteType type)
 }
 
 TFLiteInferer::TFLiteInferer(const std::string &modelPath,
-                             const std::string &artifactPath):
+                             const std::string &artifactPath,
+                             bool               enableTidl):
     m_modelPath(modelPath),
-    m_artifactPath(artifactPath)
+    m_artifactPath(artifactPath),
+    m_enableTidl(enableTidl)
 {
     Create_delegate     createPlugin;
     const char         *keys[2];
@@ -109,7 +111,6 @@ TFLiteInferer::TFLiteInferer(const std::string &modelPath,
     int32_t             status = 0;
 
     m_model = tflite::FlatBufferModel::BuildFromFile(m_modelPath.c_str());
-
     if (m_model == nullptr)
     {
         DL_INFER_LOG_ERROR("Model build failed.\n");
@@ -126,47 +127,53 @@ TFLiteInferer::TFLiteInferer(const std::string &modelPath,
         }
     }
 
-    // Setup delegate
-    if (status == 0)
+    if (m_enableTidl)
     {
-        path = "/usr/lib/libtidl_tfl_delegate.so";
-
-        lib = dlopen(path.c_str(), RTLD_NOW);
-
-        if (lib == NULL)
+        // Setup delegate
+        if (status == 0)
         {
-            DL_INFER_LOG_ERROR("Opening TIDL delegate shared library "
-                               "failed [%s].\n", path.c_str());
-            DL_INFER_LOG_ERROR("Error: %s\n", dlerror());
-            status = -1;
+            path = "/usr/lib/libtidl_tfl_delegate.so";
+
+            lib = dlopen(path.c_str(), RTLD_NOW);
+
+            if (lib == NULL)
+            {
+                DL_INFER_LOG_ERROR("Opening TIDL delegate shared library "
+                                "failed [%s].\n", path.c_str());
+                DL_INFER_LOG_ERROR("Error: %s\n", dlerror());
+                status = -1;
+            }
+        }
+
+        if (status == 0)
+        {
+            createPlugin =
+                (Create_delegate)dlsym(lib, "tflite_plugin_create_delegate");
+
+            if (createPlugin == NULL)
+            {
+                DL_INFER_LOG_ERROR("Symbol lookup in delegate shared library "
+                                "failed.\n");
+                status = -1;
+            }
+        }
+
+        if (status == 0)
+        {
+            // Currently, we program just one option
+            keys[0]    = "artifacts_folder";
+            values[0]  = m_artifactPath.c_str();
+            numOptions++;
+
+            // **keys, **values, num_options, error_handler
+            dlgPtr = createPlugin((char **)keys, (char **)values, numOptions, NULL);
+
+            m_interpreter->ModifyGraphWithDelegate(dlgPtr);
         }
     }
 
     if (status == 0)
     {
-        createPlugin =
-            (Create_delegate)dlsym(lib, "tflite_plugin_create_delegate");
-
-        if (createPlugin == NULL)
-        {
-            DL_INFER_LOG_ERROR("Symbol lookup in delegate shared library "
-                               "failed.\n");
-            status = -1;
-        }
-    }
-
-    if (status == 0)
-    {
-        // Currently, we program just one option
-        keys[0]    = "artifacts_folder";
-        values[0]  = m_artifactPath.c_str();
-        numOptions++;
-
-        // **keys, **values, num_options, error_handler
-        dlgPtr = createPlugin((char **)keys, (char **)values, numOptions, NULL);
-
-        m_interpreter->ModifyGraphWithDelegate(dlgPtr);
-
         // Allocate input and output tensors
         if (m_interpreter->AllocateTensors() != kTfLiteOk)
         {

@@ -64,7 +64,8 @@ namespace ti::dl_inferer
              *                     artifacts.
              */
             TFLiteInferer(const std::string &modelPath,
-                          const std::string &artifactPath);
+                          const std::string &artifactPath,
+                          bool               enableTidl);
 
             /**
              * Runs the model. This should be called only after all the inputs
@@ -118,6 +119,9 @@ namespace ti::dl_inferer
 
             /** Path to the directory containing the model artifacts. */
             std::string                                 m_artifactPath;
+
+            /** Enable TIDL. */
+            bool                                        m_enableTidl;
 
             /**  A pointer to the model representation in memory. */
             std::unique_ptr<tflite::FlatBufferModel>    m_model;

@@ -66,7 +66,8 @@ namespace ti::dl_inferer
              *                     artifacts.
              */
             ORTInferer(const std::string &modelPath,
-                       const std::string &artifactPath);
+                       const std::string &artifactPath,
+                       bool               enableTidl);
 
             /**
              * Runs the model. This should be called only after all the inputs
@@ -114,6 +115,9 @@ namespace ti::dl_inferer
 
             /** Path to the directory containing the model artifacts. */
             std::string                             m_artifactPath;
+
+            /** Enable TIDL. */
+            bool                                    m_enableTidl;
 
             /** Environment setup. */
             Ort::Env                                m_env;
