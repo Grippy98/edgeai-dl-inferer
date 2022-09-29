@@ -169,8 +169,9 @@ namespace ti::dl_inferer
         void dumpInfo();
 
         /** Helper function to parse inference configuration. */
-        int32_t getInfererConfig(const YAML::Node  &config,
-                                 const std::string &modelBasePath);
+        int32_t getInfererConfig(const YAML::Node   &config,
+                                 const std::string  &modelBasePath,
+                                 const bool          enableTidlDelegate);
     };
 
     /* Forward declaration. */

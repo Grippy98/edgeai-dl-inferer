@@ -175,12 +175,14 @@ void InfererConfig::dumpInfo()
 }
 
 int32_t InfererConfig::getInfererConfig(const YAML::Node   &config,
-                                        const std::string  &modelBasePath)
+                                        const std::string  &modelBasePath,
+                                        const bool          enableTidlDelegate
+                                        )
 {
-    const YAML::Node   &n = config["session"];
+    const YAML::Node    &n = config["session"];
     int32_t             status = 0;
 
-    enableTidl = true;
+    enableTidl = enableTidlDelegate;
 
     // Validate the parsed yaml configuration and create the configuration 
     // for the inference object creation.

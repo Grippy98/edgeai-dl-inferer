@@ -123,7 +123,7 @@ int main(int argc, char * argv[])
     YAML::Node yaml = YAML::LoadFile(configFile);
 
     // Populate infConfig from yamlCfg
-    status = infConfig.getInfererConfig(yaml, modelBasePath);
+    status = infConfig.getInfererConfig(yaml, modelBasePath, true);
 
     if (status < 0)
     {
