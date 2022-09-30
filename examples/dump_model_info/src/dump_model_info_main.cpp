@@ -119,11 +119,8 @@ int main(int argc, char * argv[])
     // Parse the command line options
     ParseCmdlineArgs(argc, argv, modelBasePath, configFile);
 
-    // Parse the input configuration file
-    YAML::Node yaml = YAML::LoadFile(configFile);
-
-    // Populate infConfig from yamlCfg
-    status = infConfig.getInfererConfig(yaml, modelBasePath, true);
+    // Populate infConfig
+    status = infConfig.getInfererConfig(modelBasePath, true);
 
     if (status < 0)
     {

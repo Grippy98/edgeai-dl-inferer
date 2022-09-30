@@ -31,6 +31,7 @@
  */
 /* Standard headers. */
 #include <string>
+#include <filesystem>
 
 /* Module headers. */
 #include <dl_inferer/include/ti_dl_inferer.h>
@@ -174,14 +175,22 @@ void InfererConfig::dumpInfo()
     DL_INFER_LOG_INFO_RAW("\n");
 }
 
-int32_t InfererConfig::getInfererConfig(const YAML::Node   &config,
-                                        const std::string  &modelBasePath,
+int32_t InfererConfig::getInfererConfig(const std::string  &modelBasePath,
                                         const bool          enableTidlDelegate
-                                        )
+                                       )
 {
-    const YAML::Node    &n = config["session"];
+    const string        &paramFile = modelBasePath + "/param.yaml";
     int32_t             status = 0;
 
+    if (!std::filesystem::exists(paramFile))
+    {
+        DL_INFER_LOG_ERROR("The file [%s] does not exist.\n",paramFile.c_str());
+        status = -1;
+        return status;
+    }
+
+    const YAML::Node    config = YAML::LoadFile(paramFile.c_str());;
+    const YAML::Node    &n = config["session"];
     enableTidl = enableTidlDelegate;
 
     // Validate the parsed yaml configuration and create the configuration 
