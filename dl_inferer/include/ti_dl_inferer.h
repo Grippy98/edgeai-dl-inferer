@@ -242,8 +242,8 @@ namespace ti::dl_inferer
         void dumpInfo();
 
         /** Helper function to parse inference configuration. */
-        int32_t getInfererConfig(const std::string  &modelBasePath,
-                                 const bool          enableTidlDelegate);
+        int32_t getConfig(const std::string  &modelBasePath,
+                          const bool          enableTidlDelegate);
     };
 
     /**
@@ -311,7 +311,7 @@ namespace ti::dl_inferer
         void dumpInfo();
 
         /** Helper function to parse pre process configuration. */
-        int32_t getPreprocessImageConfig(const std::string      &modelBasePath);
+        int32_t getConfig(const std::string      &modelBasePath);
     };
 
     /**
@@ -411,7 +411,7 @@ namespace ti::dl_inferer
         void dumpInfo();
 
         /** Helper function to parse post process configuration. */
-        int32_t getPostprocessImageConfig(const std::string &modelBasePath);
+        int32_t getConfig(const std::string &modelBasePath);
 
     private:
         /** Helper function to parse dataset.yaml and get classname from it. */

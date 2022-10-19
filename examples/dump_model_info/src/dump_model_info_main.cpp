@@ -150,11 +150,11 @@ int main(int argc, char * argv[])
     ParseCmdlineArgs(argc, argv, modelBasePath, configFile);
 
     // Populate infConfig
-    status = infConfig.getInfererConfig(modelBasePath, true);
+    status = infConfig.getConfig(modelBasePath, true);
 
     if (status < 0)
     {
-        printf("[%s:%d] ti::utils::getInfererConfig() failed.\n",
+        printf("[%s:%d] ti::utils::getConfig() failed.\n",
                __FUNCTION__, __LINE__);
     }
     else

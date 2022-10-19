@@ -82,11 +82,11 @@ int32_t main(int argc, char * argv[])
     logSetLevel(logLevel);
 
     // Populate infConfig
-    status = infConfig.getInfererConfig(cmdArgs.modelDirectory, cmdArgs.enableTidl);
+    status = infConfig.getConfig(cmdArgs.modelDirectory, cmdArgs.enableTidl);
 
     if (status < 0)
     {
-        DL_INFER_LOG_ERROR("[%s:%d] ti::utils::getInfererConfig() failed.\n",
+        DL_INFER_LOG_ERROR("[%s:%d] ti::utils::getConfig() failed.\n",
                             __FUNCTION__, __LINE__);
         exit(-1);
     }
@@ -114,10 +114,10 @@ int32_t main(int argc, char * argv[])
         ifInpInfo       = &dlInfInputs->at(0);
 
         // Populate postProcessConfig
-        status = postProcessConfig.getPostprocessImageConfig(cmdArgs.modelDirectory);
+        status = postProcessConfig.getConfig(cmdArgs.modelDirectory);
         if (status < 0)
         {
-            DL_INFER_LOG_ERROR("[%s:%d] ti::utils::getPostprocessImageConfig() failed.\n",
+            DL_INFER_LOG_ERROR("[%s:%d] ti::utils::getConfig() failed.\n",
                                 __FUNCTION__, __LINE__);
             exit(-1);
         }
@@ -131,10 +131,10 @@ int32_t main(int argc, char * argv[])
             PreprocessImageConfig       preProcCfg;
             preProcCfg.inDataWidth  = testImages[i].cols;
             preProcCfg.inDataHeight = testImages[i].rows;
-            status = preProcCfg.getPreprocessImageConfig(cmdArgs.modelDirectory);
+            status = preProcCfg.getConfig(cmdArgs.modelDirectory);
             if (status < 0)
             {
-                DL_INFER_LOG_ERROR("[%s:%d] ti::utils::getPreprocessImageConfig() failed.\n",
+                DL_INFER_LOG_ERROR("[%s:%d] ti::utils::getConfig() failed.\n",
                                     __FUNCTION__, __LINE__);
                 exit(-1);
             }

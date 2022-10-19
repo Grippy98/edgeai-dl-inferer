@@ -226,9 +226,9 @@ void InfererConfig::dumpInfo()
     DL_INFER_LOG_INFO_RAW("\n");
 }
 
-int32_t InfererConfig::getInfererConfig(const std::string  &modelBasePath,
-                                        const bool          enableTidlDelegate
-                                       )
+int32_t InfererConfig::getConfig(const std::string  &modelBasePath,
+                                 const bool          enableTidlDelegate
+                                )
 {
     const string        &paramFile = modelBasePath + "/param.yaml";
     int32_t             status = 0;
@@ -345,7 +345,7 @@ void PreprocessImageConfig::dumpInfo()
 }
 
 
-int32_t PreprocessImageConfig::getPreprocessImageConfig(const std::string &modelBasePath)
+int32_t PreprocessImageConfig::getConfig(const std::string &modelBasePath)
 {
     const string        &paramFile = modelBasePath + "/param.yaml";
     int32_t             status = 0;
@@ -530,7 +530,7 @@ void PostprocessImageConfig::dumpInfo()
     DL_INFER_LOG_INFO_RAW("]\n\n");
 }
 
-int32_t PostprocessImageConfig::getPostprocessImageConfig(const std::string      &modelBasePath)
+int32_t PostprocessImageConfig::getConfig(const std::string      &modelBasePath)
 {
     const string        &paramFile = modelBasePath + "/param.yaml";
     int32_t             status = 0;
