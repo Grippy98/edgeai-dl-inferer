@@ -124,7 +124,7 @@ def pre_process_image(model_config, osrt, img_path):
     Function to pre process the input image based on the model params
     """
     # List of all read images
-    imgs = []
+    orig_imgs = []
     # Number of images in one batch
     batch = 1
     # List of input images in one batch
@@ -151,6 +151,8 @@ def pre_process_image(model_config, osrt, img_path):
     for i in range(batch):
         # Read image in BGR format and HWC layout
         img = cv2.imread(image_files[i])
+        # Append original image to batch of images
+        orig_imgs.append(img.copy())
         # Resize and crop
         if(crop_dim != resize_dim):
             # Resize preserving the aspect ratio
@@ -160,8 +162,6 @@ def pre_process_image(model_config, osrt, img_path):
         # Model needs RGB image
         if(reverse_channels == False):
             img = channel_swap_bgr_to_rgb(img)
-        # Append preprocessed image to batch of images
-        imgs.append(img)
         # HWC to data_layout
         img = change_format(img, 'HWC', data_layout)
         input_data[i] = img
@@ -171,38 +171,31 @@ def pre_process_image(model_config, osrt, img_path):
     elif(osrt.data_type == np.float32):
         input_data = np.float32(input_data)
 
-    return input_data, imgs
+    return input_data, orig_imgs
 
-def run_inference_and_post_process(osrt, input_data, imgs, model_config):
+def run_inference_and_post_process(osrt, input_data, post_proc, orig_imgs, model_config):
     """
     Funtion to run inference on the input image, post process and then save
     final output.
     """
-    # Run Inference
-    outputs = osrt(input_data)
+    for i,data in enumerate(input_data):
+        # Run Inference
+        outputs = osrt([data])
 
-    # Get post processor class
-    post_proc = PostProcess.get(model_config)
+        # Run post-processing
+        image = post_proc(orig_imgs[i], outputs)
 
-    # Get pre-processed image
-    reverse_channels = model_config.reverse_channels
-    if(reverse_channels == False):
-        org_image_bgr = channel_swap_bgr_to_rgb(imgs[0])
-    else:
-        org_image_bgr = imgs[0]
+        img_name = model_config.task_type \
+                            + "_output" \
+                            + str(i) \
+                            +"_" \
+                            + model_config.path.split('model_zoo')[-1].replace('/','') \
+                            + ".jpg"
 
-    # Run post-processing
-    image = post_proc(org_image_bgr, outputs)
+        print(f"Post processed image saved: {img_name}")
 
-    img_name = model_config.task_type \
-                        + "_output_" \
-                        + model_config.path.split('model_zoo')[-1].replace('/','') \
-                        + ".jpg"
-
-    print(f"Post processed image saved: {img_name}")
-
-    # Save post-processed image
-    cv2.imwrite(str(img_name), image)
+        # Save post-processed image
+        cv2.imwrite(str(img_name), image)
 
 def main():
 
@@ -233,10 +226,13 @@ def main():
         osrt = create_runtime(model_config, mode)
 
         # Pre-process image
-        input_data, imgs = pre_process_image(model_config, osrt, img_path)
+        input_data, orig_imgs = pre_process_image(model_config, osrt, img_path)
+
+        # Get post processor class
+        post_proc = PostProcess.get(model_config)
 
         threads.append(Thread(target=run_inference_and_post_process, args=(osrt, \
-                        input_data, imgs, model_config)))
+                        input_data, post_proc, orig_imgs, model_config)))
 
     # Start all threads
     for t in threads:
