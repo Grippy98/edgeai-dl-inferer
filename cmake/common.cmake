@@ -101,8 +101,8 @@ endif()
 
 if(USE_TENSORFLOW_RT)
 include_directories(SYSTEM ${TENSORFLOW_INSTALL_DIR}
-                    SYSTEM ${TENSORFLOW_INSTALL_DIR}/tensorflow/lite/tools/make/downloads/flatbuffers/include
-                    SYSTEM ${TENSORFLOW_INSTALL_DIR}/tensorflow/lite/tools/pip_package/gen/tflite_pip/python3/cmake_build/flatbuffers/include
+                    SYSTEM ${TENSORFLOW_INSTALL_DIR}/lite/tools/make/downloads/flatbuffers/include
+                    SYSTEM ${TENSORFLOW_INSTALL_DIR}/lite/tools/pip_package/gen/tflite_pip/python3/cmake_build/flatbuffers/include
                     )
 endif()
 
