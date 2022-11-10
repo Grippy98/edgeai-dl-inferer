@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-#  Copyright (C) 2021 Texas Instruments Incorporated - http://www.ti.com/
+#  Copyright (C) 2022 Texas Instruments Incorporated - http://www.ti.com/
 #
 #  Redistribution and use in source and binary forms, with or without
 #  modification, are permitted provided that the following conditions
@@ -42,6 +42,8 @@ currently supported Run Times
 
 import numpy as _np
 import threading as _threading
+import os as _os
+import yaml as _yaml
 
 try:
     from dlr import DLRModel as _DLRModel
@@ -191,3 +193,87 @@ try:
 
 except ImportError:
     pass
+
+class ModelConfig:
+    """
+    Class to parse and store model parameters
+    """
+    count = 0
+    def __init__(self, demo_config):
+        """
+        Constructor of Model class. Prases param.yaml file present in model
+        directory and creates corresponding runtime objects
+        Args:
+            demo_config: Dictionary of model params provided
+        """
+        self.path = demo_config['model_dir']
+        self.model_name = _os.path.basename(_os.path.dirname(self.path + '/'))
+        with open(self.path  + '/param.yaml', 'r') as f:
+            params = _yaml.safe_load(f)
+        #metrics
+        self.label_offset = 0
+        if 'metric' in params:
+            if 'label_offset_pred' in params['metric']:
+                self.label_offset = params['metric']['label_offset_pred']
+        #preprocess params
+        resize = params['preprocess']['resize']
+        if (type(resize) == int):
+            self.resize = (resize, resize)
+        else:
+            self.resize = resize[-1::-1]
+        crop = params['preprocess']['crop']
+        if (type(crop) == int):
+            self.crop = (crop, crop)
+        else:
+            self.crop = crop[-1::-1]
+        if (params['session']['input_optimization'] == True):
+            self.mean = None
+            self.scale = None
+        else:
+            self.mean = params['session']['input_mean']
+            self.scale = params['session']['input_scale']
+        self.reverse_channels = params['preprocess']['reverse_channels']
+        self.data_layout = params['preprocess']['data_layout']
+        #session params
+        self.run_time = params['session']['session_name']
+        if isinstance(params['session']['model_path'], list):
+            self.model_path = self.path + '/' + \
+                                      params['session']['model_path'][0]
+        else:
+            self.model_path = self.path + '/' + params['session']['model_path']
+        self.artifacts = self.path + '/' + params['session']['artifacts_folder']
+        #postprocess params
+        self.formatter = None
+        if 'formatter' in params['postprocess']:
+            self.formatter = params['postprocess']['formatter']
+        self.ignore_index = None
+        if 'ignore_index' in params['postprocess']:
+            self.ignore_index = params['postprocess']['ignore_index']
+        self.normalized_detections = False
+        if 'normalized_detections' in params['postprocess']:
+            self.normalized_detections = \
+                                  params['postprocess']['normalized_detections']
+        self.shuffle_indices = None
+        if 'shuffle_indices' in params['postprocess']:
+            self.shuffle_indices = params['postprocess']['shuffle_indices']
+        #dataset
+        if 'input_dataset' in params and 'name' in params['input_dataset']:
+            self.dataset = params['input_dataset']['name']
+        self.task_type = params['task_type']
+        #task specific params
+        if self.task_type == 'segmentation':
+            if 'alpha' in demo_config:
+                self.alpha = demo_config['alpha']
+            else:
+                self.alpha = 0.4
+        if self.task_type == 'detection' or \
+                                      self.task_type == 'human_pose_estimation':
+            if 'viz_threshold' in demo_config:
+                self.viz_threshold = demo_config['viz_threshold']
+            else:
+                self.viz_threshold = 0.5
+        if self.task_type == 'classification':
+            if 'topN' in demo_config:
+                self.topN = demo_config['topN']
+            else:
+                self.topN = 5
