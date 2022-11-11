@@ -28,7 +28,6 @@
 #  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 #  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from classnames import *
 import cv2 as _cv2
 import numpy as _np
 import copy as _copy
@@ -58,7 +57,6 @@ class PostProcess:
 class PostProcessClassification(PostProcess):
     def __init__(self, model_config):
         super().__init__(model_config)
-        self.classnames = eval(model_config.dataset)
 
     def __call__(self, img, results):
         """
@@ -93,7 +91,7 @@ class PostProcessClassification(PostProcess):
         row = 3
         print(f"Top {N} classes:")
         for idx in topN_classes:
-            class_name = self.classnames.get(idx + self.model_config.label_offset)
+            class_name = self.model_config.classnames.get(idx + self.model_config.label_offset)
             print(class_name)
             _cv2.putText(frame, \
                 class_name, (5, row_size * row), _cv2.FONT_HERSHEY_SIMPLEX, \
@@ -103,10 +101,8 @@ class PostProcessClassification(PostProcess):
         return frame
 
 class PostProcessDetection(PostProcess):
-
     def __init__(self, model_config):
         super().__init__(model_config)
-        self.classnames = eval(model_config.dataset)
 
     def __call__(self, img, results):
         """
@@ -147,7 +143,7 @@ class PostProcessDetection(PostProcess):
 
         for b in bbox:
             if b[5] > self.model_config.viz_threshold:
-                class_name = self.classnames[self.model_config.label_offset[int(b[4])]]
+                class_name = self.model_config.classnames[self.model_config.label_offset[int(b[4])]]
                 img = self.overlay_bounding_box(img, b, class_name)
 
         return img

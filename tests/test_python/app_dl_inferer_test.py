@@ -221,16 +221,11 @@ def main():
     # Run for the list of models supplied in the command line
     for idx, model_dir in enumerate(model_dir_list):
 
-        # Demo config prepared from the command line args
-        demo_config = {
-            'model_dir': model_dir,
-            'alpha': alpha,
-            'viz_threshold': viz_threshold,
-            'topN': topN
-        }
-
-        # Get pre and post processor configuration
-        model_config = ModelConfig(demo_config)
+        # Get Model configuration
+        model_config = ModelConfig(model_dir)
+        model_config.alpha = alpha
+        model_config.viz_threshold = viz_threshold
+        model_config.topN = topN
 
         # Print test configuration
         print_test_banner(model_config, imgs_path)

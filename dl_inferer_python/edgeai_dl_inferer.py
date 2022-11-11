@@ -199,14 +199,14 @@ class ModelConfig:
     Class to parse and store model parameters
     """
     count = 0
-    def __init__(self, demo_config):
+    def __init__(self, model_path):
         """
         Constructor of Model class. Prases param.yaml file present in model
         directory and creates corresponding runtime objects
         Args:
-            demo_config: Dictionary of model params provided
+            model_path: Dir of the
         """
-        self.path = demo_config['model_dir']
+        self.path = model_path
         self.model_name = _os.path.basename(_os.path.dirname(self.path + '/'))
         with open(self.path  + '/param.yaml', 'r') as f:
             params = _yaml.safe_load(f)
@@ -259,21 +259,25 @@ class ModelConfig:
         #dataset
         if 'input_dataset' in params and 'name' in params['input_dataset']:
             self.dataset = params['input_dataset']['name']
+            self.classnames = self.get_class_names()
         self.task_type = params['task_type']
-        #task specific params
-        if self.task_type == 'segmentation':
-            if 'alpha' in demo_config:
-                self.alpha = demo_config['alpha']
-            else:
-                self.alpha = 0.4
-        if self.task_type == 'detection' or \
-                                      self.task_type == 'human_pose_estimation':
-            if 'viz_threshold' in demo_config:
-                self.viz_threshold = demo_config['viz_threshold']
-            else:
-                self.viz_threshold = 0.5
-        if self.task_type == 'classification':
-            if 'topN' in demo_config:
-                self.topN = demo_config['topN']
-            else:
-                self.topN = 5
+        self.alpha = 0.4
+        self.viz_threshold = 0.5
+        self.topN = 5
+
+    def get_class_names(self):
+        if (not _os.path.exists(self.path  + '/dataset.yaml')):
+            return None
+
+        with open(self.path  + '/dataset.yaml', 'r') as f:
+            dataset = _yaml.safe_load(f)
+
+        classnames = {}
+        classnames[0] = None
+        for data in dataset["categories"]:
+            id = data['id']
+            name = data['name']
+            if 'supercategory' in data:
+                name = data['supercategory'] + '/' + name
+            classnames[id] = name
+        return classnames

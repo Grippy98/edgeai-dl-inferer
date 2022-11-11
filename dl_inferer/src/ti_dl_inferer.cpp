@@ -651,16 +651,12 @@ void PostprocessImageConfig::getClassNames(const std::string &modelBasePath)
 
     std::string     name;
     int32_t         id;
-    bool            zerothId{false};
+
+    classnames[0] = "None";
+
     for (YAML::Node data : categories)
     {
         id = data["id"].as<int32_t>();
-
-        if (id == 0)
-        {
-            zerothId = true;
-        }
-
         name = data["name"].as<std::string>();
 
         if (data["supercategory"])
@@ -669,11 +665,6 @@ void PostprocessImageConfig::getClassNames(const std::string &modelBasePath)
         }
 
         classnames[id] = name;
-    }
-
-    if(!zerothId)
-    {
-        classnames[0] = "None";
     }
 }
 
