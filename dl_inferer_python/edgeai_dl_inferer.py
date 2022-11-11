@@ -199,7 +199,7 @@ class ModelConfig:
     Class to parse and store model parameters
     """
     count = 0
-    def __init__(self, model_path):
+    def __init__(self, model_path, enable_tidl):
         """
         Constructor of Model class. Prases param.yaml file present in model
         directory and creates corresponding runtime objects
@@ -256,11 +256,17 @@ class ModelConfig:
         self.shuffle_indices = None
         if 'shuffle_indices' in params['postprocess']:
             self.shuffle_indices = params['postprocess']['shuffle_indices']
-        #dataset
+        # dataset
         if 'input_dataset' in params and 'name' in params['input_dataset']:
             self.dataset = params['input_dataset']['name']
             self.classnames = self.get_class_names()
         self.task_type = params['task_type']
+        self.enable_tidl = enable_tidl
+        # Create Runtime
+        RunTime = eval(self.run_time)
+        self.run_time = RunTime(self.artifacts, self.model_path, self.enable_tidl)
+        self.data_type = self.run_time.data_type
+        # Set Default values of some params
         self.alpha = 0.4
         self.viz_threshold = 0.5
         self.topN = 5

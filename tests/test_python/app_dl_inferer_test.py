@@ -96,30 +96,6 @@ def parse_command_line_args():
 
     return model_dir_list, imgs_path, mode, alpha, viz_threshold, topN
 
-
-def create_runtime(model_config, mode):
-    """
-    Function to create the open source runtime object
-    """
-    # Set model file, only needed for ONNX and TFLITE models
-    model_path = model_config.model_path
-
-    # Set tidl_artifacts path
-    model_dir = model_config.path
-    tidl_artifacts = model_dir + "/artifacts"
-
-    # Create runtime
-    RunTime = eval(model_config.run_time)
-
-    if(mode == 'TIDL'):
-        osrt = RunTime(tidl_artifacts, model_path, 1)
-    elif(mode == 'ARM'):
-        osrt = RunTime(None, model_path, 0)
-    else:
-        print("Unsupported mode, defaulting to ARM mode")
-        osrt = RunTime(None, model_path, 0)
-    return osrt
-
 def pre_process_image(model_config, osrt, imgs_path):
     """
     Function to pre process the input image based on the model params
@@ -222,7 +198,14 @@ def main():
     for idx, model_dir in enumerate(model_dir_list):
 
         # Get Model configuration
-        model_config = ModelConfig(model_dir)
+        if(mode == 'TIDL'):
+            model_config = ModelConfig(model_dir,True)
+        elif(mode == 'ARM'):
+            model_config = ModelConfig(model_dir,False)
+        else:
+            print("Unsupported mode, defaulting to ARM mode")
+            model_config = ModelConfig(model_dir,False)
+
         model_config.alpha = alpha
         model_config.viz_threshold = viz_threshold
         model_config.topN = topN
@@ -231,7 +214,7 @@ def main():
         print_test_banner(model_config, imgs_path)
 
         # Create runtime
-        osrt = create_runtime(model_config, mode)
+        osrt = model_config.run_time
 
         # Pre-process image
         input_data_list, orig_imgs = pre_process_image(model_config, osrt, imgs_path)
