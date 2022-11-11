@@ -40,8 +40,8 @@
 #include <iomanip>
 
 /* Module Headers. */
-#include <edgeai_dl_inferer/ti_dl_inferer.h>
-#include <edgeai_dl_inferer/ti_dl_inferer_logger.h>
+#include <dl_inferer/include/ti_dl_inferer.h>
+#include <dl_inferer/include/ti_dl_inferer_logger.h>
 
 /**
  * \defgroup group_dl_inferer_cpp_test_post_proc Image Post-processing

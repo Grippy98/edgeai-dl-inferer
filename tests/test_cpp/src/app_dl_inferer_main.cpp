@@ -44,8 +44,8 @@
 #include <test_cpp/include/app_dl_inferer_post_process.h>
 
 /* DL Inferer. */
-#include <edgeai_dl_inferer/ti_dl_inferer.h>
-#include <edgeai_dl_inferer/ti_dl_inferer_logger.h>
+#include <dl_inferer/include/ti_dl_inferer.h>
+#include <dl_inferer/include/ti_dl_inferer_logger.h>
 
 using namespace std;
 using namespace ti::dl_inferer;

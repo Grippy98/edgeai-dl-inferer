@@ -35,7 +35,7 @@
 
 /* Standard headers. */
 #include <string>
-#include <edgeai_dl_inferer/ti_dl_inferer_logger.h>
+#include <dl_inferer/include/ti_dl_inferer_logger.h>
 
 namespace ti::app_dl_inferer::common
 {
