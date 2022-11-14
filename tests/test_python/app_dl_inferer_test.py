@@ -38,6 +38,12 @@ import argparse
 import sys
 from edgeai_dl_inferer import *
 
+def print_test_status(status):
+    if status == 0:
+        print("[PASS]: Test case PASSED!")
+    else:
+        print("[FAIL]: Test case FAILED!")
+
 def parse_command_line_args():
     """
     Function to parse the command line args supplied to the demo.
@@ -123,6 +129,8 @@ def pre_process_image(model_config, osrt, imgs_path):
     else:
         # Unsupported
         shape = None
+        print_test_status(-1)
+        exit()
 
     input_data_list = []
     for idx, img_file in enumerate(imgs_path):
@@ -231,6 +239,8 @@ def main():
     # Wait for all threads to join main
     for t in threads:
         t.join()
+
+    print_test_status(0)
 
 if __name__ == '__main__':
     main()
