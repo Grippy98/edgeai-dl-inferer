@@ -36,7 +36,6 @@ from app_dl_inferer_post_process import *
 from threading import Thread
 import argparse
 import sys
-sys.path.append('/opt/edgeai-dl-inferer/dl_inferer_python/')
 from edgeai_dl_inferer import *
 
 def parse_command_line_args():
