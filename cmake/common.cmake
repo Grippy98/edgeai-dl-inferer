@@ -60,6 +60,7 @@ link_directories(${TARGET_FS}/usr/lib/aarch64-linux-gnu
                  )
 
 if(USE_DLR_RT)
+link_directories(${TARGET_FS}/usr//local/dlr)
 link_directories(${TARGET_FS}/usr/lib/python3.8/site-packages/dlr)
 endif()
 
@@ -96,6 +97,7 @@ include_directories(${PROJECT_SOURCE_DIR}
                     )
 
 if(USE_DLR_RT)
+include_directories(${TARGET_FS}/usr/include/neo-ai-dlr/include)
 include_directories(${TARGET_FS}/usr/lib/python3.8/site-packages/dlr/include/)
 endif()
 
@@ -103,7 +105,9 @@ if(USE_TENSORFLOW_RT)
 include_directories(SYSTEM ${TENSORFLOW_INSTALL_DIR}
                     SYSTEM ${TENSORFLOW_INSTALL_DIR}/lite/tools/make/downloads/flatbuffers/include
                     SYSTEM ${TENSORFLOW_INSTALL_DIR}/lite/tools/pip_package/gen/tflite_pip/python3/cmake_build/flatbuffers/include
-                    )
+                    SYSTEM ${TENSORFLOW_INSTALL_DIR}/tensorflow/lite/tools/make/downloads/flatbuffers/include
+                    SYSTEM ${TENSORFLOW_INSTALL_DIR}/tensorflow/lite/tools/pip_package/gen/tflite_pip/python3/cmake_build/flatbuffers/include
+                   )
 endif()
 
 if(USE_ONNX_RT)
