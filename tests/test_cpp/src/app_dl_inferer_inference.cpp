@@ -131,7 +131,7 @@ InferencePipe::InferencePipe(DLInferer                 *infererObj,
     dlInfOutputs = m_inferer->getOutputInfo();
     m_numOutputs = dlInfOutputs->size();
 
-    status = createBuffers(dlInfOutputs, m_inferOutputBuff, true);
+    status = m_inferer->createBuffers(dlInfOutputs, m_inferOutputBuff, true);
 
     if (status < 0)
     {
@@ -148,7 +148,7 @@ InferencePipe::InferencePipe(DLInferer                 *infererObj,
         dlInfInputs = m_inferer->getInputInfo();
         m_numInputs = dlInfInputs->size();
 
-        status = createBuffers(dlInfInputs, m_inferInputBuff, true);
+        status = m_inferer->createBuffers(dlInfInputs, m_inferInputBuff, true);
 
         if (status < 0)
         {
@@ -165,27 +165,6 @@ InferencePipe::InferencePipe(DLInferer                 *infererObj,
 int32_t InferencePipe::getInstId()
 {
     return m_instId;
-}
-
-int32_t InferencePipe::createBuffers(const VecDlTensor    *ifInfoList,
-                                     VecDlTensorPtr       &vecVar,
-                                     bool                 allocate)
-{
-    vecVar.reserve(ifInfoList->size());
-
-    for (uint64_t i = 0; i < ifInfoList->size(); i++)
-    {
-        const DlTensor *ifInfo = &ifInfoList->at(i);
-        DlTensor   *obj = new DlTensor(*ifInfo);
-
-        /* Allocate data buffer. */
-        if (allocate)
-            obj->allocateDataBuffer(*m_inferer);
-
-        vecVar.push_back(obj);
-    }
-
-    return 0;
 }
 
 int InferencePipe::runModel(void *inputBuff,void *originalBuff)

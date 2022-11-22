@@ -105,18 +105,6 @@ namespace ti::app_dl_inferer::common
              */
             InferencePipe & operator=(const InferencePipe& rhs) = delete;
 
-            /**
-             * Creates the descriptor based on the information from the
-             * inference model interface information.
-             *
-             * @param ifInfoList Vector of inference model interface parameters
-             * @param vecVar     Vector of descriptors created by this function
-             * @param allocate   Allocate memory if True
-             */
-            int32_t createBuffers(const VecDlTensor    *ifInfoList,
-                                  VecDlTensorPtr        &vecVar,
-                                  bool                  allocate);
-
         private:
 
             /** Inference context. */

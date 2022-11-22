@@ -281,6 +281,11 @@ int32_t InfererConfig::getInfererConfig(const std::string  &modelBasePath,
         {
             devId = 0;
         }
+
+        if (n["input_data_layout"])
+        {
+            dataLayout = n["input_data_layout"].as<std::string>();
+        }
     }
 
     return status;
@@ -791,6 +796,27 @@ DLInferer* DLInferer::makeInferer(const InfererConfig &config)
     }
 
     return inter;
+}
+
+int32_t DLInferer::createBuffers(const VecDlTensor    *ifInfoList,
+                                 VecDlTensorPtr       &vecVar,
+                                 bool                 allocate)
+{
+    vecVar.reserve(ifInfoList->size());
+
+    for (uint64_t i = 0; i < ifInfoList->size(); i++)
+    {
+        const DlTensor *ifInfo = &ifInfoList->at(i);
+        DlTensor   *obj = new DlTensor(*ifInfo);
+
+        /* Allocate data buffer. */
+        if (allocate)
+            obj->allocateDataBuffer(*this);
+
+        vecVar.push_back(obj);
+    }
+
+    return 0;
 }
 
 } // namespace ti::dl_inferer

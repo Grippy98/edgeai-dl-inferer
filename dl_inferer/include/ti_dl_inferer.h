@@ -229,6 +229,9 @@ namespace ti::dl_inferer
          */
         bool        enableTidl{};
 
+        /** Layout of the data. Allowed values. */
+        std::string dataLayout{"NCHW"};
+
         /**
          * Helper function to dump the configuration information.
          */
@@ -567,6 +570,18 @@ namespace ti::dl_inferer
              * @returns A valid inferer if success. A nullptr otherwise.
              */
             static DLInferer* makeInferer(const InfererConfig &config);
+
+            /**
+             * Creates the descriptor based on the information from the
+             * inference model interface information.
+             *
+             * @param ifInfoList Vector of inference model interface parameters
+             * @param vecVar     Vector of descriptors created by this function
+             * @param allocate   Allocate memory if True
+             */
+            int32_t createBuffers(const VecDlTensor    *ifInfoList,
+                                  VecDlTensorPtr        &vecVar,
+                                  bool                  allocate);
 
             /**
              * Destructor.
