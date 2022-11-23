@@ -1,7 +1,7 @@
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
-add_compile_options(-std=c++17)
+add_compile_options(-std=c++17 -fPIC)
 
 option(USE_DLR_RT                    "Enable DLR inference" ON)
 option(USE_TENSORFLOW_RT             "Enable Tensorflow inference" ON)
