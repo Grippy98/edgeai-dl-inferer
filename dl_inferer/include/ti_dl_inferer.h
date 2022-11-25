@@ -186,6 +186,10 @@ namespace ti::dl_inferer
 
      } DlInferType;
 
+
+    /** Helper function to get size of Dltensor data types in bytes. */
+    uint8_t getTypeSize(DlInferType type);
+
     /**
      * \brief Configuration for the DL inferer.
      *
