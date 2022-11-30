@@ -41,15 +41,16 @@
 #include <test_cpp/include/app_dl_inferer_cmd_line_parse.h>
 #include <test_cpp/include/app_dl_inferer_utils.h>
 #include <test_cpp/include/app_dl_inferer_inference.h>
-#include <test_cpp/include/app_dl_inferer_post_process.h>
 
 /* DL Inferer. */
 #include <dl_inferer/include/ti_dl_inferer.h>
 #include <dl_inferer/include/ti_dl_inferer_logger.h>
+#include <post_process/include/ti_post_process.h>
 
 using namespace std;
 using namespace ti::dl_inferer;
 using namespace ti::dl_inferer::utils;
+using namespace ti::post_process;
 using namespace ti::app_dl_inferer::common;
 
 int32_t main(int argc, char * argv[])
@@ -168,8 +169,8 @@ int32_t main(int argc, char * argv[])
             postProcCfg.outDataWidth  = testImages[i].cols;
             postProcCfg.outDataHeight = testImages[i].rows;
 
-            PostprocessImage *postProcObj = \
-                         PostprocessImage::makePostprocessImageObj(postProcCfg);
+            PostprocessImage *postProcObj;
+            postProcObj = PostprocessImage::makePostprocessImageObj(postProcCfg);
             if (postProcObj == nullptr)
             {
                 DL_INFER_LOG_ERROR("makePostprocessImageObj() failed.\n");
@@ -182,17 +183,23 @@ int32_t main(int argc, char * argv[])
             void        *inBuff;
             void        *ogBuff;
             cv::Mat     preProcImage;
-            
-            /* Pre Process the image. */
+            cv::Mat     nv12Image;
+            cv::Mat     bgrImage;
+
+
+            /* Get NV12 Image for post process*/
+            nv12Image = cv::Mat::zeros(cv::Size(testImages[i].cols,testImages[i].rows*1.5),CV_8UC1);
+            convertBGRtoNV12(testImages[i],nv12Image);
+
+            /* Pre Process the image for dl inference. */
             preProcessImage(testImages[i],preProcImage,preProcCfg);
 
             /* Make Inferer. */
             InferencePipe *inferPipe = new InferencePipe(inferer,postProcObj,preProcCfg);
 
             inBuff = (void*)(preProcImage.data);
-            ogBuff = (void*)(testImages[i].data);
+            ogBuff = (void*)(nv12Image.data);
 
-            /* Run the model and do post Processing. */
             inferPipe->runModel(inBuff,ogBuff);
 
             string imgName = postProcCfg.taskType
@@ -201,7 +208,10 @@ int32_t main(int argc, char * argv[])
                             +"_"
                             + postProcCfg.modelName
                             + ".jpg";
-            cv::imwrite(imgName,testImages[i]);
+
+            /* Convert NV12 to BGR and Save */
+            cv::cvtColor(nv12Image,bgrImage,cv::COLOR_YUV2BGR_NV12);
+            cv::imwrite(imgName,bgrImage);
         }
 
         printf("\n");

@@ -30,18 +30,13 @@
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* Third-party headers. */
-#include <opencv2/core.hpp>
-#include <opencv2/imgproc.hpp>
-
 /* Module headers. */
-#include <test_cpp/include/post_process_image_object_detect.h>
+#include <post_process/include/ti_post_process_object_detection.h>
 
-namespace ti::app_dl_inferer::common
+namespace ti::post_process
 {
-using namespace cv;
-
-PostprocessImageObjDetect::PostprocessImageObjDetect(const PostprocessImageConfig   &config):
+using namespace std;
+PostprocessObjectDetection::PostprocessObjectDetection(const PostprocessImageConfig   &config):
     PostprocessImage(config)
 {
     if (m_config.normDetect)
@@ -54,51 +49,58 @@ PostprocessImageObjDetect::PostprocessImageObjDetect(const PostprocessImageConfi
         m_scaleX = static_cast<float>(m_config.outDataWidth)/m_config.inDataWidth;
         m_scaleY = static_cast<float>(m_config.outDataHeight)/m_config.inDataHeight;
     }
+
+    m_imageHolder.width = m_config.outDataWidth;
+    m_imageHolder.height = m_config.outDataHeight;
+    getColor(&m_boxColor,20,220,20);
+    getColor(&m_textColor,0,0,0);
+    getColor(&m_textBGColor,0,255,0);
+    getFont(&m_textFont,12);
 }
 
 /**
- * Use OpenCV to do in-place update of a buffer with post processing content like
- * drawing bounding box around a detected object in the frame. Typically used for
- * object classification models.
- * Although OpenCV expects BGR data, this function adjusts the color values so that
- * the post processing can be done on a RGB buffer without extra performance impact.
- *
- * @param frame Original RGB data buffer, where the in-place updates will happen
+ * @param frame Original NV12 data buffer, where the in-place updates will happen
  * @param box bounding box co-ordinates.
  * @param outDataWidth width of the output buffer.
  * @param outDataHeight Height of the output buffer.
  *
  * @returns original frame with some in-place post processing done
  */
-static void *overlayBoundingBox(void                         *frame,
-                                int                          *box,
-                                int32_t                      outDataWidth,
-                                int32_t                      outDataHeight,
-                                const std::string            objectname)
+static void overlayBoundingBox(Image                        *img,
+                               int                          *box,
+                               const std::string            objectname,
+                               YUVColor                     *boxColor,
+                               YUVColor                     *textColor,
+                               YUVColor                     *textBGColor,
+                               FontProperty                 *textFont
+                               )
 {
-    Mat img = Mat(outDataHeight, outDataWidth, CV_8UC3, frame);
-    Scalar box_color(20, 220, 20);
-    Scalar text_color(0, 0, 0);
-
-    Point topleft = Point(box[0], box[1]);
-    Point bottomright = Point(box[2], box[3]);
-
     // Draw bounding box for the detected object
-    rectangle(img, topleft, bottomright, box_color, 3);
+    drawRect(img,
+             box[0],
+             box[1],
+             box[2] - box[0],
+             box[3] - box[1],
+             boxColor,
+             2);
 
-    Point t_topleft = Point((box[0] + box[2])/2 - 5, (box[1] + box[3])/2 + 5);
-    Point t_bottomright = Point((box[0] + box[2])/2 + 120, (box[1] + box[3])/2 - 15);
-    Point t_text = Point((box[0] + box[2])/2, (box[1] + box[3])/2);
+    drawRect(img,
+             (box[0] + box[2])/2 - 5,
+             (box[1] + box[3])/2 - 5,
+             objectname.size() * textFont->width + 10,
+             textFont->height + 10,
+             textBGColor,
+             -1);
 
-    // Draw text with detected class with a background box
-    rectangle(img, t_topleft, t_bottomright, box_color, -1);
-    putText(img, objectname, t_text,
-            FONT_HERSHEY_SIMPLEX, 0.5, text_color);
-
-    return frame;
+    drawText(img,
+             objectname.c_str(),
+             (box[0] + box[2])/2,
+             (box[1] + box[3])/2,
+             textFont,
+             textColor);
 }
 
-void *PostprocessImageObjDetect::operator()(void           *frameData,
+void *PostprocessObjectDetection::operator()(void           *frameData,
                                             VecDlTensorPtr &results)
 {
     /* The results has three vectors. We assume that the type
@@ -199,7 +201,11 @@ void *PostprocessImageObjDetect::operator()(void           *frameData,
         return (float)0;
     };
 
+    m_imageHolder.yRowAddr = (uint8_t *)frameData;
+    m_imageHolder.uvRowAddr = (uint8_t *)frameData + (m_imageHolder.width*m_imageHolder.height);
+
     int32_t numEntries = resultRo[0]->numElem/lastDims[0];
+
     for (auto i = 0; i < numEntries; i++)
     {
         float score;
@@ -219,15 +225,18 @@ void *PostprocessImageObjDetect::operator()(void           *frameData,
         label = getVal(i, m_config.formatter[4]);
 
         int32_t adj_class_id = m_config.labelOffsetMap.at(label);
-        std::string objectname = m_config.classnames.at(adj_class_id);
-        overlayBoundingBox(frameData, box, m_config.outDataWidth,
-                            m_config.outDataHeight, objectname);
+        const std::string objectname = m_config.classnames.at(adj_class_id);
+        overlayBoundingBox( &m_imageHolder, box, objectname,
+                            &m_boxColor, &m_textColor, &m_textBGColor,
+                            &m_textFont);
     }
+
+
     return ret;
 }
 
-PostprocessImageObjDetect::~PostprocessImageObjDetect()
+PostprocessObjectDetection::~PostprocessObjectDetection()
 {
 }
 
-} // namespace ti::app_dl_inferer::common
+} // namespace ti::post_process

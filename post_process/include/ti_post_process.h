@@ -30,11 +30,12 @@
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef _APP_DL_INFERER_POST_PROCESS_H_
-#define _APP_DL_INFERER_POST_PROCESS_H_
+#ifndef _TI_POST_PROCESS_
+#define _TI_POST_PROCESS_
 
 /* Standard headers. */
 #include <string>
+#include <algorithm>
 
 /* Third Party headers. */
 #include <iomanip>
@@ -42,25 +43,25 @@
 /* Module Headers. */
 #include <dl_inferer/include/ti_dl_inferer.h>
 #include <dl_inferer/include/ti_dl_inferer_logger.h>
+#include <post_process/include/ti_post_process_utils.h>
 
 /**
- * \defgroup group_dl_inferer_cpp_test_post_proc Image Post-processing
+ * \defgroup group_post_process Post Process in NV12
  *
- * \brief Class providing interface for generic post-processing logic.
- *
- * \ingroup group_dl_inferer_cpp_test
+ * \brief Unified interface for running different Post Process APIs.
+ *        The goal of this class to provide a common interface to the 
+ *        application for doing post process in NV12 buffers.
  */
 
-namespace ti::app_dl_inferer::common
+namespace ti::post_process
 {
-    using namespace std;
     using namespace ti::dl_inferer;
     using namespace ti::dl_inferer::utils;
-    
+
     class PostprocessImage
     {
         /** Base class for images based post-processing. This class forms as a base
-        * class for different concrete post-processing a;lgorithms. This does not
+        * class for different concrete post-processing algorithms. This does not
         * provide polymorphic operations since the language does not allow virtual
         * functions that are abstract and templated.
         *
@@ -69,7 +70,7 @@ namespace ti::app_dl_inferer::common
         * Any configuration specific data needed beyoond this basic capability will
         * be handled by the sub-classes as needed.
         *
-        * \ingroup group_dl_inferer_cpp_test_post_proc
+        * \ingroup group_post_process
         */
         public:
             /** Constructor.
@@ -118,6 +119,6 @@ namespace ti::app_dl_inferer::common
             PostprocessImage & operator=(const PostprocessImage& rhs) = delete;
     };
 
-} // namespace ti::app_dl_inferer::common
+} // namespace ti::post_process
 
-#endif /* _APP_DL_INFERER_POST_PROCESS_H_ */
+#endif /* _TI_POST_PROCESS_ */

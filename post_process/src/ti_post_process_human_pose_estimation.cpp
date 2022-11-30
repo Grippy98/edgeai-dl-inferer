@@ -30,16 +30,11 @@
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* Third-party headers. */
-#include <opencv2/core.hpp>
-#include <opencv2/imgproc.hpp>
-
 /* Module headers. */
-#include <test_cpp/include/post_process_image_pose_estimation.h>
+#include <post_process/include/ti_post_process_human_pose_estimation.h>
 
-namespace ti::app_dl_inferer::common
+namespace ti::post_process
 {
-using namespace cv;
 using namespace std;
 
 vector<vector<int>> CLASS_COLOR_MAP = {{0, 0, 255}, {255, 0, 0},
@@ -77,34 +72,54 @@ vector<vector<int>> pose_kpt_color = {palette[16], palette[16], palette[16],
                                       palette[9], palette[9], palette[9],
                                       palette[9], palette[9]};
 
-int radius = 5;
+int kptSize = 10;
 
-PostprocessImagePoseEstimation::PostprocessImagePoseEstimation(const PostprocessImageConfig   &config):
+PostprocessHumanPoseEstimation::PostprocessHumanPoseEstimation(const PostprocessImageConfig   &config):
     PostprocessImage(config)
 {
     m_scaleX = static_cast<float>(m_config.outDataWidth)/m_config.inDataWidth;
     m_scaleY = static_cast<float>(m_config.outDataHeight)/m_config.inDataHeight;
+    m_imageHolder.width = m_config.outDataWidth;
+    m_imageHolder.height = m_config.outDataHeight;
+    
+    /* Convert RGB Color map to YUV Color map*/
+    YUVColor color;
+    for (auto &c : CLASS_COLOR_MAP)
+    {
+        getColor(&color,c[0],c[1],c[2]);
+        m_yuvColorMap.push_back(color);
+    }
+
+    for (auto &c : pose_limb_color)
+    {
+        getColor(&color,c[0],c[1],c[2]);
+        m_yuvPoseLimbColor.push_back(color);
+    }
+
+    for (auto &c : pose_kpt_color)
+    {
+        getColor(&color,c[0],c[1],c[2]);
+        m_yuvPoseKpt.push_back(color);
+    }
+
+    getFont(&m_textFont,16);
 }
 
 /**
- * Use OpenCV to do in-place update of a buffer with post processing content like
- * drawing bounding box around a detected object, drawing circles at keypoints
- * and connecting appropriate keypoints with lines in the frame.
- * It can detect the poses of multiple persons.
- * Co-ordinates will be resized according to the output frame size.
  *
  * @param frameData Original Data buffer where in-place updates will happen.
  * @param results
  * @returns Original frame where some in-place post processing done.
  */
 
-void *PostprocessImagePoseEstimation::operator()(void           *frameData,
+void *PostprocessHumanPoseEstimation::operator()(void           *frameData,
                                                  VecDlTensorPtr &results)
 {
-    Mat img = Mat(m_config.outDataHeight, m_config.outDataWidth, CV_8UC3, frameData);
     void *ret = frameData;
     auto *result = results[0];
     float* data = (float*)result->data;
+    m_imageHolder.yRowAddr = (uint8_t *)frameData;
+    m_imageHolder.uvRowAddr = (uint8_t *)frameData + (m_imageHolder.width*m_imageHolder.height);
 
     for(int i = 0; i < result->shape[2] ; i++)
     {
@@ -117,7 +132,7 @@ void *PostprocessImagePoseEstimation::operator()(void           *frameData,
         det_label = int(data[i * 57 + 5]);
 
         if(det_score > m_config.vizThreshold) {
-            vector<int> color_map = CLASS_COLOR_MAP[det_label];
+            YUVColor color_map = m_yuvColorMap[det_label];
 
             for(int j = 6; j < 57; j++)
             {
@@ -129,56 +144,79 @@ void *PostprocessImagePoseEstimation::operator()(void           *frameData,
             det_bbox.push_back(data[i * 57 + 2] * m_scaleX);
             det_bbox.push_back(data[i * 57 + 3] * m_scaleY);
 
-            Point p1(det_bbox[0], det_bbox[1]);
-            Point p2(det_bbox[2], det_bbox[3]);
+            drawRect(&m_imageHolder,
+                     det_bbox[0],
+                     det_bbox[1],
+                     det_bbox[2] - det_bbox[0],
+                     det_bbox[3] - det_bbox[1],
+                     &color_map,
+                     2);
 
-            float scale = abs((det_bbox[2] - det_bbox[0]) * (det_bbox[3] - det_bbox[1]))\
-                         / float((m_config.outDataWidth * m_config.outDataHeight));
-            rectangle(img, p1, p2, Scalar(color_map[0], color_map[1], color_map[2]), 2);
             string id = "Id : " + to_string(det_label);
-            putText(img, id, Point(det_bbox[0] + 5, det_bbox[1] + 15),
-                    FONT_HERSHEY_DUPLEX, 2.5 * scale, Scalar(color_map[0], color_map[1],
-                    color_map[2]), 2);
+
+            drawText(&m_imageHolder,
+                     id.c_str(),
+                     det_bbox[0] + 5,
+                     det_bbox[1] + 15,
+                     &m_textFont,
+                     &color_map);
+
             stringstream ss;
             ss << fixed << setprecision(1) << det_score;
             string score = "Score : " + ss.str();
-            putText(img, score.c_str(), Point(det_bbox[0] + 5,det_bbox[1] + 30),
-                    FONT_HERSHEY_DUPLEX, 2.5 * scale, Scalar(color_map[0], color_map[1],
-                    color_map[2]), 2);
+
+            drawText(&m_imageHolder,
+                     score.c_str(),
+                     det_bbox[0] + 5,
+                     det_bbox[1] + 15 + m_textFont.height,
+                     &m_textFont,
+                     &color_map);
+
             int steps = 3;
             int num_kpts = kpt.size()/steps;
-            for(int kid = 0; kid < num_kpts; kid++){
-                int r = pose_kpt_color[kid][0];
-                int g = pose_kpt_color[kid][1];
-                int b = pose_kpt_color[kid][2];
+            for(int kid = 0; kid < num_kpts; kid++)
+            {
+                YUVColor kpt_color_map = m_yuvPoseKpt[kid];
 
                 int x_coord = kpt[steps * kid] * m_scaleX;
                 int y_coord = kpt[steps * kid + 1] * m_scaleY;
                 float conf = kpt[steps * kid + 2];
 
-                if(conf > 0.5){
-                    circle(img, Point(x_coord, y_coord), radius, Scalar(r, g, b), -1);
+                if(conf > 0.5)
+                {
+                    drawRect(&m_imageHolder,
+                             x_coord - kptSize/2,
+                             y_coord - kptSize/2,
+                             kptSize,
+                             kptSize,
+                             &kpt_color_map,
+                             -1);
+
                 }
             }
 
-            for(uint64_t sk_id = 0; sk_id < skeleton.size(); sk_id++){
-                int r = pose_limb_color[sk_id][0];
-                int g = pose_limb_color[sk_id][1];
-                int b = pose_limb_color[sk_id][2];
+            for(uint64_t sk_id = 0; sk_id < skeleton.size(); sk_id++)
+            {
+                YUVColor limb_color_map = m_yuvPoseLimbColor[sk_id];
 
                 int p11 = kpt[(skeleton[sk_id][0] - 1) * steps] * m_scaleX;
                 int p12 = kpt[(skeleton[sk_id][0] - 1) * steps + 1] * m_scaleY;
-                Point pos1 = Point(p11, p12);
 
                 int p21 = kpt[(skeleton[sk_id][1] - 1) * steps] * m_scaleX;
                 int p22 = kpt[(skeleton[sk_id][1] - 1) * steps + 1] * m_scaleY;
-                Point pos2 = Point(p21, p22);
 
                 float conf1 = kpt[(skeleton[sk_id][0] - 1) * steps + 2];
                 float conf2 = kpt[(skeleton[sk_id][1] - 1) * steps + 2];
 
-                if(conf1 > 0.5 && conf2 > 0.5){
-                    line(img, pos1, pos2, Scalar(r, g, b), 2, LINE_AA);
+                if(conf1 > 0.5 && conf2 > 0.5)
+                {
+                    drawLine(&m_imageHolder,
+                             p11,
+                             p12,
+                             p21,
+                             p22,
+                             &limb_color_map,
+                             2);
                 }
             }
         }
@@ -186,8 +224,8 @@ void *PostprocessImagePoseEstimation::operator()(void           *frameData,
     return ret;
 }
 
-PostprocessImagePoseEstimation::~PostprocessImagePoseEstimation()
+PostprocessHumanPoseEstimation::~PostprocessHumanPoseEstimation()
 {
 }
 
-} // namespace ti::app_dl_inferer::common
+} // namespace ti::post_process

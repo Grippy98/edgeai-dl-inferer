@@ -30,35 +30,34 @@
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef _POST_PROCESS_IMAGE_OBJECT_DETECT_H_
-#define _POST_PROCESS_IMAGE_OBJECT_DETECT_H_
+#ifndef _TI_POST_PROCESS_OBJECT_DETECTION_
+#define _TI_POST_PROCESS_OBJECT_DETECTION_
 
 /* Module headers. */
-#include <test_cpp/include/app_dl_inferer_post_process.h>
+#include <post_process/include/ti_post_process.h>
 
 /**
- * \defgroup group_dl_inferer_cpp_test_obj_detect Object Detection post-processing
+ * \defgroup group_post_process_obj_detection Object Detection post-processing
  *
- * \brief Class implementing the image based object detection post-processing
- *        logic.
+ * \brief Class implementing the object detection post-processing logic.
  *
- * \ingroup group_dl_inferer_cpp_test_post_proc
+ * \ingroup group_post_process
  */
 
-namespace ti::app_dl_inferer::common
+namespace ti::post_process
 {
-    /** Post-processing for image based object detection.
+   /** Post-processing for image based object detection.
      *
-     * \ingroup group_dl_inferer_cpp_test_obj_detect
+     * \ingroup group_post_process_obj_detection
      */
-    class PostprocessImageObjDetect : public PostprocessImage
+    class PostprocessObjectDetection : public PostprocessImage
     {
         public:
             /** Constructor.
              *
              * @param config Configuration information not present in YAML
              */
-            PostprocessImageObjDetect(const PostprocessImageConfig  &config);
+            PostprocessObjectDetection(const PostprocessImageConfig  &config);
 
             /** Function operator
              *
@@ -72,7 +71,7 @@ namespace ti::app_dl_inferer::common
                              VecDlTensorPtr    &results);
 
             /** Destructor. */
-            ~PostprocessImageObjDetect();
+            ~PostprocessObjectDetection();
 
         private:
             /** Multiplicative factor to be applied to X co-ordinates. */
@@ -81,6 +80,21 @@ namespace ti::app_dl_inferer::common
             /** Multiplicative factor to be applied to Y co-ordinates. */
             float                   m_scaleY{1.0f};
 
+            /** Structure to hold information about NV12 Image. */
+            Image                   m_imageHolder;
+
+            /** Color of the bounding box. */
+            YUVColor                m_boxColor;
+
+            /** Color of the class text. */
+            YUVColor                m_textColor;
+
+            /** Color of the text background. */
+            YUVColor                m_textBGColor;
+
+            /** Font of the class text. */
+            FontProperty            m_textFont;
+
         private:
             /**
              * Assignment operator.
@@ -88,10 +102,10 @@ namespace ti::app_dl_inferer::common
              * Assignment is not required and allowed and hence prevent
              * the compiler from generating a default assignment operator.
              */
-            PostprocessImageObjDetect &
-                operator=(const PostprocessImageObjDetect& rhs) = delete;
+            PostprocessObjectDetection &
+                operator=(const PostprocessObjectDetection& rhs) = delete;
     };
 
-} // namespace ti::app_dl_inferer::common
+} // namespace ti::post_process
 
-#endif /* _POST_PROCESS_IMAGE_OBJECT_DETECT_H_ */
+#endif /* _TI_POST_PROCESS_OBJECT_DETECTION_ */

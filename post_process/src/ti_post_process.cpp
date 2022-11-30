@@ -35,15 +35,14 @@
 #include <stdlib.h>
 
 /* Module headers. */
-#include <test_cpp/include/app_dl_inferer_post_process.h>
-#include <test_cpp/include/post_process_image_classify.h>
-#include <test_cpp/include/post_process_image_object_detect.h>
-#include <test_cpp/include/post_process_image_segmentation.h>
-#include <test_cpp/include/post_process_image_pose_estimation.h>
+#include <post_process/include/ti_post_process.h>
+#include <post_process/include/ti_post_process_image_classification.h>
+#include <post_process/include/ti_post_process_object_detection.h>
+#include <post_process/include/ti_post_process_semantic_segmentation.h>
+#include <post_process/include/ti_post_process_human_pose_estimation.h>
 
-namespace ti::app_dl_inferer::common
+namespace ti::post_process
 {
-using namespace ti::dl_inferer::utils;
 
 PostprocessImage::PostprocessImage(const PostprocessImageConfig &config):
     m_config(config)
@@ -57,19 +56,19 @@ PostprocessImage* PostprocessImage::makePostprocessImageObj(const PostprocessIma
     
     if (config.taskType == "classification")
     {
-        cntxt = new PostprocessImageClassify(config);
+        cntxt = new PostprocessImageClassification(config);
     }
     else if (config.taskType == "detection")
     {
-        cntxt = new PostprocessImageObjDetect(config);
+        cntxt = new PostprocessObjectDetection(config);
     }
     else if (config.taskType == "segmentation")
     {
-        cntxt = new PostprocessImageSemanticSeg(config);
+        cntxt = new PostprocessSemanticSegmentation(config);
     }
     else if (config.taskType == "human_pose_estimation")
     {
-        cntxt = new PostprocessImagePoseEstimation(config);
+        cntxt = new PostprocessHumanPoseEstimation(config);
     }
     else
     {
@@ -88,4 +87,4 @@ PostprocessImage::~PostprocessImage()
 {
 }
 
-} // namespace  ti::app_dl_inferer::common
+} // namespace  ti::post_process

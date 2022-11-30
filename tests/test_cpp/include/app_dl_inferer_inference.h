@@ -38,11 +38,12 @@
 
 /* Module headers. */
 #include <test_cpp/include/app_dl_inferer_utils.h>
-#include <test_cpp/include/app_dl_inferer_post_process.h>
 
 /* DL Inferer. */
 #include <dl_inferer/include/ti_dl_inferer.h>
 #include <dl_inferer/include/ti_dl_inferer_logger.h>
+#include <post_process/include/ti_post_process.h>
+
 
 /**
  * \defgroup group_dl_inferer_cpp_test Master demo code
@@ -57,6 +58,7 @@ namespace ti::app_dl_inferer::common
     using namespace std;
     using namespace ti::dl_inferer;
     using namespace ti::dl_inferer::utils;
+    using namespace ti::post_process;
     using namespace ti::app_dl_inferer::common;
     /**
      * \brief Main class that integrates the pre-processing, DL inferencing, and

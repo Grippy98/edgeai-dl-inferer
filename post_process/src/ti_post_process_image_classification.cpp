@@ -30,31 +30,51 @@
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* Third-party headers. */
-#include <opencv2/core.hpp>
-#include <opencv2/imgproc.hpp>
-
 /* Module headers. */
-#include <test_cpp/include/post_process_image_classify.h>
+#include <post_process/include/ti_post_process_image_classification.h>
 
-namespace ti::app_dl_inferer::common
+namespace ti::post_process
 {
 using namespace std;
-using namespace cv;
 
 #define INVOKE_OVERLAY_CLASS_LOGIC(T)                    \
     overlayTopNClasses(frameData,                        \
                        reinterpret_cast<T*>(buff->data), \
                        m_config.classnames,              \
-                       m_config.outDataWidth,            \
-                       m_config.outDataHeight,           \
                        labelOffset,                      \
                        m_config.topN,                    \
-                       buff->numElem)
+                       buff->numElem,                    \
+                       &m_imageHolder,                   \
+                       &m_titleColor,                    \
+                       &m_textColor,                     \
+                       &m_titleFont,                     \
+                       &m_textFont)
 
-PostprocessImageClassify::PostprocessImageClassify(const PostprocessImageConfig &config):
+PostprocessImageClassification::PostprocessImageClassification(const PostprocessImageConfig &config):
     PostprocessImage(config)
 {
+    m_imageHolder.width = config.outDataWidth;
+    m_imageHolder.height = config.outDataHeight;
+
+    /** Get YUV value for green color. */
+    getColor(&m_titleColor,0,255,0);
+
+    /** Get YUV value for yellow color. */
+    getColor(&m_textColor,255,255,0);
+
+    /** Get Monospace font from available font sizes
+     *  where width of character is closest to 3% 
+     *  of the total width image width
+     */
+    int titleSize  = (int)(0.03*config.outDataWidth);
+    getFont(&m_titleFont,titleSize);
+    
+    /** Get Monospace font from available font sizes
+     *  where width of character is closest to 2% 
+     *  of the total width image width
+     */
+    int textSize  = (int)(0.02*config.outDataWidth);
+    getFont(&m_textFont,textSize);
 }
 
 /**
@@ -132,13 +152,7 @@ static vector<tuple<T, int32_t>> get_topN(T        *data,
 }
 
 /**
-  * Use OpenCV to do in-place update of a buffer with post processing content like
-  * a black rectangle at the top-left corner and text lines describing the
-  * detected class names. Typically used for image classification models
-  * Although OpenCV expects BGR data, this function adjusts the color values so that
-  * the post processing can be done on a RGB buffer without extra performance impact.
-  *
-  * @param frame Original RGB data buffer, where the in-place updates will happen
+  * @param frame Original NV12 data buffer, where the in-place updates will happen
   * @param results Reference to a vector of vector of floats representing the output
   *          from an inference API. It should contain 1 vector representing the
   *          probability with which that class is detected in this image.
@@ -146,26 +160,31 @@ static vector<tuple<T, int32_t>> get_topN(T        *data,
   * @returns original frame with some in-place post processing done
   */
 template <typename T1, typename T2>
-static T1 *overlayTopNClasses(T1                        *frame,
-                              T2                        *results,
-                              map<int32_t,string>       classnames,
-                              int32_t                   outDataWidth,
-                              int32_t                   outDataHeight,
-                              int32_t                   labelOffset,
-                              int32_t                   N,
-                              int32_t                   size)
+static T1 *overlayTopNClasses(T1                   *frame,
+                              T2                   *results,
+                              map<int32_t,string>   classnames,
+                              int32_t               labelOffset,
+                              int32_t               N,
+                              int32_t               size,
+                              Image                 *imgHolder,
+                              YUVColor              *titleColor,
+                              YUVColor              *textColor,
+                              FontProperty          *titleFont,
+                              FontProperty          *textFont
+                              )
 {
     vector<tuple<T2,int32_t>> argmax;
-    float txtSize = static_cast<float>(outDataWidth)/DL_INFERER_POSTPROC_DEFAULT_WIDTH;
-    int   rowSize = 40 * outDataWidth/DL_INFERER_POSTPROC_DEFAULT_WIDTH;
-    Scalar text_color(200, 200, 200);
 
     argmax = get_topN<T2>(results, N, size);
-    Mat img = Mat(outDataHeight, outDataWidth, CV_8UC3, frame);
 
-    std::string title = "Top " + std::to_string(N) + " detected classes:";
-    putText(img, title.c_str(), Point(5, 2 * rowSize),
-            FONT_HERSHEY_SIMPLEX, txtSize, Scalar(0, 255, 0), 2);
+    imgHolder->yRowAddr = (uint8_t *)frame;
+    imgHolder->uvRowAddr = (uint8_t *)frame + (imgHolder->width*imgHolder->height);
+
+    std::string title = "Top " + std::to_string(N) + " detected classes:\0";
+
+    drawText(imgHolder,title.c_str(),5,10,titleFont,titleColor);
+
+    int yOffset = (titleFont->height) + 12;
 
     for (int i = 0; i < N; i++)
     {
@@ -174,17 +193,16 @@ static T1 *overlayTopNClasses(T1                        *frame,
         if (index >= 0)
         {
             string str = classnames.at(index);
-            int32_t row = i + 3;
-            putText(img, str, Point(5, rowSize * row),
-                FONT_HERSHEY_SIMPLEX, txtSize, Scalar(255, 255, 0), 2);
+            int32_t row = (i*textFont->height) + yOffset;
+            drawText(imgHolder,str.c_str(),5,10+row,textFont,textColor);
         }
     }
 
     return frame;
 }
 
-void *PostprocessImageClassify::operator()(void            *frameData,
-                                           VecDlTensorPtr  &results)
+void *PostprocessImageClassification::operator()(void            *frameData,
+                                                 VecDlTensorPtr  &results)
 {
     /* Even though a vector of variants is passed only the first
      * entry is valid.
@@ -229,8 +247,8 @@ void *PostprocessImageClassify::operator()(void            *frameData,
     return ret;
 }
 
-PostprocessImageClassify::~PostprocessImageClassify()
+PostprocessImageClassification::~PostprocessImageClassification()
 {
 }
 
-} // namespace ti::app_dl_inferer::common
+} // namespace ti::post_process

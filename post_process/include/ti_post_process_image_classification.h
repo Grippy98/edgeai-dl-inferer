@@ -30,35 +30,34 @@
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef _POST_PROCESS_IMAGE_SEGMENTATION_H_
-#define _POST_PROCESS_IMAGE_SEGMENTATION_H_
+#ifndef _TI_POST_PROCESS_IMAGE_CLASSIFICATION_
+#define _TI_POST_PROCESS_IMAGE_CLASSIFICATION_
 
 /* Module headers. */
-#include <test_cpp/include/app_dl_inferer_post_process.h>
+#include <post_process/include/ti_post_process.h>
 
 /**
- * \defgroup group_dl_inferer_cpp_test_segmentation Semantic Segmentation post-processing
+ * \defgroup group_post_process_img_classification Image Classification post-processing
  *
- * \brief Class implementing the image based semantic segmentation post-processing
- *        logic.
+ * \brief Class implementing the image classification post-processing logic.
  *
- * \ingroup group_dl_inferer_cpp_test_post_proc
+ * \ingroup group_post_process
  */
 
-namespace ti::app_dl_inferer::common
+namespace ti::post_process
 {
-    /** Post-processing for semantic segmentation.
+    /** Post-processing for image classification.
      *
-     * \ingroup group_dl_inferer_cpp_test_segmentation
+     * \ingroup group_post_process_img_classification
      */
-    class PostprocessImageSemanticSeg : public PostprocessImage
+    class PostprocessImageClassification : public PostprocessImage
     {
         public:
             /** Constructor.
              *
              * @param config Configuration information not present in YAML
              */
-            PostprocessImageSemanticSeg(const PostprocessImageConfig    &config);
+            PostprocessImageClassification(const PostprocessImageConfig   &config);
 
             /** Function operator
              *
@@ -66,13 +65,29 @@ namespace ti::app_dl_inferer::common
              * interface to execute the functionality provided by this class.
              *
              * @param frameData Input data frame on which results are overlaid
-             * @param results Segmentation output results from the inference
+             * @param results Classification output results from the inference
              */
             void *operator()(void              *frameData,
                              VecDlTensorPtr    &results);
 
             /** Destructor. */
-            ~PostprocessImageSemanticSeg();
+            ~PostprocessImageClassification();
+
+        private:
+            /** Structure to hold information about NV12 Image. */
+            Image           m_imageHolder;
+
+            /** Color of the title Text. */
+            YUVColor        m_titleColor;
+
+            /** Color of the result text. */
+            YUVColor        m_textColor;
+
+            /** Font of title. */
+            FontProperty    m_titleFont;
+
+            /** Font of result text. */
+            FontProperty    m_textFont;
 
         private:
             /**
@@ -81,9 +96,11 @@ namespace ti::app_dl_inferer::common
              * Assignment is not required and allowed and hence prevent
              * the compiler from generating a default assignment operator.
              */
-            PostprocessImageSemanticSeg &
-                operator=(const PostprocessImageSemanticSeg& rhs) = delete;
+            PostprocessImageClassification &
+                operator=(const PostprocessImageClassification& rhs) = delete;
     };
-} // namespace ti::app_dl_inferer::common
 
-#endif /* _POST_PROCESS_IMAGE_SEGMENTATION_H_ */
+} // namespace ti::post_process
+
+#endif /* _TI_POST_PROCESS_IMAGE_CLASSIFICATION_ */
+

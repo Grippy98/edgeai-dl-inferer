@@ -30,49 +30,71 @@
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef _POST_PROCESS_IMAGE_CLASSIFY_H_
-#define _POST_PROCESS_IMAGE_CLASSIFY_H_
+#ifndef _TI_POST_PROCESS_HUMAN_POSE_ESTIMATION_
+#define _TI_POST_PROCESS_HUMAN_POSE_ESTIMATION_
 
 /* Module headers. */
-#include <test_cpp/include/app_dl_inferer_post_process.h>
+#include <post_process/include/ti_post_process.h>
 
 /**
- * \defgroup group_dl_inferer_cpp_test_classify Image Classification post-processing
+ * \defgroup group_post_process_human_pose_estimation Human Pose Estimation post-processing
  *
- * \brief Class implementing the image based image classification post-processing
- *        logic.
+ * \brief Class implementing the human pose estimation post-processing logic.
  *
- * \ingroup group_dl_inferer_cpp_test_post_proc
+ * \ingroup group_post_process
  */
 
-namespace ti::app_dl_inferer::common
+namespace ti::post_process
 {
-    /** Post-processing for image classification.
+    /** Post-processing for human pose estimation.
      *
-     * \ingroup group_dl_inferer_cpp_test_classify
+     * \ingroup group_post_process_human_pose_estimation.
      */
-    class PostprocessImageClassify : public PostprocessImage
+    class PostprocessHumanPoseEstimation : public PostprocessImage
     {
         public:
             /** Constructor.
              *
              * @param config Configuration information not present in YAML
              */
-            PostprocessImageClassify(const PostprocessImageConfig   &config);
+            PostprocessHumanPoseEstimation(const PostprocessImageConfig  &config);
 
             /** Function operator
              *
              * This is the heart of the class. The application uses this
              * interface to execute the functionality provided by this class.
              *
-             * @param frameData Input data frame on which results are overlaid
-             * @param results Classification output results from the inference
+             * @param frameData  Input data frame on which overlay is done
+             * @param results Detection output results from the inference
              */
             void *operator()(void              *frameData,
                              VecDlTensorPtr    &results);
 
             /** Destructor. */
-            ~PostprocessImageClassify();
+            ~PostprocessHumanPoseEstimation();
+
+        private:
+            /** Multiplicative factor to be applied to X co-ordinates. */
+            float                   m_scaleX{1.0f};
+
+            /** Multiplicative factor to be applied to Y co-ordinates. */
+            float                   m_scaleY{1.0f};
+
+            /** Structure to hold information about NV12 Image. */
+            Image                   m_imageHolder;
+
+            /** Vector of YUV colors. */
+            std::vector<YUVColor>   m_yuvColorMap;
+
+            /** Vector of YUV colors for limb. */
+            std::vector<YUVColor>   m_yuvPoseLimbColor;
+
+            /** Vector of YUV colors for key-points. */
+            std::vector<YUVColor>   m_yuvPoseKpt;
+
+            /** Font for text. */
+            FontProperty            m_textFont;
+
 
         private:
             /**
@@ -81,9 +103,11 @@ namespace ti::app_dl_inferer::common
              * Assignment is not required and allowed and hence prevent
              * the compiler from generating a default assignment operator.
              */
-            PostprocessImageClassify &
-                operator=(const PostprocessImageClassify& rhs) = delete;
+            PostprocessHumanPoseEstimation &
+                operator=(const PostprocessHumanPoseEstimation& rhs) = delete;
     };
-} // namespace ti::app_dl_inferer::common
 
-#endif /* _POST_PROCESS_IMAGE_CLASSIFY_H_ */
+} // namespace ti::post_process
+
+#endif /* _TI_POST_PROCESS_HUMAN_POSE_ESTIMATION_ */
+

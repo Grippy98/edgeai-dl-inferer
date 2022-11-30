@@ -16,11 +16,6 @@ set(SRC_FILES
     src/app_dl_inferer_cmd_line_parse.cpp
     src/app_dl_inferer_utils.cpp
     src/app_dl_inferer_inference.cpp
-    src/app_dl_inferer_post_process.cpp
-    src/post_process_image_classify.cpp
-    src/post_process_image_object_detect.cpp
-    src/post_process_image_segmentation.cpp
-    src/post_process_image_pose_estimation.cpp
     src/app_dl_inferer_main.cpp)
 
 build_app(${PROJECT_NAME}

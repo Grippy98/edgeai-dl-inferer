@@ -30,31 +30,11 @@
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* Third-party headers. */
-#include <opencv2/core.hpp>
-#include <opencv2/imgproc.hpp>
-
 /* Module headers. */
-#include <test_cpp/include/post_process_image_segmentation.h>
+#include <post_process/include/ti_post_process_semantic_segmentation.h>
 
-namespace ti::app_dl_inferer::common
+namespace ti::post_process
 {
-#define CLIP(X) ( (X) > 255 ? 255 : (X) < 0 ? 0 : X)
-
-// RGB -> YUV
-#define RGB2Y(R, G, B) CLIP(( (  66 * (R) + 129 * (G) +  25 * (B) + 128) >> 8) +  16)
-#define RGB2U(R, G, B) CLIP(( ( -38 * (R) -  74 * (G) + 112 * (B) + 128) >> 8) + 128)
-#define RGB2V(R, G, B) CLIP(( ( 112 * (R) -  94 * (G) -  18 * (B) + 128) >> 8) + 128)
-
-// YUV -> RGB
-#define C(Y) ( (Y) - 16  )
-#define D(U) ( (U) - 128 )
-#define E(V) ( (V) - 128 )
-
-#define YUV2R(Y, U, V) CLIP(( 298 * C(Y)              + 409 * E(V) + 128) >> 8)
-#define YUV2G(Y, U, V) CLIP(( 298 * C(Y) - 100 * D(U) - 208 * E(V) + 128) >> 8)
-#define YUV2B(Y, U, V) CLIP(( 298 * C(Y) + 516 * D(U)              + 128) >> 8)
-
 #define INVOKE_BLEND_LOGIC(T)                           \
     blendSegMask(reinterpret_cast<uint8_t*>(frameData), \
                  reinterpret_cast<T*>(buff->data),      \
@@ -64,21 +44,16 @@ namespace ti::app_dl_inferer::common
                  m_config.outDataHeight,                \
                  m_config.alpha)
 
-PostprocessImageSemanticSeg::PostprocessImageSemanticSeg(const PostprocessImageConfig   &config):
+PostprocessSemanticSegmentation::PostprocessSemanticSegmentation(const PostprocessImageConfig   &config):
     PostprocessImage(config)
 {
 }
 
 /**
- * Use OpenCV to do in-place update of a buffer with post processing content like
- * alpha blending a specific color for each classified pixel. Typically used for
- * semantic segmentation models.
- * Although OpenCV expects BGR data, this function adjusts the color values so that
- * the post processing can be done on a RGB buffer without extra performance impact.
  * For every pixel in input frame, this will find the scaled co-ordinates for a
  * downscaled result and use the color associated with detected class ID.
  *
- * @param frame Original RGB data buffer, where the in-place updates will happen
+ * @param frame Original NV12 data buffer, where the in-place updates will happen
  * @param classes Reference to a vector of vector of floats representing the output
  *          from an inference API. It should contain 1 vector describing the class ID
  *          detected for that pixel.
@@ -93,65 +68,70 @@ static T1 *blendSegMask(T1         *frame,
                         int32_t     outDataHeight,
                         float       alpha)
 {
-    uint8_t    *ptr;
     uint8_t     a;
     uint8_t     sa;
-    uint8_t     r;
-    uint8_t     g;
-    uint8_t     b;
-    uint8_t     r_m;
-    uint8_t     g_m;
-    uint8_t     b_m;
+    uint8_t*    yPtr;
+    uint8_t*    uvPtr;
+    uint8_t     y_m;
+    uint8_t     u_m;
+    uint8_t     v_m;
     int32_t     w;
     int32_t     h;
     int32_t     sw;
     int32_t     sh;
     int32_t     class_id;
 
-    a  = alpha * 255;
-    sa = (1 - alpha ) * 255;
+    a  = alpha * 256;
+    sa = (1 - alpha ) * 256;
+
+    int uvOffset = outDataHeight*outDataWidth;
 
     // Here, (w, h) iterate over frame and (sw, sh) iterate over classes
     for (h = 0; h < outDataHeight; h++)
     {
         sh = (int32_t)(h * inDataHeight / outDataHeight);
-        ptr = frame + h * (outDataWidth * 3);
+        yPtr = frame + h * outDataWidth;
+        uvPtr = frame + uvOffset + ((h >> 1) * outDataWidth);
 
-        for (w = 0; w < outDataWidth; w++)
+        for (w = 0; w < outDataWidth; w+=2)
         {
             int32_t index;
-
             sw = (int32_t)(w * inDataWidth / outDataWidth);
-
-            // Get the RGB values from original image
-            r = *(ptr + 0);
-            g = *(ptr + 1);
-            b = *(ptr + 2);
-
             // sw and sh are scaled co-ordiates over the results[0] vector
             // Get the color corresponding to class detected at this co-ordinate
             index = (int32_t)(sh * inDataWidth + sw);
             class_id =  classes[index];
-
             // random color assignment based on class-id's
-            r_m = 10 * class_id;
-            g_m = 20 * class_id;
-            b_m = 30 * class_id;
+
+
+            y_m = (class_id << 3);
+            *(yPtr) = ((*(yPtr) * a) + (y_m * sa)) >> 8;
+            yPtr++;
+
+            sw = (int32_t)((w+1) * inDataWidth / outDataWidth);
+            index = (int32_t)(sh * inDataWidth + sw);
+            class_id =  classes[index];
+
+            y_m = (class_id << 3);
+            u_m = (class_id << 4);
+            v_m = (class_id << 5);
 
             // Blend the original image with mask value
-            *(ptr + 0) = ((r * a) + (r_m * sa)) / 255;
-            *(ptr + 1) = ((g * a) + (g_m * sa)) / 255;
-            *(ptr + 2) = ((b * a) + (b_m * sa)) / 255;
+            *(yPtr) = ((*(yPtr) * a) + (y_m * sa)) >> 8;
+            yPtr++;
 
-            ptr += 3;
+            u_m = ((*(uvPtr) * a) + (u_m * sa)) >> 8;
+            v_m = ((*(uvPtr+1) * a) + (v_m * sa)) >> 8;
+            *((uint16_t*)uvPtr) = (v_m << 8) | u_m;
+            uvPtr += 2;
         }
     }
 
     return frame;
 }
 
-void *PostprocessImageSemanticSeg::operator()(void             *frameData,
-                                              VecDlTensorPtr   &results)
+void *PostprocessSemanticSegmentation::operator()(void             *frameData,
+                                                  VecDlTensorPtr   &results)
 {
     /* Even though a vector of variants is passed only the first
      * entry is valid.
@@ -195,8 +175,8 @@ void *PostprocessImageSemanticSeg::operator()(void             *frameData,
     return ret;
 }
 
-PostprocessImageSemanticSeg::~PostprocessImageSemanticSeg()
+PostprocessSemanticSegmentation::~PostprocessSemanticSegmentation()
 {
 }
 
-} // namespace ti::app_dl_inferer::common
+} // namespace ti::post_process

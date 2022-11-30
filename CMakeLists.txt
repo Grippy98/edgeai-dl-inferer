@@ -4,5 +4,6 @@ project(edgeai_dl_inferer)
 
 add_subdirectory(dl_inferer)
 add_subdirectory(dl_inferer_python)
+add_subdirectory(post_process)
 add_subdirectory(examples)
 add_subdirectory(tests/test_cpp)

@@ -118,6 +118,7 @@ endif()
 
 set(COMMON_LINK_LIBS
     edgeai_dl_inferer
+    edgeai_post_process
     )
 
 set(SYSTEM_LINK_LIBS

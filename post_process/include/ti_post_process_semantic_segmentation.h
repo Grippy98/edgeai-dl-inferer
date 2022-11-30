@@ -30,57 +30,48 @@
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef _POST_PROCESS_IMAGE_POSE_ESTIMATION_H_
-#define _POST_PROCESS_IMAGE_POSE_ESTIMATION_H_
+#ifndef _TI_POST_PROCESS_SEMANTIC_SEGMENTATION_
+#define _TI_POST_PROCESS_SEMANTIC_SEGMENTATION_
 
 /* Module headers. */
-#include <test_cpp/include/app_dl_inferer_post_process.h>
+#include <post_process/include/ti_post_process.h>
 
 /**
- * \defgroup group_dl_inferer_cpp_test_img_pose Human Pose Estimation post-processing
+ * \defgroup group_post_process_semantic_segmentation Semantic Segmentation post-processing
  *
- * \brief Class implementing the image based human pose post-processing
- *        logic.
+ * \brief Class implementing the semantic segmentation post-processing logic.
  *
- * \ingroup group_dl_inferer_cpp_test_post_proc
+ * \ingroup group_post_process
  */
 
-namespace ti::app_dl_inferer::common
+namespace ti::post_process
 {
-    /** Post-processing for image based pose estimation.
+    /** Post-processing for image based semantic segmentation
      *
-     * \ingroup group_dl_inferer_cpp_test_post_proc.
+     * \ingroup group_post_process_semantic_segmentation
      */
-    class PostprocessImagePoseEstimation : public PostprocessImage
+    class PostprocessSemanticSegmentation : public PostprocessImage
     {
         public:
             /** Constructor.
              *
              * @param config Configuration information not present in YAML
              */
-            PostprocessImagePoseEstimation(const PostprocessImageConfig  &config);
+            PostprocessSemanticSegmentation(const PostprocessImageConfig    &config);
 
             /** Function operator
              *
              * This is the heart of the class. The application uses this
              * interface to execute the functionality provided by this class.
              *
-             * @param frameData  Input data frame on which overlay is done
-             * @param results Detection output results from the inference
+             * @param frameData Input data frame on which results are overlaid
+             * @param results Segmentation output results from the inference
              */
             void *operator()(void              *frameData,
                              VecDlTensorPtr    &results);
 
             /** Destructor. */
-            ~PostprocessImagePoseEstimation();
-
-        private:
-            /** Multiplicative factor to be applied to X co-ordinates. */
-            float                   m_scaleX{1.0f};
-
-            /** Multiplicative factor to be applied to Y co-ordinates. */
-            float                   m_scaleY{1.0f};
-
+            ~PostprocessSemanticSegmentation();
         private:
             /**
              * Assignment operator.
@@ -88,10 +79,10 @@ namespace ti::app_dl_inferer::common
              * Assignment is not required and allowed and hence prevent
              * the compiler from generating a default assignment operator.
              */
-            PostprocessImagePoseEstimation &
-                operator=(const PostprocessImagePoseEstimation& rhs) = delete;
+            PostprocessSemanticSegmentation &
+                operator=(const PostprocessSemanticSegmentation& rhs) = delete;
     };
 
-} // namespace ti::app_dl_inferer::common
+} // namespace ti::post_process
 
-#endif /* _POST_PROCESS_IMAGE_POSE_ESTIMATION_H_ */
+#endif /* _TI_POST_PROCESS_SEMANTIC_SEGMENTATION_ */

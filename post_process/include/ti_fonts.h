@@ -30,42 +30,38 @@
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef _APP_DL_INFERER_UTILS_H_
-#define _APP_DL_INFERER_UTILS_H_
+/* Standard headers. */
+#include <stdint.h>
 
-/* Third Party Headers. */
-#include <opencv2/opencv.hpp>
+#ifndef _TI_POST_PROCESS_FONTS_
+#define _TI_POST_PROCESS_FONTS_
 
-/* Module Headers. */
-#include <dl_inferer/include/ti_dl_inferer.h>
+/**
+ * \defgroup group_post_process_fonts Font Library
+ *
+ * \brief Font Library
+ *
+ * \ingroup group_post_process
+ */
 
-namespace ti::app_dl_inferer::common
+namespace ti::post_process
 {
-    using namespace ti::dl_inferer;
-    using namespace std;
-
-    /**
-     * Resizes, Crops and Color Converts the image based on Config file
-     *
-     * @param testImage    Original Image.
-     * @param preProcImage PreProcessed Image
-     * @param preProcCfg   PrePocess Config
-     *
+    /** Structure to contain adress of font bitmap
+     *  its width and its height.
      */
-    
-    void preProcessImage(cv::Mat               &testImage,
-                         cv::Mat               &preProcImage,
-                         PreprocessImageConfig &preProcCfg);
+    typedef struct
+    {
+        uint32_t        *addr;
+        int             width;
+        int             height;
 
-     /**
-     * Convert BGR Image to NV12
-     *
-     * @param bgrMat  Original BGR Image.
-     * @param nv12Mat NV12 Image
-     *
+    } FontProperty;
+
+    /** Helper function to give best fit available
+     *  font based on fontSize
      */
-    void convertBGRtoNV12(const cv::Mat& bgrMat, cv::Mat& nv12Mat);
+    void getFont(FontProperty *pProp, int fontSize);
 
-} // namespace ti::app_dl_inferer::common
+} // namespace ti::post_process
 
-#endif /* _APP_DL_INFERER_UTILS_H_ */
+#endif // _TI_POST_PROCESS_FONTS_
