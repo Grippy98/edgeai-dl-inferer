@@ -120,29 +120,31 @@ void *PostprocessHumanPoseEstimation::operator()(void           *frameData,
     float* data = (float*)result->data;
     m_imageHolder.yRowAddr = (uint8_t *)frameData;
     m_imageHolder.uvRowAddr = (uint8_t *)frameData + (m_imageHolder.width*m_imageHolder.height);
+    auto height = result->shape[result->dim - 2];
+    auto width = result->shape[result->dim - 1];
 
-    for(int i = 0; i < result->shape[2] ; i++)
+    for(int i = 0; i < height ; i++)
     {
         vector<int> det_bbox;
         float det_score;
         int det_label;
         vector<float> kpt;
 
-        det_score = data[i * 57 + 4];
-        det_label = int(data[i * 57 + 5]);
+        det_score = data[i * width + 4];
+        det_label = int(data[i * width + 5]);
 
         if(det_score > m_config.vizThreshold) {
             YUVColor color_map = m_yuvColorMap[det_label];
 
-            for(int j = 6; j < 57; j++)
+            for(int j = 6; j < width; j++)
             {
-                kpt.push_back(data[i * 57 + j]);
+                kpt.push_back(data[i * width + j]);
             }
 
-            det_bbox.push_back(data[i * 57 + 0] * m_scaleX);
-            det_bbox.push_back(data[i * 57 + 1] * m_scaleY);
-            det_bbox.push_back(data[i * 57 + 2] * m_scaleX);
-            det_bbox.push_back(data[i * 57 + 3] * m_scaleY);
+            det_bbox.push_back(data[i * width + 0] * m_scaleX);
+            det_bbox.push_back(data[i * width + 1] * m_scaleY);
+            det_bbox.push_back(data[i * width + 2] * m_scaleX);
+            det_bbox.push_back(data[i * width + 3] * m_scaleY);
 
             drawRect(&m_imageHolder,
                      det_bbox[0],
