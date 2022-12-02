@@ -31,7 +31,7 @@
  */
 
 /* Module headers. */
-#include <post_process/include/ti_fonts.h>
+#include <ti_fonts.h>
 
 namespace ti::post_process
 {

@@ -40,9 +40,9 @@
 #include <test_cpp/include/app_dl_inferer_utils.h>
 
 /* DL Inferer. */
-#include <dl_inferer/include/ti_dl_inferer.h>
-#include <dl_inferer/include/ti_dl_inferer_logger.h>
-#include <post_process/include/ti_post_process.h>
+#include <ti_dl_inferer.h>
+#include <ti_dl_inferer_logger.h>
+#include <ti_post_process.h>
 
 
 /**

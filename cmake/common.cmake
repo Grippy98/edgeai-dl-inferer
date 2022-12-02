@@ -86,7 +86,12 @@ endif()
 include_directories(${PROJECT_SOURCE_DIR}
                     ${PROJECT_SOURCE_DIR}/..
                     ${PROJECT_SOURCE_DIR}/include
-                    ${PROJECT_SOURCE_DIR}/include
+                    ${PROJECT_SOURCE_DIR}/dl_inferer/include
+                    ${PROJECT_SOURCE_DIR}/post_process/include
+                    ${PROJECT_SOURCE_DIR}/../dl_inferer/include
+                    ${PROJECT_SOURCE_DIR}/../post_process/include
+                    ${PROJECT_SOURCE_DIR}/../../dl_inferer/include
+                    ${PROJECT_SOURCE_DIR}/../../post_process/include
                     SYSTEM ${TARGET_FS}/usr/local/include
                     SYSTEM ${TARGET_FS}/usr/include/gstreamer-1.0/
                     SYSTEM ${TARGET_FS}/usr/include/glib-2.0/

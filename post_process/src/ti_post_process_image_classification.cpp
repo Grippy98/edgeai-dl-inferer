@@ -31,7 +31,7 @@
  */
 
 /* Module headers. */
-#include <post_process/include/ti_post_process_image_classification.h>
+#include <ti_post_process_image_classification.h>
 
 namespace ti::post_process
 {

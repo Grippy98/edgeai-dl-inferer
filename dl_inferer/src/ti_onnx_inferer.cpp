@@ -69,8 +69,8 @@
 #include <core/providers/tidl/tidl_provider_factory.h>
 
 /* Module headers. */
-#include <dl_inferer/include/ti_onnx_inferer.h>
-#include <dl_inferer/include/ti_dl_inferer_logger.h>
+#include <ti_onnx_inferer.h>
+#include <ti_dl_inferer_logger.h>
 
 using namespace ti::dl_inferer::utils;
 

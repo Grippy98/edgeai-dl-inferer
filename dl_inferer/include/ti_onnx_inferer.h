@@ -70,7 +70,7 @@
 #include <core/session/onnxruntime_cxx_api.h>
 
 /* Module headers. */
-#include <dl_inferer/include/ti_dl_inferer.h>
+#include <ti_dl_inferer.h>
 
 /**
  * \defgroup group_onnx_inferer ORT runtime API

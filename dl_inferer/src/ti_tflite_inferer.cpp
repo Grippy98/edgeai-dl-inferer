@@ -69,8 +69,8 @@
 #include <tensorflow/lite/util.h>
 
 /* Module headers. */
-#include <dl_inferer/include/ti_tflite_inferer.h>
-#include <dl_inferer/include/ti_dl_inferer_logger.h>
+#include <ti_tflite_inferer.h>
+#include <ti_dl_inferer_logger.h>
 
 using namespace ti::dl_inferer::utils;
 

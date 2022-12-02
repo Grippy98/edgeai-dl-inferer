@@ -31,7 +31,7 @@
  */
 
 /* Module headers. */
-#include <post_process/include/ti_post_process_semantic_segmentation.h>
+#include <ti_post_process_semantic_segmentation.h>
 
 namespace ti::post_process
 {

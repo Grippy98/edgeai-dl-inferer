@@ -41,9 +41,8 @@
 #include <iomanip>
 
 /* Module Headers. */
-#include <dl_inferer/include/ti_dl_inferer.h>
-#include <dl_inferer/include/ti_dl_inferer_logger.h>
-#include <post_process/include/ti_post_process_utils.h>
+#include <ti_dl_inferer.h>
+#include <ti_post_process_utils.h>
 
 /**
  * \defgroup group_post_process Post Process in NV12
@@ -56,7 +55,6 @@
 namespace ti::post_process
 {
     using namespace ti::dl_inferer;
-    using namespace ti::dl_inferer::utils;
 
     class PostprocessImage
     {

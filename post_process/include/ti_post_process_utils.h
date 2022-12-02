@@ -39,7 +39,7 @@
 #include <cstring>
 
 /* Module Headers. */
-#include <post_process/include/ti_fonts.h>
+#include <ti_fonts.h>
 
 #define CLIP(X) ( (X) > 255 ? 255 : (X) < 0 ? 0 : X)
 #define RGB2Y(R, G, B) CLIP(( ( 66*(R) + 129*(G) + 25*(B) + 128) >>8 ) + 16)

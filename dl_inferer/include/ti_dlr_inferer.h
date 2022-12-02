@@ -70,7 +70,7 @@
 #include <dlr.h>
 
 /* Module headers. */
-#include <dl_inferer/include/ti_dl_inferer.h>
+#include <ti_dl_inferer.h>
 
 /**
  * \defgroup group_dlr_inferer DLR runtime API

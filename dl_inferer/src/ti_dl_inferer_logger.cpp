@@ -69,7 +69,7 @@
 #include <sys/time.h>
 
 /* Module headers. */
-#include <dl_inferer/include/ti_dl_inferer_logger.h>
+#include <ti_dl_inferer_logger.h>
 
 using namespace std;
 

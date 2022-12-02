@@ -31,7 +31,7 @@
  */
 
 /* Module headers. */
-#include <post_process/include/ti_post_process_utils.h>
+#include <ti_post_process_utils.h>
 
 namespace ti::post_process
 {

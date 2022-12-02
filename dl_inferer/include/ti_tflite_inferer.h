@@ -68,7 +68,7 @@
 #include <tensorflow/lite/kernels/register.h>
 
 /* Module headers. */
-#include <dl_inferer/include/ti_dl_inferer.h>
+#include <ti_dl_inferer.h>
 
 /**
  * \defgroup group_tflite_inferer TFLITE runtime API

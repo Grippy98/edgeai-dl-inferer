@@ -30,7 +30,7 @@
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include <test_cpp/include/app_dl_inferer_utils.h>
-#include <post_process/include/ti_post_process.h>
+#include <ti_post_process.h>
 
 namespace ti::app_dl_inferer::common
 {

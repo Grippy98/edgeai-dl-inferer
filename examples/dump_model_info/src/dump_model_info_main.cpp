@@ -64,8 +64,8 @@
 #include <getopt.h>
 
 /* Module headers. */
-#include <dl_inferer/include/ti_dl_inferer.h>
-#include <dl_inferer/include/ti_dl_inferer_logger.h>
+#include <ti_dl_inferer.h>
+#include <ti_dl_inferer_logger.h>
 
 using namespace std;
 using namespace ti::dl_inferer;

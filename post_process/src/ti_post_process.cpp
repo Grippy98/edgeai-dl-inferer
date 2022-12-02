@@ -35,14 +35,17 @@
 #include <stdlib.h>
 
 /* Module headers. */
-#include <post_process/include/ti_post_process.h>
-#include <post_process/include/ti_post_process_image_classification.h>
-#include <post_process/include/ti_post_process_object_detection.h>
-#include <post_process/include/ti_post_process_semantic_segmentation.h>
-#include <post_process/include/ti_post_process_human_pose_estimation.h>
+#include <ti_post_process.h>
+#include <ti_post_process_image_classification.h>
+#include <ti_post_process_object_detection.h>
+#include <ti_post_process_semantic_segmentation.h>
+#include <ti_post_process_human_pose_estimation.h>
+#include <ti_dl_inferer_logger.h>
 
 namespace ti::post_process
 {
+
+using namespace ti::dl_inferer::utils;
 
 PostprocessImage::PostprocessImage(const PostprocessImageConfig &config):
     m_config(config)

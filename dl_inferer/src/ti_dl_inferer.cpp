@@ -64,19 +64,19 @@
 #include <filesystem>
 
 /* Module headers. */
-#include <dl_inferer/include/ti_dl_inferer.h>
-#include <dl_inferer/include/ti_dl_inferer_logger.h>
+#include <ti_dl_inferer.h>
+#include <ti_dl_inferer_logger.h>
 
 #if defined(USE_DLR_RT)
-#include <dl_inferer/include/ti_dlr_inferer.h>
+#include <ti_dlr_inferer.h>
 #endif
 
 #if defined(USE_TENSORFLOW_RT)
-#include <dl_inferer/include/ti_tflite_inferer.h>
+#include <ti_tflite_inferer.h>
 #endif
 
 #if defined(USE_ONNX_RT)
-#include <dl_inferer/include/ti_onnx_inferer.h>
+#include <ti_onnx_inferer.h>
 #endif
 
 /**

@@ -31,7 +31,7 @@
  */
 
 /* Module headers. */
-#include <post_process/include/ti_post_process_object_detection.h>
+#include <ti_post_process_object_detection.h>
 
 namespace ti::post_process
 {

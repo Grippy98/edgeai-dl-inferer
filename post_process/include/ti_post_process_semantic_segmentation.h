@@ -34,7 +34,7 @@
 #define _TI_POST_PROCESS_SEMANTIC_SEGMENTATION_
 
 /* Module headers. */
-#include <post_process/include/ti_post_process.h>
+#include <ti_post_process.h>
 
 /**
  * \defgroup group_post_process_semantic_segmentation Semantic Segmentation post-processing

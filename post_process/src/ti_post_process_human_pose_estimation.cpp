@@ -31,7 +31,7 @@
  */
 
 /* Module headers. */
-#include <post_process/include/ti_post_process_human_pose_estimation.h>
+#include <ti_post_process_human_pose_estimation.h>
 
 namespace ti::post_process
 {

@@ -37,7 +37,7 @@
 #include <opencv2/opencv.hpp>
 
 /* Module Headers. */
-#include <dl_inferer/include/ti_dl_inferer.h>
+#include <ti_dl_inferer.h>
 
 namespace ti::app_dl_inferer::common
 {

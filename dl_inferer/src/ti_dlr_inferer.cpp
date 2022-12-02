@@ -66,8 +66,8 @@
 #include <map>
 
 /* Module headers. */
-#include <dl_inferer/include/ti_dlr_inferer.h>
-#include <dl_inferer/include/ti_dl_inferer_logger.h>
+#include <ti_dlr_inferer.h>
+#include <ti_dl_inferer_logger.h>
 
 /* External headers */
 #include <dlpack/dlpack.h>

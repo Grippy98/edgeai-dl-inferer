@@ -34,7 +34,7 @@
 #define _TI_POST_PROCESS_OBJECT_DETECTION_
 
 /* Module headers. */
-#include <post_process/include/ti_post_process.h>
+#include <ti_post_process.h>
 
 /**
  * \defgroup group_post_process_obj_detection Object Detection post-processing
