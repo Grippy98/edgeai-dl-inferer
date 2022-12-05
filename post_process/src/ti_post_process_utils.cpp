@@ -412,4 +412,96 @@ void blendImage(Image*  imgSrc,
     }
 }
 
+void BarGraph::initGraph(Image*        img,
+                         int32_t       topX,
+                         int32_t       topY,
+                         int32_t       width,
+                         int32_t       height,
+                         int32_t       maxValue,
+                         const char*   title,
+                         const char*   valueUnit,
+                         FontProperty* titleFontProp,
+                         FontProperty* valueFontProp,
+                         YUVColor*     textColor,
+                         YUVColor*     fillColor,
+                         YUVColor*     bgColor
+                        )
+{
+    if (topX >= img->width)
+    {
+        return;
+    }
+    if (topY >= img->height)
+    {
+        return;
+    }
+    if (topX < 0)
+    {
+       return;
+    }
+    if (topY < 0)
+    {
+        return;
+    }
+    m_img = img;
+    m_topX = topX;
+    m_topY = topY;
+    m_graphTopX = topX;
+    m_graphTopY = topY + valueFontProp->height + 1;
+    m_valueFontProp = valueFontProp;
+    m_textColor = textColor;
+    m_fillColor = fillColor;
+    m_width = width;
+    m_height = height;
+    m_maxValue = maxValue;
+    m_heightPerUnit = (float)height/(float)maxValue;
+    m_valueUnit = valueUnit;
+
+    drawRect(m_img, m_graphTopX, m_graphTopY, m_width, m_height, bgColor, -1);
+
+    int totalFontWidth = 0;
+    uint8_t counter = 0;
+    while (*(title+counter))
+    {
+        totalFontWidth += titleFontProp->width;
+        counter++;
+    }
+    int titleX = (m_graphTopX + (m_width/2)) - (totalFontWidth/2);
+    int titleY = m_graphTopY + m_height + 1;
+    drawText(m_img,title,titleX,titleY,titleFontProp,m_textColor);
+}
+
+void BarGraph::update(int32_t value)
+{
+    char buffer[20];
+    sprintf(buffer,"%d %s",value,m_valueUnit);
+
+    int totalFontWidth = 0;
+    uint8_t counter = 0;
+    while (*(buffer+counter))
+    {
+        totalFontWidth += m_valueFontProp->width;
+        counter++;
+    }
+
+    int bufferX = (m_graphTopX + (m_width/2)) - (totalFontWidth/2);
+    drawText(m_img,buffer,bufferX,m_topY,m_valueFontProp,m_textColor);
+
+    if (value <= 0)
+    {
+        return;
+    }
+    if (value > m_maxValue)
+    {
+        value = m_maxValue;
+    }
+
+    int fillHeight = value * m_heightPerUnit;
+    int fillWidth = m_width - 2;
+    int fillX = m_graphTopX + 1;
+    int fillY = m_graphTopY + m_height - fillHeight;
+
+    drawRect(m_img, fillX, fillY, fillWidth, fillHeight, m_fillColor, -1);
+}
+
 } // namespace ti::post_process

@@ -35,7 +35,9 @@
 
 /* Standard headers. */
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
+#include <string.h>
 #include <cstring>
 
 /* Module Headers. */
@@ -235,6 +237,44 @@ namespace ti::post_process
                     float     beta,
                     float     gamma
                     );
+
+    /**
+     * \brief BarGraph Structure
+     *
+     * \ingroup group_post_process_utils
+     */
+    struct BarGraph
+    {
+        Image*          m_img;
+        int32_t         m_topX;
+        int32_t         m_topY;
+        int32_t         m_graphTopX;
+        int32_t         m_graphTopY;
+        FontProperty*   m_valueFontProp;
+        YUVColor*       m_textColor;
+        YUVColor*       m_fillColor;
+        int32_t         m_width;
+        int32_t         m_height;
+        int32_t         m_maxValue;
+        float           m_heightPerUnit;
+        const char*     m_valueUnit;
+
+        void initGraph(Image*        img,
+                       int32_t       topY,
+                       int32_t       topX,
+                       int32_t       width,
+                       int32_t       height,
+                       int32_t       maxValue,
+                       const char*   title,
+                       const char*   valueUnit,
+                       FontProperty* titleFontProp,
+                       FontProperty* valueFontProp,
+                       YUVColor*     textColor,
+                       YUVColor*     fillColor,
+                       YUVColor*     bgColor
+                       );
+        void update(int32_t value);
+    };
 } // namespace ti::post_process
 
 
