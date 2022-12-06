@@ -427,6 +427,14 @@ void BarGraph::initGraph(Image*        img,
                          YUVColor*     bgColor
                         )
 {
+    if (width & 1)
+    {
+        width = width - 1;
+    }
+    if (width <= 0 || height <= 0)
+    {
+        return;
+    }
     if (topX >= img->width)
     {
         return;
@@ -474,7 +482,7 @@ void BarGraph::initGraph(Image*        img,
 void BarGraph::update(int32_t value)
 {
     char buffer[20];
-    sprintf(buffer,"%d %s",value,m_valueUnit);
+    sprintf(buffer,"%d%s",value,m_valueUnit);
 
     int totalFontWidth = 0;
     uint8_t counter = 0;
@@ -497,11 +505,9 @@ void BarGraph::update(int32_t value)
     }
 
     int fillHeight = value * m_heightPerUnit;
-    int fillWidth = m_width - 2;
-    int fillX = m_graphTopX + 1;
     int fillY = m_graphTopY + m_height - fillHeight;
 
-    drawRect(m_img, fillX, fillY, fillWidth, fillHeight, m_fillColor, -1);
+    drawRect(m_img, m_graphTopX, fillY, m_width, fillHeight, m_fillColor, -1);
 }
 
 } // namespace ti::post_process
