@@ -9,7 +9,6 @@ include_directories(${CMAKE_SOURCE_DIR})
 set(SYSTEM_LINK_LIBS ${SYSTEM_LINK_LIBS}
     opencv_core
     opencv_imgproc
-    opencv_highgui
     opencv_imgcodecs)
 
 set(SRC_FILES

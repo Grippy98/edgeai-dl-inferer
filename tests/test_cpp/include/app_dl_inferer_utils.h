@@ -34,7 +34,8 @@
 #define _APP_DL_INFERER_UTILS_H_
 
 /* Third Party Headers. */
-#include <opencv2/opencv.hpp>
+#include <opencv2/core.hpp>
+#include <opencv2/imgproc.hpp>
 
 /* Module Headers. */
 #include <ti_dl_inferer.h>

@@ -36,6 +36,8 @@
 
 /* Third Party Headers. */
 #include <opencv2/core.hpp>
+#include <opencv2/imgproc.hpp>
+#include <opencv2/imgcodecs.hpp>
 
 /* Module headers. */
 #include <test_cpp/include/app_dl_inferer_cmd_line_parse.h>
