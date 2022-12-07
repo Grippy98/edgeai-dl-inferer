@@ -88,10 +88,13 @@ include_directories(${PROJECT_SOURCE_DIR}
                     ${PROJECT_SOURCE_DIR}/include
                     ${PROJECT_SOURCE_DIR}/dl_inferer/include
                     ${PROJECT_SOURCE_DIR}/post_process/include
+                    ${PROJECT_SOURCE_DIR}/pre_process/include
                     ${PROJECT_SOURCE_DIR}/../dl_inferer/include
                     ${PROJECT_SOURCE_DIR}/../post_process/include
+                    ${PROJECT_SOURCE_DIR}/../pre_process/include
                     ${PROJECT_SOURCE_DIR}/../../dl_inferer/include
                     ${PROJECT_SOURCE_DIR}/../../post_process/include
+                    ${PROJECT_SOURCE_DIR}/../../pre_process/include
                     SYSTEM ${TARGET_FS}/usr/local/include
                     SYSTEM ${TARGET_FS}/usr/include/gstreamer-1.0/
                     SYSTEM ${TARGET_FS}/usr/include/glib-2.0/
@@ -124,6 +127,7 @@ endif()
 set(COMMON_LINK_LIBS
     edgeai_dl_inferer
     edgeai_post_process
+    edgeai_pre_process
     )
 
 set(SYSTEM_LINK_LIBS
@@ -223,7 +227,7 @@ function(build_lib lib_name lib_type lib_ver)
                           VERSION ${lib_ver}
                          )
 
-    set(INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR}/${lib_name})
+    set(INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR}/edgeai_dl_inferer)
 
     FILE(GLOB HDRS ${CMAKE_CURRENT_SOURCE_DIR}/include/*.h)
 
@@ -237,37 +241,37 @@ function(build_lib lib_name lib_type lib_ver)
     # Specify the header files to install
     install(FILES ${HDRS} DESTINATION ${INCLUDE_INSTALL_DIR})
 
-    set(CONFIG_PACKAGE_LOCATION ${CMAKE_INSTALL_PREFIX}/cmake/${lib_name})
-
-    # Create config file
-    configure_package_config_file(${CMAKE_SOURCE_DIR}/cmake/${lib_name}_config.cmake.in
-        ${CMAKE_CURRENT_BINARY_DIR}/${lib_name}Config.cmake
-        INSTALL_DESTINATION ${CONFIG_PACKAGE_LOCATION}
-        PATH_VARS INCLUDE_INSTALL_DIR
-    )
-
-    install(EXPORT ${lib_name}Targets
-        FILE ${lib_name}Targets.cmake
-        DESTINATION ${CONFIG_PACKAGE_LOCATION}
-    )
-
-    export(EXPORT ${lib_name}Targets
-        FILE ${CMAKE_CURRENT_BINARY_DIR}/${lib_name}Targets.cmake
-    )
-
-    # Generate the version file for the config file
-    write_basic_package_version_file(
-        ${CMAKE_CURRENT_BINARY_DIR}/${lib_name}ConfigVersion.cmake
-        VERSION "${lib_ver}"
-        COMPATIBILITY AnyNewerVersion
-    )
-
-    # install the package configuration files
-    install(FILES
-      ${CMAKE_CURRENT_BINARY_DIR}/${lib_name}Config.cmake
-      ${CMAKE_CURRENT_BINARY_DIR}/${lib_name}ConfigVersion.cmake
-      DESTINATION ${CONFIG_PACKAGE_LOCATION}
-    )
+##    set(CONFIG_PACKAGE_LOCATION ${CMAKE_INSTALL_PREFIX}/cmake/${lib_name})
+##
+##    # Create config file
+##    configure_package_config_file(${CMAKE_SOURCE_DIR}/cmake/${lib_name}_config.cmake.in
+##        ${CMAKE_CURRENT_BINARY_DIR}/${lib_name}Config.cmake
+##        INSTALL_DESTINATION ${CONFIG_PACKAGE_LOCATION}
+##        PATH_VARS INCLUDE_INSTALL_DIR
+##    )
+##
+##    install(EXPORT ${lib_name}Targets
+##        FILE ${lib_name}Targets.cmake
+##        DESTINATION ${CONFIG_PACKAGE_LOCATION}
+##    )
+##
+##    export(EXPORT ${lib_name}Targets
+##        FILE ${CMAKE_CURRENT_BINARY_DIR}/${lib_name}Targets.cmake
+##    )
+##
+##    # Generate the version file for the config file
+##    write_basic_package_version_file(
+##        ${CMAKE_CURRENT_BINARY_DIR}/${lib_name}ConfigVersion.cmake
+##        VERSION "${lib_ver}"
+##        COMPATIBILITY AnyNewerVersion
+##    )
+##
+##    # install the package configuration files
+##    install(FILES
+##      ${CMAKE_CURRENT_BINARY_DIR}/${lib_name}Config.cmake
+##      ${CMAKE_CURRENT_BINARY_DIR}/${lib_name}ConfigVersion.cmake
+##      DESTINATION ${CONFIG_PACKAGE_LOCATION}
+##    )
 
 endfunction()
 
@@ -284,4 +288,3 @@ function(install_python_module module_name)
     install(FILES ${MODULE} DESTINATION ${CMAKE_INSTALL_PYTHON_LIBDIR})
 
 endfunction()
-

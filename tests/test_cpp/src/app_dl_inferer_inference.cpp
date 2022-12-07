@@ -44,11 +44,6 @@ namespace ti::app_dl_inferer::common
 /* Alias for time point type */
 using TimePoint = std::chrono::time_point<std::chrono::system_clock>;
 
-using namespace std;
-using namespace ti::dl_inferer;
-using namespace ti::dl_inferer::utils;
-using namespace ti::app_dl_inferer::common;
-
 template <typename InputT, typename OutputT>
 int32_t normalize(InputT  *inData,
                   OutputT *outData,

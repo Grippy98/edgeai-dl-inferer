@@ -34,8 +34,6 @@
 
 namespace ti::app_dl_inferer::common
 {
-using namespace std;
-using namespace ti::dl_inferer;
 
 void preProcessImage(cv::Mat               &testImage,
                     cv::Mat                &preProcImage,

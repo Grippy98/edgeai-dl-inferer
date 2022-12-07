@@ -38,11 +38,11 @@
 #include <opencv2/imgproc.hpp>
 
 /* Module Headers. */
-#include <ti_dl_inferer.h>
+#include <ti_pre_process_config.h>
 
 namespace ti::app_dl_inferer::common
 {
-    using namespace ti::dl_inferer;
+    using namespace ti::pre_process;
     using namespace std;
 
     /**

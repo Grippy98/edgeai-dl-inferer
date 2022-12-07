@@ -46,13 +46,15 @@
 
 /* DL Inferer. */
 #include <ti_dl_inferer.h>
-#include <ti_dl_inferer_logger.h>
 #include <ti_post_process.h>
+#include <ti_pre_process_config.h>
+#include <ti_dl_inferer_logger.h>
 
 using namespace std;
 using namespace ti::dl_inferer;
 using namespace ti::dl_inferer::utils;
 using namespace ti::post_process;
+using namespace ti::pre_process;
 using namespace ti::app_dl_inferer::common;
 
 int32_t main(int argc, char * argv[])
