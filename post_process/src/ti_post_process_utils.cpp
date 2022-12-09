@@ -117,17 +117,33 @@ void drawLine(Image*    img,
     {
         drawX1 = img->width - 1;
     }
+    else if (drawX1 < thickness/2)
+    {
+        drawX1 = thickness/2;
+    }
     if (drawX2 >= img->width)
     {
         drawX2 = img->width - 1;
+    }
+    else if (drawX2 < thickness/2)
+    {
+        drawX2 = thickness/2;
     }
     if (drawY1 >= img->height)
     {
         drawY1 = img->height - 1;
     }
+    else if (drawY1 < thickness/2)
+    {
+        drawY1 = thickness/2;
+    }
     if (drawY2 >= img->height)
     {
         drawY2 = img->height - 1;
+    }
+    else if (drawY2 < thickness/2)
+    {
+        drawY2 = thickness/2;
     }
 
     int32_t i,k,dx,dy,sdx,sdy,dxabs,dyabs,x,y,px,py;
