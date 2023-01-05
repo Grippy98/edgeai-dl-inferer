@@ -70,7 +70,6 @@ static T1 *blendSegMask(T1         *frame,
 {
     uint8_t     a;
     uint8_t     sa;
-    uint8_t*    yPtr;
     uint8_t*    uvPtr;
     uint8_t     y_m;
     uint8_t     u_m;
@@ -80,45 +79,33 @@ static T1 *blendSegMask(T1         *frame,
     int32_t     sw;
     int32_t     sh;
     int32_t     class_id;
+    int32_t     rowOffset;
 
     a  = alpha * 256;
     sa = (1 - alpha ) * 256;
 
-    int uvOffset = outDataHeight*outDataWidth;
-
+    int     uvOffset = outDataHeight*outDataWidth;
     // Here, (w, h) iterate over frame and (sw, sh) iterate over classes
-    for (h = 0; h < outDataHeight; h++)
+    for (h = 0; h < outDataHeight/2; h++)
     {
-        sh = (int32_t)(h * inDataHeight / outDataHeight);
-        yPtr = frame + h * outDataWidth;
-        uvPtr = frame + uvOffset + ((h >> 1) * outDataWidth);
+        sh = (int32_t)((h << 1) * inDataHeight / outDataHeight);
+        uvPtr = frame + uvOffset + (h * outDataWidth);
+        rowOffset = sh*inDataWidth;
 
         for (w = 0; w < outDataWidth; w+=2)
         {
             int32_t index;
+
             sw = (int32_t)(w * inDataWidth / outDataWidth);
-            // sw and sh are scaled co-ordiates over the results[0] vector
-            // Get the color corresponding to class detected at this co-ordinate
-            index = (int32_t)(sh * inDataWidth + sw);
+            index = (int32_t)(rowOffset + sw);
             class_id =  classes[index];
-            // random color assignment based on class-id's
-
-
-            y_m = (class_id << 3);
-            *(yPtr) = ((*(yPtr) * a) + (y_m * sa)) >> 8;
-            yPtr++;
-
-            sw = (int32_t)((w+1) * inDataWidth / outDataWidth);
-            index = (int32_t)(sh * inDataWidth + sw);
-            class_id =  classes[index];
-
-            y_m = (class_id << 3);
             u_m = (class_id << 4);
             v_m = (class_id << 5);
-
-            // Blend the original image with mask value
-            *(yPtr) = ((*(yPtr) * a) + (y_m * sa)) >> 8;
-            yPtr++;
+	    sw = (int32_t)((w+1) * inDataWidth / outDataWidth);
+            index = (int32_t)(rowOffset + sw);
+            class_id =  classes[index];
+            u_m = (u_m + (class_id << 4))/2;
+            v_m = (v_m + (class_id << 5))/2;
 
             u_m = ((*(uvPtr) * a) + (u_m * sa)) >> 8;
             v_m = ((*(uvPtr+1) * a) + (v_m * sa)) >> 8;
@@ -126,7 +113,6 @@ static T1 *blendSegMask(T1         *frame,
             uvPtr += 2;
         }
     }
-
     return frame;
 }
 
