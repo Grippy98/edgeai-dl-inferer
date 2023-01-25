@@ -58,6 +58,19 @@ namespace ti::post_process
 PostprocessSemanticSegmentation::PostprocessSemanticSegmentation(const PostprocessImageConfig   &config):
     PostprocessImage(config)
 {
+    /* Generate YUV Color map from RGB Color Map. */
+    mMaxColorClass = sizeof(RGB_COLOR_MAP)/sizeof(RGB_COLOR_MAP[0]);
+    mYUVColorMap = new uint8_t*[mMaxColorClass];
+    for(int i = 0; i < mMaxColorClass; ++i)
+    {
+        mYUVColorMap[i] = new uint8_t[3];
+        uint8_t R = RGB_COLOR_MAP[i][0];
+        uint8_t G = RGB_COLOR_MAP[i][1];
+        uint8_t B = RGB_COLOR_MAP[i][2];
+        mYUVColorMap[i][0] = RGB2Y(R,G,B);
+        mYUVColorMap[i][1] = RGB2U(R,G,B);
+        mYUVColorMap[i][2] = RGB2V(R,G,B);
+    }
 }
 
 /**
@@ -133,20 +146,6 @@ static T1 *blendSegMask(T1         *frame,
 void *PostprocessSemanticSegmentation::operator()(void             *frameData,
                                                   VecDlTensorPtr   &results)
 {
-    /* Generate YUV Color map from RGB Color Map. */
-    mMaxColorClass = sizeof(RGB_COLOR_MAP)/sizeof(RGB_COLOR_MAP[0]);
-    mYUVColorMap = new uint8_t*[mMaxColorClass];
-    for(int i = 0; i < mMaxColorClass; ++i)
-    {
-        mYUVColorMap[i] = new uint8_t[3];
-        uint8_t R = RGB_COLOR_MAP[i][0];
-        uint8_t G = RGB_COLOR_MAP[i][1];
-        uint8_t B = RGB_COLOR_MAP[i][2];
-        mYUVColorMap[i][0] = RGB2Y(R,G,B);
-        mYUVColorMap[i][1] = RGB2U(R,G,B);
-        mYUVColorMap[i][2] = RGB2V(R,G,B);
-    }
-
     /* Even though a vector of variants is passed only the first
      * entry is valid.
      */
@@ -191,6 +190,11 @@ void *PostprocessSemanticSegmentation::operator()(void             *frameData,
 
 PostprocessSemanticSegmentation::~PostprocessSemanticSegmentation()
 {
+    for(int i = 0; i < mMaxColorClass; ++i)
+    {
+        delete mYUVColorMap[i];
+    }
+    delete mYUVColorMap;
 }
 
 } // namespace ti::post_process
