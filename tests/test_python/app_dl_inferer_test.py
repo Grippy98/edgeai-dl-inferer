@@ -73,7 +73,7 @@ def parse_command_line_args():
     if args.test_images:
         imgs_path = args.test_images
     else:
-        imgs_path = ['/opt/edge_ai_apps/data/images/0002.jpg']
+        imgs_path = ['/opt/edgeai-test-data/images/0002.jpg']
 
     # TIDL or ARM mode
     if args.mode:
