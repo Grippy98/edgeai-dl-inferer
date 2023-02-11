@@ -388,7 +388,6 @@ int32_t DLRInferer::run(const VecDlTensorPtr &inputs,
                 return cmap[info->type];
             };
 
-            dltensor.ctx = {kDLCPU, 0};
             dltensor.ndim = info->dim;
             dltensor.shape = info->shape.data();
             dltensor.strides = nullptr;
