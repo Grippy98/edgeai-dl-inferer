@@ -87,7 +87,7 @@ int32_t main(int argc, char * argv[])
     logSetLevel(logLevel);
 
     // Populate infConfig
-    status = infConfig.getConfig(cmdArgs.modelDirectory, cmdArgs.enableTidl);
+    status = infConfig.getConfig(cmdArgs.modelDirectory, cmdArgs.enableTidl, 1);
 
     if (status < 0)
     {

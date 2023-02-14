@@ -126,10 +126,12 @@ DlInferType Tflite2TiInferType(TfLiteType type)
 
 TFLiteInferer::TFLiteInferer(const std::string &modelPath,
                              const std::string &artifactPath,
-                             bool               enableTidl):
+                             bool               enableTidl,
+                             const int          coreNumber):
     m_modelPath(modelPath),
     m_artifactPath(artifactPath),
-    m_enableTidl(enableTidl)
+    m_enableTidl(enableTidl),
+    m_coreNumber(coreNumber)
 {
     Create_delegate     createPlugin;
     const char         *keys[2];
@@ -193,6 +195,9 @@ TFLiteInferer::TFLiteInferer(const std::string &modelPath,
             // Currently, we program just one option
             keys[0]    = "artifacts_folder";
             values[0]  = m_artifactPath.c_str();
+            numOptions++;
+            keys[1]    = "core_number";
+            values[1]  = std::to_string(m_coreNumber).c_str();
             numOptions++;
 
             // **keys, **values, num_options, error_handler

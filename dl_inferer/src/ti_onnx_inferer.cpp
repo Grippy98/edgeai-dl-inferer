@@ -151,10 +151,12 @@ int32_t Onnx2TiInferType(ONNXTensorElementDataType  type,
 
 ORTInferer::ORTInferer(const std::string &modelPath,
                        const std::string &artifactPath,
-                       bool               enableTidl):
+                       bool               enableTidl,
+                       const int          coreNumber):
     m_modelPath(modelPath),
     m_artifactPath(artifactPath),
     m_enableTidl(enableTidl),
+    m_coreNumber(coreNumber),
     m_env(ORT_LOGGING_LEVEL_ERROR, __FUNCTION__),
     m_memInfo(Ort::MemoryInfo::CreateCpu(OrtArenaAllocator, OrtMemTypeDefault))
 {
@@ -171,6 +173,7 @@ ORTInferer::ORTInferer(const std::string &modelPath,
     if (m_enableTidl)
     {
         strcpy(tidlOpts.artifacts_folder, m_artifactPath.c_str());
+        tidlOpts.core_number = m_coreNumber;
         ortStatus = OrtSessionOptionsAppendExecutionProvider_Tidl(sessionOpts,
                                                                 &tidlOpts);
     }

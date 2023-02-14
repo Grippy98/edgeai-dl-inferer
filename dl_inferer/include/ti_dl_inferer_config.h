@@ -127,6 +127,10 @@ namespace ti::dl_inferer
         /** Layout of the data. Allowed values. */
         std::string dataLayout{"NCHW"};
 
+        /** Core Number to offload to
+         */
+        int         coreNumber{1};
+
         /**
          * Helper function to dump the configuration information.
          */
@@ -134,7 +138,8 @@ namespace ti::dl_inferer
 
         /** Helper function to parse inference configuration. */
         int32_t getConfig(const std::string  &modelBasePath,
-                          const bool          enableTidlDelegate);
+                          const bool          enableTidlDelegate,
+                          const int           coreNum);
     };
 
 } // namespace ti::dl_inferer

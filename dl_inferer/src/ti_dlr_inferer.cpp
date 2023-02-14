@@ -124,11 +124,13 @@ static int32_t type2Size(const char *s, DlInferType &tiType)
 DLRInferer::DLRInferer(const std::string   &fileName,
                        int32_t              devType,
                        int32_t              devId,
-                       bool                 enableTidl):
+                       bool                 enableTidl,
+                       const int            coreNumber):
     m_name(fileName),
     m_devType(devType),
     m_devId(devId),
-    m_enableTidl(enableTidl)
+    m_enableTidl(enableTidl),
+    m_coreNumber(coreNumber)
 {
     if (m_enableTidl == false)
     {

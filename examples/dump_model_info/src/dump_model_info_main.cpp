@@ -150,7 +150,7 @@ int main(int argc, char * argv[])
     ParseCmdlineArgs(argc, argv, modelBasePath, configFile);
 
     // Populate infConfig
-    status = infConfig.getConfig(modelBasePath, true);
+    status = infConfig.getConfig(modelBasePath, true, 1);
 
     if (status < 0)
     {

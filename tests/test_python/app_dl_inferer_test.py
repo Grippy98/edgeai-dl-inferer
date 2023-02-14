@@ -206,12 +206,14 @@ def main():
 
         # Get Model configuration
         if(mode == 'TIDL'):
-            model_config = ModelConfig(model_dir,True)
+            enable_tidl = True
         elif(mode == 'ARM'):
-            model_config = ModelConfig(model_dir,False)
+            enable_tidl = False
         else:
             print("Unsupported mode, defaulting to ARM mode")
-            model_config = ModelConfig(model_dir,False)
+            enable_tidl = False
+
+        model_config = ModelConfig(model_dir,enable_tidl,1)
 
         model_config.alpha = alpha
         model_config.viz_threshold = viz_threshold

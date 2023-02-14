@@ -244,7 +244,8 @@ DLInferer* DLInferer::makeInferer(const InfererConfig &config)
         {
             inter = new TFLiteInferer(config.modelFile, 
                                       config.artifactsPath,
-                                      config.enableTidl);
+                                      config.enableTidl,
+                                      config.coreNumber);
         }
     }
 #endif
@@ -283,7 +284,8 @@ DLInferer* DLInferer::makeInferer(const InfererConfig &config)
             inter = new DLRInferer(config.artifactsPath, 
                                    devType, 
                                    config.devId, 
-                                   config.enableTidl);
+                                   config.enableTidl,
+                                   config.coreNumber);
         }
     }
 #endif
@@ -300,7 +302,8 @@ DLInferer* DLInferer::makeInferer(const InfererConfig &config)
         {
             inter = new ORTInferer(config.modelFile,
                                    config.artifactsPath,
-                                   config.enableTidl);
+                                   config.enableTidl,
+                                   config.coreNumber);
         }
     }
 #endif

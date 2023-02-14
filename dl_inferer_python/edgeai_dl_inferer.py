@@ -53,13 +53,14 @@ try:
         Abstracts the tvmdlr Run Time
         """
 
-        def __init__(self, artifacts, model_path, enable_tidl):
+        def __init__(self, artifacts, model_path, enable_tidl, core_number):
             """
             Create a DLR runtime object
             Args:
                 artifacts: TIDL artifacts, can be None if enable_tidl == false
                 model_path: Path to tvm model file
                 enable_tidl: Enable TIDL acceleration
+                core_number: Core Number
             """
             if not enable_tidl:
                 print("[ERROR] CPU Execution mode is not supported for TVM")
@@ -89,19 +90,21 @@ try:
         Abstracts the tflitert Run Time
         """
 
-        def __init__(self, artifacts, model_path, enable_tidl):
+        def __init__(self, artifacts, model_path, enable_tidl, core_number):
             """
             Create a TFLite runtime object
             Args:
                 artifacts: TIDL artifacts, can be None if enable_tidl == false
                 model_path: Path to tflite model file
                 enable_tidl: Enable TIDL acceleration
+                core_number: Core Number
             """
             if enable_tidl:
                 delegate_options = {
                     "tidl_tools_path": "null",
                     "artifacts_folder": artifacts,
                     "import": "no",
+                    "core_number": core_number,
                 }
                 tidl_delegate = [
                     _tflitert_interpreter.load_delegate(
@@ -146,18 +149,20 @@ try:
         Abstracts the onnxrt Run Time
         """
 
-        def __init__(self, artifacts, model_path, enable_tidl):
+        def __init__(self, artifacts, model_path, enable_tidl, core_number):
             """
             Create a ONNX runtime object
             Args:
                 artifacts: TIDL artifacts, can be None if enable_tidl == false
                 model_path: Path to onnx model file
                 enable_tidl: Enable TIDL acceleration
+                core_number: Core Number
             """
             if enable_tidl:
                 runtime_options = {
                     "tidl_tools_path": "null",
                     "artifacts_folder": artifacts,
+                    "core_number": core_number,
                 }
                 sess_options = _onnxruntime.SessionOptions()
                 ep_list = ["TIDLExecutionProvider", "CPUExecutionProvider"]
@@ -199,7 +204,7 @@ class ModelConfig:
     Class to parse and store model parameters
     """
     count = 0
-    def __init__(self, model_path, enable_tidl):
+    def __init__(self, model_path, enable_tidl, core_number):
         """
         Constructor of Model class. Prases param.yaml file present in model
         directory and creates corresponding runtime objects
@@ -262,9 +267,13 @@ class ModelConfig:
             self.classnames = self.get_class_names()
         self.task_type = params['task_type']
         self.enable_tidl = enable_tidl
+        self.core_number = core_number
         # Create Runtime
         RunTime = eval(self.run_time)
-        self.run_time = RunTime(self.artifacts, self.model_path, self.enable_tidl)
+        self.run_time = RunTime(self.artifacts,
+                                self.model_path,
+                                self.enable_tidl,
+                                self.core_number)
         self.data_type = self.run_time.data_type
         # Set Default values of some params
         self.alpha = 0.4

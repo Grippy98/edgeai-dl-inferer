@@ -97,11 +97,14 @@ namespace ti::dl_inferer
              *                 take.
              * @param devId    Id of the device. Please refer to the DLR API
              *                 documentation for the valid range of this field.
+             * @param enableTidl Enable TIDL Offload.
+             * @param coreNumber Core Number to offload to.
              */
             DLRInferer(const std::string &fileName, 
                        int32_t            devType, 
                        int32_t            devId,
-                       bool               enableTidl);
+                       bool               enableTidl,
+                       const int          coreNumber);
 
             /**
              * Runs the model. This should be called only after all the inputs
@@ -161,6 +164,9 @@ namespace ti::dl_inferer
 
             /** Enable TIDL. */
             bool                        m_enableTidl;
+
+            /** Core Number. */
+            int                         m_coreNumber;
 
             /** Handle to the model inference engine. */
             DLRModelHandle              m_handle;

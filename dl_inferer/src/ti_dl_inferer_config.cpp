@@ -82,11 +82,14 @@ void InfererConfig::dumpInfo()
     DL_INFER_LOG_INFO("InfererConfig::Artifacts Path    = %s\n", artifactsPath.c_str());
     DL_INFER_LOG_INFO("InfererConfig::Runtime API       = %s\n", rtType.c_str());
     DL_INFER_LOG_INFO("InfererConfig::Device Type       = %s\n", devType.c_str());
+    DL_INFER_LOG_INFO("InfererConfig::Enable TIDL       = %d\n", enableTidl);
+    DL_INFER_LOG_INFO("InfererConfig::Core Number       = %d\n", coreNumber);
     DL_INFER_LOG_INFO_RAW("\n");
 }
 
 int32_t InfererConfig::getConfig(const std::string  &modelBasePath,
-                                 const bool          enableTidlDelegate
+                                 const bool          enableTidlDelegate,
+                                 const int           coreNum
                                 )
 {
     const string        &paramFile = modelBasePath + "/param.yaml";
@@ -102,6 +105,8 @@ int32_t InfererConfig::getConfig(const std::string  &modelBasePath,
     const YAML::Node    config = YAML::LoadFile(paramFile.c_str());;
     const YAML::Node    &n = config["session"];
     enableTidl = enableTidlDelegate;
+    coreNumber = coreNum;
+
 
     /** Validate the parsed yaml configuration and create the configuration
     * for the inference object creation.

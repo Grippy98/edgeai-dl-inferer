@@ -92,10 +92,13 @@ namespace ti::dl_inferer
              * @param modelPath Path to the model.
              * @param artifactPath Path to the directory containing the model
              *                     artifacts.
+             * @param enableTidl Enable TIDL Offload.
+             * @param coreNumber Core Number to offload to.
              */
             TFLiteInferer(const std::string &modelPath,
                           const std::string &artifactPath,
-                          bool               enableTidl);
+                          bool               enableTidl,
+                          const int          coreNumber);
 
             /**
              * Runs the model. This should be called only after all the inputs
@@ -152,6 +155,9 @@ namespace ti::dl_inferer
 
             /** Enable TIDL. */
             bool                                        m_enableTidl;
+
+            /** Core Number. */
+            int                                         m_coreNumber;
 
             /**  A pointer to the model representation in memory. */
             std::unique_ptr<tflite::FlatBufferModel>    m_model;
