@@ -30,10 +30,13 @@
 #  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 #  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-while getopts ":d" flag; do
+while getopts ":dn" flag; do
     case "${flag}" in
         d)
             build_flag="--buildtype=debug"
+            ;;
+        n)
+            NO_CLEAN=1
             ;;
         *)
             ;;
@@ -44,15 +47,31 @@ set -e
 current_dir=$(pwd)
 cd $(dirname $0)
 
-# Install if running from target else skip
-if [ `arch` == "aarch64" ]; then
-    cd ../
+if [ `arch` != "aarch64" ]; then
+    build_flag="$build_flag -DCMAKE_TOOLCHAIN_FILE=../cmake/cross_compile_aarch64.cmake"
+fi
+
+cd ../
+if [ "$NO_CLEAN" != "1" ]; then
     rm -rf build bin lib
+fi
+if [ ! -d build ]; then
     mkdir build
     cd build
     cmake $build_flag ..
-    make -j2
-    make -j2 install
+else
+    cd build
+fi
+make -j2
+if [ "$INSTALL_PATH" != "" ]; then
+    if [ ! -w $TARGET_FS ]; then
+        echo "You do not have write permission to $TARGET_FS, adding sudo to install command"
+        sudo make -j`nproc` install DESTDIR=$INSTALL_PATH
+    else
+        make -j`nproc` install DESTDIR=$INSTALL_PATH
+    fi
+else
+    echo "INSTALL_PATH not defined, Skipping install !"
 fi
 
 cd $current_dir
