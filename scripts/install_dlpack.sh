@@ -62,7 +62,7 @@ done
 cd $install_dir
 ls | grep "dlpack"
 if [ "$?" -ne "0" ]; then
-    git clone --single-branch -b master https://github.com/dmlc/dlpack.git
+    git clone --single-branch -b v0.5 https://github.com/dmlc/dlpack.git
     if [ "$?" -ne "0" ]; then
         cd $current_dir
         exit 1
@@ -70,7 +70,4 @@ if [ "$?" -ne "0" ]; then
 fi
 
 # We need this repo only for building C++ apps, just the headers are required
-cd dlpack
-git checkout -b tidl_branch 3ec0443
-
 cd $current_dir
