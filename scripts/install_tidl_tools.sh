@@ -62,7 +62,7 @@ done
 cd $install_dir
 ls | grep "edgeai-tidl-tools"
 if [ "$?" -ne "0" ]; then
-    git clone --single-branch --branch 08_05_00_11 https://github.com/TexasInstruments/edgeai-tidl-tools.git
+    git clone --single-branch --branch 08.06.00.00 https://github.com/TexasInstruments/edgeai-tidl-tools.git
     if [ "$?" -ne "0" ]; then
         cd $current_dir
         exit 1
