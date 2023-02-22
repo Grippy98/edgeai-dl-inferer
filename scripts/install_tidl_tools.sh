@@ -33,6 +33,8 @@
 current_dir=$(pwd)
 cd $(dirname $0)
 
+export REL=08_06_00_00
+
 if [ `arch` == "aarch64" ]; then
     install_dir="/opt/"
 else
