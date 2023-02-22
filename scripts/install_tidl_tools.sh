@@ -64,7 +64,7 @@ done
 cd $install_dir
 ls | grep "edgeai-tidl-tools"
 if [ "$?" -ne "0" ]; then
-    git clone --single-branch --branch 08.06.00.00 https://github.com/TexasInstruments/edgeai-tidl-tools.git
+    git clone --single-branch --branch 08.06.00.01 https://github.com/TexasInstruments/edgeai-tidl-tools.git
     if [ "$?" -ne "0" ]; then
         cd $current_dir
         exit 1
@@ -78,9 +78,6 @@ if [ `arch` == "aarch64" ]; then
     if grep -qi ubuntu /etc/os-release; then
         cd edgeai-tidl-tools/dockers/J721E/ubuntu_20.04
         ./container_setup.sh
-    else
-        cd edgeai-tidl-tools/dockers/dependency_build/qemu
-        ./targetfs_load.sh /
     fi
 fi
 
