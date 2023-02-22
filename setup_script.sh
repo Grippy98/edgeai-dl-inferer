@@ -35,25 +35,21 @@ cd $(dirname $0)
 
 exit_setup()
 {
-    echo "Setup FAILED!"
+    echo "Setup FAILED! : Make sure you have active network connection"
     cd $current_dir
     exit 1
 }
 
-# check if running on docker
-grep -qi ubuntu /etc/os-release
-if [[ "$?" == "0" && `arch` == "aarch64" ]]; then
-    # Install dlpack headers required for cpp apps
-    ./scripts/install_dlpack.sh $*
-    if [ "$?" -ne "0" ]; then
-        exit_setup
-    fi
+# Install dlpack headers required for cpp apps
+./scripts/install_dlpack.sh $*
+if [ "$?" -ne "0" ]; then
+    exit_setup
+fi
 
-    # Clone TIDL tools can install OSRT dependencies
-    ./scripts/install_tidl_tools.sh $*
-    if [ "$?" -ne "0" ]; then
-        exit_setup
-    fi
+# Clone TIDL tools can install OSRT dependencies
+./scripts/install_tidl_tools.sh $*
+if [ "$?" -ne "0" ]; then
+    exit_setup
 fi
 
 # Install DL Inferer library
@@ -64,6 +60,7 @@ fi
 
 cd $current_dir
 
+ldconfig
 sync
 
 echo "Setup Done!"
