@@ -180,7 +180,7 @@ static T1 *overlayTopNClasses(T1                   *frame,
     imgHolder->yRowAddr = (uint8_t *)frame;
     imgHolder->uvRowAddr = (uint8_t *)frame + (imgHolder->width*imgHolder->height);
 
-    std::string title = "Top " + std::to_string(N) + " detected classes:\0";
+    std::string title = "Recognized Classes (Top " + std::to_string(N) + "):\0";
 
     drawText(imgHolder,title.c_str(),5,10,titleFont,titleColor);
 
