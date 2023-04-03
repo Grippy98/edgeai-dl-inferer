@@ -101,6 +101,7 @@ include_directories(${PROJECT_SOURCE_DIR}
                     SYSTEM ${TARGET_FS}/usr/lib/aarch64-linux-gnu/glib-2.0/include
                     SYSTEM ${TARGET_FS}/usr/include/opencv4/
                     SYSTEM ${TARGET_FS}/usr/include/processor_sdk/vision_apps/
+                    SYSTEM ${TARGET_FS}/usr/include/edgeai-apps-utils/
                     SYSTEM ${DLPACK_INSTALL_DIR}/include
                     )
 
@@ -128,6 +129,7 @@ set(COMMON_LINK_LIBS
     edgeai_dl_inferer
     edgeai_post_process
     edgeai_pre_process
+    edgeai-apps-utils
     )
 
 set(SYSTEM_LINK_LIBS

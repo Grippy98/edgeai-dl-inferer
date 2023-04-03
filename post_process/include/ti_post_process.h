@@ -42,7 +42,8 @@
 /* Module Headers. */
 #include <ti_dl_inferer.h>
 #include <ti_post_process_config.h>
-#include <ti_post_process_utils.h>
+#include <edgeai_nv12_drawing_utils.h>
+#include <edgeai_nv12_font_utils.h>
 
 /**
  * \defgroup group_post_process Post Process in NV12

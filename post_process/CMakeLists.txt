@@ -7,8 +7,6 @@ include(${CMAKE_SOURCE_DIR}/cmake/common.cmake)
 set(POST_PROCESS_SRCS
     src/ti_post_process.cpp
     src/ti_post_process_config.cpp
-    src/ti_fonts.cpp
-    src/ti_post_process_utils.cpp
     src/ti_post_process_image_classification.cpp
     src/ti_post_process_object_detection.cpp
     src/ti_post_process_semantic_segmentation.cpp
