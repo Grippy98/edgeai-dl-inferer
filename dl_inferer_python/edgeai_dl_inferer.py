@@ -262,10 +262,10 @@ class ModelConfig:
         if 'shuffle_indices' in params['postprocess']:
             self.shuffle_indices = params['postprocess']['shuffle_indices']
         # dataset
-        if 'input_dataset' in params and 'name' in params['input_dataset']:
-            self.dataset = params['input_dataset']['name']
-            self.classnames = self.get_class_names()
+        self.classnames = self.get_class_names()
+        # Task Type
         self.task_type = params['task_type']
+
         self.enable_tidl = enable_tidl
         self.core_number = core_number
         # Create Runtime

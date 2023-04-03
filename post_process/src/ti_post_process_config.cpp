@@ -261,11 +261,7 @@ int32_t PostprocessImageConfig::getConfig(const std::string      &modelBasePath)
         }
 
         //Read the dataset name
-        if (yaml["input_dataset"]["name"])
-        {
-            dataset = yaml["input_dataset"]["name"].as<std::string>();
-            getClassNames(modelBasePath);
-        }
+        getClassNames(modelBasePath);
     }
 
     return status;

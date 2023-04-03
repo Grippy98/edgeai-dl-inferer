@@ -183,9 +183,6 @@ namespace ti::post_process
         /** Height of the output data. */
         int32_t                                 outDataHeight{POSTPROC_DEFAULT_HEIGHT};
 
-        /** Name of the dataset. */
-        std::string                             dataset{};
-
         /** An array of strings for object class names. */
         std::map<int32_t, std::string>          classnames{};
 
