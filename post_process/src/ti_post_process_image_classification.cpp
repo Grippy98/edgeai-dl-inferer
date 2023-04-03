@@ -182,7 +182,9 @@ static T1 *overlayTopNClasses(T1                   *frame,
 
     std::string title = "Recognized Classes (Top " + std::to_string(N) + "):\0";
 
-    drawText(imgHolder,title.c_str(),5,10,titleFont,titleColor);
+    int titleYPos = (int)(0.05 * imgHolder->height);
+
+    drawText(imgHolder,title.c_str(),5,titleYPos,titleFont,titleColor);
 
     int yOffset = (titleFont->height) + 12;
 
@@ -194,7 +196,7 @@ static T1 *overlayTopNClasses(T1                   *frame,
         {
             string str = classnames.at(index);
             int32_t row = (i*textFont->height) + yOffset;
-            drawText(imgHolder,str.c_str(),5,10+row,textFont,textColor);
+            drawText(imgHolder,str.c_str(),5,titleYPos+row,textFont,textColor);
         }
     }
 
