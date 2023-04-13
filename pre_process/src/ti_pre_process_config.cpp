@@ -89,7 +89,6 @@ void PreprocessImageConfig::dumpInfo()
     DL_INFER_LOG_INFO("PreprocessImageConfig::resizeHeight    = %d\n", resizeHeight);
     DL_INFER_LOG_INFO("PreprocessImageConfig::outDataWidth    = %d\n", outDataWidth);
     DL_INFER_LOG_INFO("PreprocessImageConfig::outDataHeight   = %d\n", outDataHeight);
-    DL_INFER_LOG_INFO("PreprocessImageConfig::inputTensorType = Enum %d\n", inputTensorType);
 
     DL_INFER_LOG_INFO("PreprocessImageConfig::mean          = [");
     for (uint32_t i = 0; i < mean.size(); i++)
@@ -247,9 +246,96 @@ int32_t PreprocessImageConfig::getConfig(const std::string &modelBasePath)
             DL_INFER_LOG_ERROR("The sizes of mean and scale vectors do not match.\n");
             status = -1;
         }
+
+        // Read the Input Tensor Details
+        const YAML::Node &inputDetailsNode = session["input_details"];
+        for (uint32_t i = 0; i < inputDetailsNode.size(); i++)
+        {
+            string dType = inputDetailsNode[i]["type"].as<string>();
+            DlInferType parsedType = getDataType(dType);
+
+            inputTensorTypes.push_back(parsedType);
+
+            vector<int32_t> tShape = {};
+            const YAML::Node &tShapeNode = inputDetailsNode[i]["shape"];
+            for (uint32_t j = 0; j < tShapeNode.size(); j++)
+            {
+                int n;
+                string shapeValue =  tShapeNode[j].as<string>();
+                if ((std::istringstream(shapeValue) >> n >> std::ws).eof())
+                {
+                    tShape.push_back(tShapeNode[j].as<int32_t>());
+                }
+                else
+                {
+                    tShape.clear();
+                    break;
+                }
+            }
+
+            inputTensorShapes.push_back(tShape);
+        }
+
+        // Read the Output Tensor Details
+        const YAML::Node &outputDetailsNode = session["output_details"];
+        for (uint32_t i = 0; i < outputDetailsNode.size(); i++)
+        {
+            string dType = outputDetailsNode[i]["type"].as<string>();
+            DlInferType parsedType = getDataType(dType);
+
+            outputTensorTypes.push_back(parsedType);
+
+            vector<int32_t> tShape = {};
+            const YAML::Node &tShapeNode = outputDetailsNode[i]["shape"];
+            for (uint32_t j = 0; j < tShapeNode.size(); j++)
+            {
+                int n;
+                string shapeValue =  tShapeNode[j].as<string>();
+                if ((std::istringstream(shapeValue) >> n >> std::ws).eof())
+                {
+                    tShape.push_back(tShapeNode[j].as<int32_t>());
+                }
+                else
+                {
+                    tShape.clear();
+                    break;
+                }
+            }
+            outputTensorShapes.push_back(tShape);
+        }
+    }
+    return status;
+}
+
+DlInferType PreprocessImageConfig::getDataType(const std::string &type)
+{
+    std::string dType = type;
+    //Convert to lower case
+    for (auto &c : dType)
+    {
+        c = tolower(c);
     }
 
-    return status;
+    DlInferType tensorType = DlInferType_Invalid;
+    if (dType.find("uint8") != string::npos)
+        tensorType = DlInferType_UInt8;
+    else if (dType.find("uint16") != string::npos)
+        tensorType = DlInferType_UInt16;
+    else if (dType.find("uint32") != string::npos)
+        tensorType = DlInferType_UInt32;
+    else if (dType.find("int8") != string::npos)
+        tensorType = DlInferType_Int8;
+    else if (dType.find("int16") != string::npos)
+        tensorType = DlInferType_Int16;
+    else if (dType.find("int32") != string::npos)
+        tensorType = DlInferType_Int32;
+    else if (dType.find("int") != string::npos)
+        tensorType = DlInferType_Int64;
+    else if (dType.find("float16") != string::npos)
+        tensorType = DlInferType_Float16;
+    else if (dType.find("float") != string::npos)
+        tensorType = DlInferType_Float32;
+    return tensorType;
 }
 
 } // namespace ti::pre_process

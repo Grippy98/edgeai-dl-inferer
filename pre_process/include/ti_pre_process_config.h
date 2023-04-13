@@ -69,6 +69,8 @@
 /* Module headers. */
 #include <ti_dl_inferer.h>
 
+using namespace std;
+
 /**
  * \defgroup group_pre_process_config Pre Process Helper Library
  *
@@ -100,56 +102,65 @@ namespace ti::pre_process
     struct PreprocessImageConfig
     {
         /** Name of the model. */
-        std::string         modelName{};
+        string             modelName{};
 
         /** Type of the runtime API to invoke. The valid values are:
          * - DL_INFER_RTTYPE_DLR
          * - DL_INFER_RTTYPE_TFLITE
          * - DL_INFER_RTTYPE_ONNX
          */
-        std::string         rtType{};
+        string             rtType{};
 
         /** Task type.
          *  - detection
          *  - segmentation
          *  - classification
          */
-        std::string         taskType{};
+        string                  taskType{};
 
         /** Width of the input data. */
-        int32_t             inDataWidth{PREPROC_DEFAULT_WIDTH};
+        int32_t                 inDataWidth{PREPROC_DEFAULT_WIDTH};
 
         /** Height of the input data. */
-        int32_t             inDataHeight{PREPROC_DEFAULT_HEIGHT};
+        int32_t                 inDataHeight{PREPROC_DEFAULT_HEIGHT};
 
         /** Out width. */
-        int32_t             outDataWidth{PREPROC_DEFAULT_WIDTH};
+        int32_t                 outDataWidth{PREPROC_DEFAULT_WIDTH};
 
         /** Out height. */
-        int32_t             outDataHeight{PREPROC_DEFAULT_HEIGHT};
+        int32_t                 outDataHeight{PREPROC_DEFAULT_HEIGHT};
 
         /** Mean values to apply during normalization. */
-        std::vector<float>  mean;
+        vector<float>           mean;
 
         /** Scale values to apply during normalization. */
-        std::vector<float>  scale;
+        vector<float>           scale;
 
         /** Resize width. */
-        int32_t             resizeWidth{PREPROC_DEFAULT_WIDTH};
+        int32_t                 resizeWidth{PREPROC_DEFAULT_WIDTH};
 
         /** Resize height. */
-        int32_t             resizeHeight{PREPROC_DEFAULT_HEIGHT};
+        int32_t                 resizeHeight{PREPROC_DEFAULT_HEIGHT};
 
         /** Layout of the data. Allowed values. */
-        std::string         dataLayout{"NCHW"};
+        string                  dataLayout{"NCHW"};
 
-        int32_t             numChans{0};
+        int32_t                 numChans{0};
 
         /** If preprocess is reverse channel. */
-        bool                reverseChannel{false};
+        bool                    reverseChannel{false};
 
-        /** Data type of Input tensor. */
-        DlInferType         inputTensorType{DlInferType_Invalid};
+        /** Data type of Input tensors. */
+        vector<DlInferType>     inputTensorTypes;
+
+        /** Shape of Input tensors. */
+        vector<vector<int32_t>> inputTensorShapes;
+
+        /** Data type of Output tensors. */
+        vector<DlInferType>     outputTensorTypes;
+
+        /** Shape of Output tensors. */
+        vector<vector<int32_t>> outputTensorShapes;
 
         /**
          * Helper function to dump the configuration information.
@@ -157,7 +168,12 @@ namespace ti::pre_process
         void dumpInfo();
 
         /** Helper function to parse pre process configuration. */
-        int32_t getConfig(const std::string      &modelBasePath);
+        int32_t getConfig(const string      &modelBasePath);
+
+    private:
+        /** Helper function to parse tensor data type. */
+        DlInferType getDataType(const std::string &dType);
+
     };
 
 } // namespace ti::pre_process

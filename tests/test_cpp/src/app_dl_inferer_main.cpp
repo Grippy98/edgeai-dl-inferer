@@ -143,7 +143,6 @@ int32_t main(int argc, char * argv[])
                                     __FUNCTION__, __LINE__);
                 exit(-1);
             }
-            preProcCfg.inputTensorType = ifInpInfo->type;
 
             if (postProcessConfig.taskType == "segmentation")
             {

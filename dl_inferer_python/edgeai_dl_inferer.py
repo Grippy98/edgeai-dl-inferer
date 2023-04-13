@@ -209,8 +209,20 @@ class ModelConfig:
         Constructor of Model class. Prases param.yaml file present in model
         directory and creates corresponding runtime objects
         Args:
-            model_path: Dir of the
+            model_path: Dir of the model
+            enable_tidl: Enable tidl offload
+            core_number: C7x core number to offload to
         """
+
+        self.enable_tidl = enable_tidl
+        self.core_number = core_number
+
+        # Set Default values of some viz parameters
+        self.alpha = 0.4
+        self.viz_threshold = 0.5
+        self.topN = 5
+
+        # Parse params file
         self.path = model_path
         self.model_name = _os.path.basename(_os.path.dirname(self.path + '/'))
         with open(self.path  + '/param.yaml', 'r') as f:
@@ -240,7 +252,7 @@ class ModelConfig:
         self.reverse_channels = params['preprocess']['reverse_channels']
         self.data_layout = params['preprocess']['data_layout']
         #session params
-        self.run_time = params['session']['session_name']
+        self.session_name = params['session']['session_name']
         if isinstance(params['session']['model_path'], list):
             self.model_path = self.path + '/' + \
                                       params['session']['model_path'][0]
@@ -261,24 +273,46 @@ class ModelConfig:
         self.shuffle_indices = None
         if 'shuffle_indices' in params['postprocess']:
             self.shuffle_indices = params['postprocess']['shuffle_indices']
+
+        # Create Runtime
+        RunTime = eval(self.session_name)
+        self.run_time = RunTime(self.artifacts,
+                                self.model_path,
+                                self.enable_tidl,
+                                self.core_number)
         # dataset
         self.classnames = self.get_class_names()
         # Task Type
         self.task_type = params['task_type']
 
-        self.enable_tidl = enable_tidl
-        self.core_number = core_number
-        # Create Runtime
-        RunTime = eval(self.run_time)
-        self.run_time = RunTime(self.artifacts,
-                                self.model_path,
-                                self.enable_tidl,
-                                self.core_number)
-        self.data_type = self.run_time.data_type
-        # Set Default values of some params
-        self.alpha = 0.4
-        self.viz_threshold = 0.5
-        self.topN = 5
+        # Input and Output Tensor Info
+        self.input_tensor_types,self.input_tensor_shapes  = \
+            self.parse_details(params['session']['input_details'])
+
+        self.output_tensor_types,self.output_tensor_shapes  = \
+            self.parse_details(params['session']['output_details'])
+
+    def parse_details(self,details):
+        shapes,dtypes = [],[]
+        for i in details:
+            dtype = i['type'].lower()
+            if  "uint8" in dtype:
+                dtype = _np.uint8
+            elif "uint16" in dtype:
+                dtype = _np.uint16
+            elif "uint32" in dtype:
+                dtype = _np.uint32
+            elif "int8" in dtype:
+                dtype = _np.int8
+            elif "int16" in dtype:
+                dtype = _np.int16
+            elif "int32" in dtype:
+                dtype = _np.int32
+            else:
+                dtype = _np.float32
+            dtypes.append(dtype)
+            shapes.append(i['shape'])
+        return dtypes,shapes
 
     def get_class_names(self):
         if (not _os.path.exists(self.path  + '/dataset.yaml')):
