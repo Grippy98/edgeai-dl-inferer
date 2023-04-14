@@ -215,6 +215,9 @@ def main():
 
         model_config = ModelConfig(model_dir,enable_tidl,1)
 
+        # Create runtime
+        model_config.create_runtime()
+
         model_config.alpha = alpha
         model_config.viz_threshold = viz_threshold
         model_config.topN = topN
@@ -222,7 +225,6 @@ def main():
         # Print test configuration
         print_test_banner(model_config, imgs_path)
 
-        # Create runtime
         osrt = model_config.run_time
 
         # Pre-process image

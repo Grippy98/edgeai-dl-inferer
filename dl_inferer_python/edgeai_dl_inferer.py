@@ -274,12 +274,6 @@ class ModelConfig:
         if 'shuffle_indices' in params['postprocess']:
             self.shuffle_indices = params['postprocess']['shuffle_indices']
 
-        # Create Runtime
-        RunTime = eval(self.session_name)
-        self.run_time = RunTime(self.artifacts,
-                                self.model_path,
-                                self.enable_tidl,
-                                self.core_number)
         # dataset
         self.classnames = self.get_class_names()
         # Task Type
@@ -291,6 +285,14 @@ class ModelConfig:
 
         self.output_tensor_types,self.output_tensor_shapes  = \
             self.parse_details(params['session']['output_details'])
+
+    def create_runtime(self):
+        # Create Runtime
+        RunTime = eval(self.session_name)
+        self.run_time = RunTime(self.artifacts,
+                                self.model_path,
+                                self.enable_tidl,
+                                self.core_number)
 
     def parse_details(self,details):
         shapes,dtypes = [],[]
