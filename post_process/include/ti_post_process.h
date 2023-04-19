@@ -33,6 +33,12 @@
 #ifndef _TI_POST_PROCESS_
 #define _TI_POST_PROCESS_
 
+extern "C"
+{
+    #include <edgeai_nv12_drawing_utils.h>
+    #include <edgeai_nv12_font_utils.h>
+}
+
 /* Standard headers. */
 #include <algorithm>
 
@@ -42,8 +48,6 @@
 /* Module Headers. */
 #include <ti_dl_inferer.h>
 #include <ti_post_process_config.h>
-#include <edgeai_nv12_drawing_utils.h>
-#include <edgeai_nv12_font_utils.h>
 
 /**
  * \defgroup group_post_process Post Process in NV12
