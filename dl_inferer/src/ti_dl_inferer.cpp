@@ -108,26 +108,6 @@ using namespace ti::dl_inferer::utils;
 
 namespace ti::dl_inferer
 {
-uint8_t getTypeSize(DlInferType type)
-{
-    switch (type) {
-        case DlInferType_Int8:
-        case DlInferType_UInt8:
-            return 1;
-        case DlInferType_Int16:
-        case DlInferType_UInt16:
-        case DlInferType_Float16:
-            return 2;
-        case DlInferType_Int32:
-        case DlInferType_UInt32:
-        case DlInferType_Float32:
-            return 4;
-        case DlInferType_Int64:
-            return 8;
-        default:
-            return 0;
-    }
-}
 
 DlTensor::DlTensor()
 {

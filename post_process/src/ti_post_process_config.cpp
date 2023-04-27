@@ -150,6 +150,11 @@ int32_t PostprocessImageConfig::getConfig(const std::string      &modelBasePath)
         DL_INFER_LOG_WARN("Inference configuration parameters  missing.\n");
         status = -1;
     }
+    else if (!session["output_details"])
+    {
+        DL_INFER_LOG_ERROR("Output tensor details missing.\n");
+        status = -1;
+    }
     else if (!postProc)
     {
         DL_INFER_LOG_WARN("Postprocess configuration parameters missing.\n");
@@ -262,6 +267,35 @@ int32_t PostprocessImageConfig::getConfig(const std::string      &modelBasePath)
 
         //Read the dataset name
         getClassNames(modelBasePath);
+
+        // Read the Tensor Details for output from inferer
+        const YAML::Node &outputDetailsNode = session["output_details"];
+        for (uint32_t i = 0; i < outputDetailsNode.size(); i++)
+        {
+            string dType = outputDetailsNode[i]["type"].as<string>();
+            DlInferType parsedType = getDataType(dType);
+
+            outputTensorTypes.push_back(parsedType);
+
+            vector<int64_t> tShape = {};
+            const YAML::Node &tShapeNode = outputDetailsNode[i]["shape"];
+            for (uint32_t j = 0; j < tShapeNode.size(); j++)
+            {
+                int n;
+                string shapeValue =  tShapeNode[j].as<string>();
+                if ((std::istringstream(shapeValue) >> n >> std::ws).eof())
+                {
+                    tShape.push_back(tShapeNode[j].as<int64_t>());
+                }
+                else
+                {
+                    tShape.clear();
+                    break;
+                }
+            }
+            outputTensorShapes.push_back(tShape);
+        }
+
     }
 
     return status;

@@ -63,7 +63,9 @@
 #define _TI_DL_INFERER_CONFIG_
 
 /* Standard headers. */
+#include <stdint.h>
 #include <string>
+#include <vector>
 
 /**
  * \defgroup group_dl_inferer_config DL Inferer Helper Library
@@ -82,6 +84,52 @@
 namespace ti::dl_inferer
 {
     /**
+     * \brief Enumeration for the different data types used for identifying
+     *        the data types at the interface.
+     *
+     * \ingroup group_dl_inferer_config
+     */
+    typedef enum
+    {
+        /**  Invalid type. */
+        DlInferType_Invalid = 0,
+
+        /** Data type signed 8 bit integer. */
+        DlInferType_Int8    = 2,
+
+        /** Data type unsigned 8 bit integer. */
+        DlInferType_UInt8   = 3,
+
+        /** Data type signed 16 bit integer. */
+        DlInferType_Int16   = 4,
+
+        /** Data type unsigned 16 bit integer. */
+        DlInferType_UInt16  = 5,
+
+        /** Data type signed 32 bit integer. */
+        DlInferType_Int32   = 6,
+
+        /** Data type unsigned 32 bit integer. */
+        DlInferType_UInt32  = 7,
+
+        /** Data type signed 64 bit integer. */
+        DlInferType_Int64   = 8,
+
+        /** Data type 16 bit floating point. */
+        DlInferType_Float16 = 9,
+
+        /** Data type 32 bit floating point. */
+        DlInferType_Float32 = 10,
+
+     } DlInferType;
+
+    /** Helper function to get DlInferType from type string. */
+    DlInferType getDataType(const std::string &type);
+
+    /** Helper function to get size of Dltensor data types in bytes. */
+    uint8_t     getTypeSize(DlInferType type);
+
+    /**
      * \brief Configuration for the DL inferer.
      *
      * \ingroup group_dl_inferer_config
@@ -92,44 +140,56 @@ namespace ti::dl_inferer
          *  - file for TFLITE and ONNX
          *  - directory for DLR
          **/
-        std::string modelFile{};
+        std::string                         modelFile{};
 
         /** Path to the directory containing the model artifacts. This is only
          *  valid for TFLITE models and is not looked at for the other ones.
          */
-        std::string artifactsPath{};
+        std::string                         artifactsPath{};
 
         /** Type of the runtime API to invoke. The valid values are:
          * - DL_INFER_RTTYPE_DLR
          * - DL_INFER_RTTYPE_TFLITE
          * - DL_INFER_RTTYPE_ONNX
          */
-        std::string rtType{};
+        std::string                         rtType{};
 
         /** Type of the device. This field is specific to the DLR API and
          * is not looked at for the other ones. Please refer to the DLR API
          * specification for valid values this field can take.
          */
-        std::string devType{};
+        std::string                         devType{};
 
         /** Id of the device. This field is specific to the DLR API and
          * is not looked at for the other ones. Please refer to the DLR API
          * specification for valid values this field can take.
          */
-        int32_t     devId{DLR_DEVID_INVALID};
+        int32_t                             devId{DLR_DEVID_INVALID};
 
         /** Should TIDL be enabled. This field is specific to the DLR API and 
          * is not looked at for the other ones. Please refer to the DLR API
          * specification for valid values this field can take.
          */
-        bool        enableTidl{};
+        bool                                enableTidl{};
 
         /** Layout of the data. Allowed values. */
-        std::string dataLayout{"NCHW"};
+        std::string                         dataLayout{"NCHW"};
 
         /** Core Number to offload to
          */
-        int         coreNumber{1};
+        int                                 coreNumber{1};
+
+        /** Data type of Input tensors to inferer. */
+        std::vector<DlInferType>            inputTensorTypes;
+
+        /** Shape of Input tensors to inferer. */
+        std::vector<std::vector<int64_t>>   inputTensorShapes;
+
+        /** Data type of Output tensors from inferer. */
+        std::vector<DlInferType>            outputTensorTypes{};
+
+        /** Shape of Output tensors from inferer. */
+        std::vector<std::vector<int64_t>>   outputTensorShapes{};
 
         /**
          * Helper function to dump the configuration information.

@@ -76,6 +76,58 @@ using namespace ti::dl_inferer::utils;
 namespace ti::dl_inferer
 {
 
+DlInferType getDataType(const std::string &type)
+{
+    std::string dType = type;
+    //Convert to lower case
+    for (auto &c : dType)
+    {
+        c = tolower(c);
+    }
+
+    DlInferType tensorType = DlInferType_Invalid;
+    if (dType.find("uint8") != string::npos)
+        tensorType = DlInferType_UInt8;
+    else if (dType.find("uint16") != string::npos)
+        tensorType = DlInferType_UInt16;
+    else if (dType.find("uint32") != string::npos)
+        tensorType = DlInferType_UInt32;
+    else if (dType.find("int8") != string::npos)
+        tensorType = DlInferType_Int8;
+    else if (dType.find("int16") != string::npos)
+        tensorType = DlInferType_Int16;
+    else if (dType.find("int32") != string::npos)
+        tensorType = DlInferType_Int32;
+    else if (dType.find("int") != string::npos)
+        tensorType = DlInferType_Int64;
+    else if (dType.find("float16") != string::npos)
+        tensorType = DlInferType_Float16;
+    else if (dType.find("float") != string::npos)
+        tensorType = DlInferType_Float32;
+    return tensorType;
+}
+
+uint8_t getTypeSize(DlInferType type)
+{
+    switch (type) {
+        case DlInferType_Int8:
+        case DlInferType_UInt8:
+            return 1;
+        case DlInferType_Int16:
+        case DlInferType_UInt16:
+        case DlInferType_Float16:
+            return 2;
+        case DlInferType_Int32:
+        case DlInferType_UInt32:
+        case DlInferType_Float32:
+            return 4;
+        case DlInferType_Int64:
+            return 8;
+        default:
+            return 0;
+    }
+}
+
 void InfererConfig::dumpInfo()
 {
     DL_INFER_LOG_INFO("InfererConfig::Model Path        = %s\n", modelFile.c_str());
@@ -131,6 +183,16 @@ int32_t InfererConfig::getConfig(const std::string  &modelBasePath,
         DL_INFER_LOG_ERROR("Please specifiy a valid run-time API type.\n");
         status = -1;
     }
+    else if (!n["input_details"])
+    {
+        DL_INFER_LOG_ERROR("Please specifiy valid input tensor details.\n");
+        status = -1;
+    }
+    else if (!n["output_details"])
+    {
+        DL_INFER_LOG_ERROR("Please specifiy valid output tensor details.\n");
+        status = -1;
+    }
     else
     {
         /* Initialize the inference configuration parameter object. */
@@ -170,6 +232,63 @@ int32_t InfererConfig::getConfig(const std::string  &modelBasePath,
         if (n["input_data_layout"])
         {
             dataLayout = n["input_data_layout"].as<std::string>();
+        }
+
+        // Read the Input Tensor Details to inferer
+        const YAML::Node &inputDetailsNode = n["input_details"];
+        for (uint32_t i = 0; i < inputDetailsNode.size(); i++)
+        {
+            string dType = inputDetailsNode[i]["type"].as<string>();
+            DlInferType parsedType = getDataType(dType);
+
+            inputTensorTypes.push_back(parsedType);
+
+            vector<int64_t> tShape = {};
+            const YAML::Node &tShapeNode = inputDetailsNode[i]["shape"];
+            for (uint32_t j = 0; j < tShapeNode.size(); j++)
+            {
+                int n;
+                string shapeValue =  tShapeNode[j].as<string>();
+                if ((std::istringstream(shapeValue) >> n >> std::ws).eof())
+                {
+                    tShape.push_back(tShapeNode[j].as<int64_t>());
+                }
+                else
+                {
+                    tShape.clear();
+                    break;
+                }
+            }
+
+            inputTensorShapes.push_back(tShape);
+        }
+
+        // Read the Tensor Details for output from inferer
+        const YAML::Node &outputDetailsNode = n["output_details"];
+        for (uint32_t i = 0; i < outputDetailsNode.size(); i++)
+        {
+            string dType = outputDetailsNode[i]["type"].as<string>();
+            DlInferType parsedType = getDataType(dType);
+
+            outputTensorTypes.push_back(parsedType);
+
+            vector<int64_t> tShape = {};
+            const YAML::Node &tShapeNode = outputDetailsNode[i]["shape"];
+            for (uint32_t j = 0; j < tShapeNode.size(); j++)
+            {
+                int n;
+                string shapeValue =  tShapeNode[j].as<string>();
+                if ((std::istringstream(shapeValue) >> n >> std::ws).eof())
+                {
+                    tShape.push_back(tShapeNode[j].as<int64_t>());
+                }
+                else
+                {
+                    tShape.clear();
+                    break;
+                }
+            }
+            outputTensorShapes.push_back(tShape);
         }
     }
 

@@ -151,6 +151,11 @@ int32_t PreprocessImageConfig::getConfig(const std::string &modelBasePath)
         DL_INFER_LOG_ERROR("Scale value specification missing.\n");
         status = -1;
     }
+    else if (!session["input_details"])
+    {
+        DL_INFER_LOG_ERROR("Input tensor details missing.\n");
+        status = -1;
+    }
     else if (!preProc["data_layout"])
     {
         DL_INFER_LOG_ERROR("Data layout specification missing.\n");
@@ -256,7 +261,7 @@ int32_t PreprocessImageConfig::getConfig(const std::string &modelBasePath)
 
             inputTensorTypes.push_back(parsedType);
 
-            vector<int32_t> tShape = {};
+            vector<int64_t> tShape = {};
             const YAML::Node &tShapeNode = inputDetailsNode[i]["shape"];
             for (uint32_t j = 0; j < tShapeNode.size(); j++)
             {
@@ -264,7 +269,7 @@ int32_t PreprocessImageConfig::getConfig(const std::string &modelBasePath)
                 string shapeValue =  tShapeNode[j].as<string>();
                 if ((std::istringstream(shapeValue) >> n >> std::ws).eof())
                 {
-                    tShape.push_back(tShapeNode[j].as<int32_t>());
+                    tShape.push_back(tShapeNode[j].as<int64_t>());
                 }
                 else
                 {
@@ -275,67 +280,8 @@ int32_t PreprocessImageConfig::getConfig(const std::string &modelBasePath)
 
             inputTensorShapes.push_back(tShape);
         }
-
-        // Read the Output Tensor Details
-        const YAML::Node &outputDetailsNode = session["output_details"];
-        for (uint32_t i = 0; i < outputDetailsNode.size(); i++)
-        {
-            string dType = outputDetailsNode[i]["type"].as<string>();
-            DlInferType parsedType = getDataType(dType);
-
-            outputTensorTypes.push_back(parsedType);
-
-            vector<int32_t> tShape = {};
-            const YAML::Node &tShapeNode = outputDetailsNode[i]["shape"];
-            for (uint32_t j = 0; j < tShapeNode.size(); j++)
-            {
-                int n;
-                string shapeValue =  tShapeNode[j].as<string>();
-                if ((std::istringstream(shapeValue) >> n >> std::ws).eof())
-                {
-                    tShape.push_back(tShapeNode[j].as<int32_t>());
-                }
-                else
-                {
-                    tShape.clear();
-                    break;
-                }
-            }
-            outputTensorShapes.push_back(tShape);
-        }
     }
     return status;
-}
-
-DlInferType PreprocessImageConfig::getDataType(const std::string &type)
-{
-    std::string dType = type;
-    //Convert to lower case
-    for (auto &c : dType)
-    {
-        c = tolower(c);
-    }
-
-    DlInferType tensorType = DlInferType_Invalid;
-    if (dType.find("uint8") != string::npos)
-        tensorType = DlInferType_UInt8;
-    else if (dType.find("uint16") != string::npos)
-        tensorType = DlInferType_UInt16;
-    else if (dType.find("uint32") != string::npos)
-        tensorType = DlInferType_UInt32;
-    else if (dType.find("int8") != string::npos)
-        tensorType = DlInferType_Int8;
-    else if (dType.find("int16") != string::npos)
-        tensorType = DlInferType_Int16;
-    else if (dType.find("int32") != string::npos)
-        tensorType = DlInferType_Int32;
-    else if (dType.find("int") != string::npos)
-        tensorType = DlInferType_Int64;
-    else if (dType.find("float16") != string::npos)
-        tensorType = DlInferType_Float16;
-    else if (dType.find("float") != string::npos)
-        tensorType = DlInferType_Float32;
-    return tensorType;
 }
 
 } // namespace ti::pre_process

@@ -67,6 +67,9 @@
 #include <vector>
 #include <map>
 
+/* Module headers. */
+#include <ti_dl_inferer.h>
+
 /**
  * \defgroup group_post_process_config Post Process Helper Library
  *
@@ -101,6 +104,7 @@
 
 namespace ti::post_process
 {
+    using namespace ti::dl_inferer;
     /**
      * \brief Configuration for the Post Process.
      *
@@ -185,6 +189,12 @@ namespace ti::post_process
 
         /** An array of strings for object class names. */
         std::map<int32_t, std::string>          classnames{};
+
+        /** Data type of Output tensors from inferer. */
+        std::vector<DlInferType>                outputTensorTypes{};
+
+        /** Shape of Output tensors from inferer. */
+        std::vector<std::vector<int64_t>>       outputTensorShapes{};
 
         /**
          * Helper function to dump the configuration information.

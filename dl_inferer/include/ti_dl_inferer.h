@@ -104,49 +104,6 @@
 
 namespace ti::dl_inferer
 {
-    /**
-     * \brief Enumeration for the different data types used for identifying
-     *        the data types at the interface.
-     *
-     * \ingroup group_dl_inferer
-     */
-    typedef enum
-    {
-        /**  Invalid type. */
-        DlInferType_Invalid = 0,
-
-        /** Data type signed 8 bit integer. */
-        DlInferType_Int8    = 2,
-
-        /** Data type unsigned 8 bit integer. */
-        DlInferType_UInt8   = 3,
-
-        /** Data type signed 16 bit integer. */
-        DlInferType_Int16   = 4,
-
-        /** Data type unsigned 16 bit integer. */
-        DlInferType_UInt16  = 5,
-
-        /** Data type signed 32 bit integer. */
-        DlInferType_Int32   = 6,
-
-        /** Data type unsigned 32 bit integer. */
-        DlInferType_UInt32  = 7,
-
-        /** Data type signed 64 bit integer. */
-        DlInferType_Int64   = 8,
-
-        /** Data type 16 bit floating point. */
-        DlInferType_Float16 = 9,
-
-        /** Data type 32 bit floating point. */
-        DlInferType_Float32 = 10,
-
-     } DlInferType;
-
-
-    /** Helper function to get size of Dltensor data types in bytes. */
-    uint8_t getTypeSize(DlInferType type);
 
     /* Forward declaration. */
     class DLInferer;

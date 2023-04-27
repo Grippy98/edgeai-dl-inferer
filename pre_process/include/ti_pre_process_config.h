@@ -150,17 +150,11 @@ namespace ti::pre_process
         /** If preprocess is reverse channel. */
         bool                    reverseChannel{false};
 
-        /** Data type of Input tensors. */
-        vector<DlInferType>     inputTensorTypes;
+        /** Data type of Input tensors to inferer. */
+        vector<DlInferType>     inputTensorTypes{};
 
-        /** Shape of Input tensors. */
-        vector<vector<int32_t>> inputTensorShapes;
-
-        /** Data type of Output tensors. */
-        vector<DlInferType>     outputTensorTypes;
-
-        /** Shape of Output tensors. */
-        vector<vector<int32_t>> outputTensorShapes;
+        /** Shape of Input tensors to inferer. */
+        vector<vector<int64_t>> inputTensorShapes{};
 
         /**
          * Helper function to dump the configuration information.
@@ -169,11 +163,6 @@ namespace ti::pre_process
 
         /** Helper function to parse pre process configuration. */
         int32_t getConfig(const string      &modelBasePath);
-
-    private:
-        /** Helper function to parse tensor data type. */
-        DlInferType getDataType(const std::string &dType);
-
     };
 
 } // namespace ti::pre_process
