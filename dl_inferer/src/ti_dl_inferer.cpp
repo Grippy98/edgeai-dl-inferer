@@ -132,6 +132,26 @@ DlTensor::DlTensor(const DlTensor& rhs):
     DL_INFER_LOG_DEBUG("COPY CONSTRUCTOR\n");
 }
 
+DlTensor::DlTensor(const DlInferType        tensorType,
+                   const vector<int64_t>    tensorShape):
+    type(tensorType),
+    shape(tensorShape),
+    data(nullptr)
+{
+    DL_INFER_LOG_DEBUG("CUSTOM CONSTRUCTOR\n");
+
+    elemSize = getTypeSize(type);
+    dim = shape.size();
+
+    numElem = 1;
+    for (int32_t i = 0; i < dim; i++)
+    {
+        numElem *= shape[i];
+    }
+
+    size = numElem * elemSize;
+}
+
 void DlTensor::allocateDataBuffer(DLInferer& inferer)
 {
     if (dataAllocated)

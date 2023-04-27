@@ -165,6 +165,13 @@ namespace ti::dl_inferer
             DlTensor(const DlTensor& rhs);
 
             /**
+            * Custom constructor.
+            * Calculates required DlTensor fields based on tensorType and
+            * tensorShape.
+            */
+            DlTensor(const DlInferType          tensorType,
+                    const std::vector<int64_t>  tensorShape);
+            /**
              * Dumps the information to the screen.
              */
             void dumpInfo() const;
