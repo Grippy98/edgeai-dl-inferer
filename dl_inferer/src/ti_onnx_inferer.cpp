@@ -152,11 +152,13 @@ int32_t Onnx2TiInferType(ONNXTensorElementDataType  type,
 ORTInferer::ORTInferer(const std::string &modelPath,
                        const std::string &artifactPath,
                        bool               enableTidl,
-                       const int          coreNumber):
+                       const int          coreNumber,
+                       bool               allocateOutBuf):
     m_modelPath(modelPath),
     m_artifactPath(artifactPath),
     m_enableTidl(enableTidl),
     m_coreNumber(coreNumber),
+    m_allocateOutBuf(allocateOutBuf),
     m_env(ORT_LOGGING_LEVEL_ERROR, __FUNCTION__),
     m_memInfo(Ort::MemoryInfo::CreateCpu(OrtArenaAllocator, OrtMemTypeDefault))
 {
@@ -401,10 +403,11 @@ int32_t ORTInferer::run_memcopy(const VecDlTensorPtr &inputs,
             DL_INFER_LOG_DEBUG("NEW_SIZE = %d OLD_SIZE = %d\n",
                                newSize, info->size);
             info->size = newSize;
-            info->allocateDataBuffer(*this);
+            if (m_allocateOutBuf)
+                info->allocateDataBuffer(*this);
         }
-
-        memcpy(info->data, src, info->size);
+        if (info->data != NULL && src != NULL && info->size > 0)
+            memcpy(info->data, src, info->size);
     }
 
     return status;

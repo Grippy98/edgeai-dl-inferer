@@ -179,6 +179,10 @@ namespace ti::dl_inferer
          */
         int                                 coreNumber{1};
 
+        /** Allocate Output Buffers
+        */
+        bool                                allocateOutBuf{true};
+
         /** Data type of Input tensors to inferer. */
         std::vector<DlInferType>            inputTensorTypes;
 

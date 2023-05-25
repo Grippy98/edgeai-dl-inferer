@@ -100,7 +100,8 @@ namespace ti::dl_inferer
             ORTInferer(const std::string &modelPath,
                        const std::string &artifactPath,
                        bool               enableTidl,
-                       const int          coreNumber);
+                       const int          coreNumber,
+                       bool               allocateOutBuf);
 
             /**
              * Runs the model. This should be called only after all the inputs
@@ -154,6 +155,9 @@ namespace ti::dl_inferer
 
             /** Core Number. */
             int                                    m_coreNumber;
+
+            /** Alocate output buffer.*/
+            bool                                   m_allocateOutBuf;
 
             /** Environment setup. */
             Ort::Env                                m_env;

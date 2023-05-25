@@ -303,7 +303,8 @@ DLInferer* DLInferer::makeInferer(const InfererConfig &config)
             inter = new ORTInferer(config.modelFile,
                                    config.artifactsPath,
                                    config.enableTidl,
-                                   config.coreNumber);
+                                   config.coreNumber,
+                                   config.allocateOutBuf);
         }
     }
 #endif

@@ -194,6 +194,10 @@ static T1 *overlayTopNClasses(T1                   *frame,
 
         if (index >= 0)
         {
+            if (classnames.find(index) == classnames.end())
+            {
+                continue;
+            }
             string str = classnames.at(index);
             int32_t row = (i*textFont->height) + yOffset;
             drawText(imgHolder,str.c_str(),5,titleYPos+row,textFont,textColor);

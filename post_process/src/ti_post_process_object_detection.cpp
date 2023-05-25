@@ -224,8 +224,18 @@ void *PostprocessObjectDetection::operator()(void           *frameData,
 
         label = getVal(i, m_config.formatter[4]);
 
+        if (m_config.labelOffsetMap.find(label) == m_config.labelOffsetMap.end())
+        {
+            continue;
+        }
         int32_t adj_class_id = m_config.labelOffsetMap.at(label);
+
+        if (m_config.classnames.find(adj_class_id) == m_config.classnames.end())
+        {
+            continue;
+        }
         const std::string objectname = m_config.classnames.at(adj_class_id);
+
         overlayBoundingBox( &m_imageHolder, box, objectname,
                             &m_boxColor, &m_textColor, &m_textBGColor,
                             &m_textFont);
