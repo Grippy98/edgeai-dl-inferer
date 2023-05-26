@@ -167,13 +167,12 @@ ORTInferer::ORTInferer(const std::string &modelPath,
     c_api_tidl_options      tidlOpts{};
     int32_t                 status;
 
-    sessionOpts.SetIntraOpNumThreads(1);
-
     sessionOpts.SetGraphOptimizationLevel(
             GraphOptimizationLevel::ORT_ENABLE_EXTENDED);
 
     if (m_enableTidl)
     {
+        sessionOpts.SetIntraOpNumThreads(1);
         strcpy(tidlOpts.artifacts_folder, m_artifactPath.c_str());
         tidlOpts.core_number = m_coreNumber;
         ortStatus = OrtSessionOptionsAppendExecutionProvider_Tidl(sessionOpts,
@@ -181,6 +180,7 @@ ORTInferer::ORTInferer(const std::string &modelPath,
     }
     else
     {
+        sessionOpts.SetIntraOpNumThreads(2);
         ortStatus = NULL;
     }
 
