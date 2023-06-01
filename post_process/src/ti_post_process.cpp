@@ -39,7 +39,6 @@
 #include <ti_post_process_image_classification.h>
 #include <ti_post_process_object_detection.h>
 #include <ti_post_process_semantic_segmentation.h>
-#include <ti_post_process_human_pose_estimation.h>
 #include <ti_dl_inferer_logger.h>
 
 namespace ti::post_process
@@ -68,10 +67,6 @@ PostprocessImage* PostprocessImage::makePostprocessImageObj(const PostprocessIma
     else if (config.taskType == "segmentation")
     {
         cntxt = new PostprocessSemanticSegmentation(config);
-    }
-    else if (config.taskType == "human_pose_estimation")
-    {
-        cntxt = new PostprocessHumanPoseEstimation(config);
     }
     else
     {
