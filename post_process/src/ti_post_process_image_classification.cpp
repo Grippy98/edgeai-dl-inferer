@@ -47,6 +47,7 @@ using namespace std;
                        &m_imageHolder,                   \
                        &m_titleColor,                    \
                        &m_textColor,                     \
+                       &m_textBgColor,                   \
                        &m_titleFont,                     \
                        &m_textFont)
 
@@ -60,20 +61,23 @@ PostprocessImageClassification::PostprocessImageClassification(const Postprocess
     getColor(&m_titleColor,0,255,0);
 
     /** Get YUV value for yellow color. */
-    getColor(&m_textColor,255,255,0);
+    getColor(&m_textColor, 255, 255, 0);
+
+    /** Get YUV value for dark blue color. */
+    getColor(&m_textBgColor, 5, 11, 120);
 
     /** Get Monospace font from available font sizes
-     *  where width of character is closest to 3% 
+     *  where width of character is closest to 2.5%
      *  of the total width image width
      */
-    int titleSize  = (int)(0.03*config.outDataWidth);
+    int titleSize  = (int)(0.015*config.outDataWidth);
     getFont(&m_titleFont,titleSize);
     
     /** Get Monospace font from available font sizes
-     *  where width of character is closest to 2% 
+     *  where width of character is closest to 1.5%
      *  of the total width image width
      */
-    int textSize  = (int)(0.02*config.outDataWidth);
+    int textSize  = (int)(0.015*config.outDataWidth);
     getFont(&m_textFont,textSize);
 }
 
@@ -169,6 +173,7 @@ static T1 *overlayTopNClasses(T1                   *frame,
                               Image                 *imgHolder,
                               YUVColor              *titleColor,
                               YUVColor              *textColor,
+                              YUVColor              *textBgColor,
                               FontProperty          *titleFont,
                               FontProperty          *textFont
                               )
@@ -183,10 +188,17 @@ static T1 *overlayTopNClasses(T1                   *frame,
     std::string title = "Recognized Classes (Top " + std::to_string(N) + "):\0";
 
     int titleYPos = (int)(0.05 * imgHolder->height);
+    int yOffset = (titleFont->height) + 12;
 
+    drawRect(imgHolder,
+             0,
+             titleYPos,
+             (titleFont->width * title.length()) + 10,
+             yOffset,
+             textBgColor,
+             -1);
     drawText(imgHolder,title.c_str(),5,titleYPos,titleFont,titleColor);
 
-    int yOffset = (titleFont->height) + 12;
 
     for (int i = 0; i < N; i++)
     {
@@ -200,6 +212,13 @@ static T1 *overlayTopNClasses(T1                   *frame,
             }
             string str = classnames.at(index);
             int32_t row = (i*textFont->height) + yOffset;
+            drawRect(imgHolder,
+                     0,
+                     titleYPos+row,
+                     (textFont->width * str.length()) + 10,
+                     textFont->height,
+                     textBgColor,
+                     -1);
             drawText(imgHolder,str.c_str(),5,titleYPos+row,textFont,textColor);
         }
     }

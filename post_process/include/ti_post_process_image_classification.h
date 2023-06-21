@@ -83,6 +83,9 @@ namespace ti::post_process
             /** Color of the result text. */
             YUVColor        m_textColor;
 
+            /** Color of the background for text. */
+            YUVColor        m_textBgColor;
+
             /** Font of title. */
             FontProperty    m_titleFont;
 
