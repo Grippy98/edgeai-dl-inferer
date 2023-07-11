@@ -62,7 +62,7 @@ set(CMAKE_CXX_COMPILER_WORKS 1)
 
 # Use list(APPEND) rather than set() so that any variables added by CMake aren't lost!
 #
-# Here is the docs for this variable: 
+# Here is the docs for this variable:
 # https://cmake.org/cmake/help/latest/variable/CMAKE_TRY_COMPILE_PLATFORM_VARIABLES.html
 list(APPEND CMAKE_TRY_COMPILE_PLATFORM_VARIABLES
      CROSS_COMPILER_PATH
@@ -74,7 +74,7 @@ list(APPEND CMAKE_TRY_COMPILE_PLATFORM_VARIABLES
     )
 
 link_directories(${TARGET_FS}/usr/lib/aarch64-linux
-                 ${TARGET_FS}/usr/lib/python3.8/site-packages/dlr
+                 ${TARGET_FS}/usr/lib/python3.10/site-packages/dlr
                  ${TARGET_FS}/usr/lib
                  ${TARGET_FS}/lib
                  )
