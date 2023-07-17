@@ -187,7 +187,7 @@ static T1 *overlayTopNClasses(T1                   *frame,
 
     std::string title = "Recognized Classes (Top " + std::to_string(N) + "):\0";
 
-    int titleYPos = (int)(0.05 * imgHolder->height);
+    int titleYPos = (int)(0.075 * imgHolder->height);
     int yOffset = (titleFont->height) + 12;
 
     drawRect(imgHolder,
