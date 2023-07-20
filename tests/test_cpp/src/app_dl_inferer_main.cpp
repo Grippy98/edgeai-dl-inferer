@@ -57,7 +57,7 @@ using namespace ti::post_process;
 using namespace ti::pre_process;
 using namespace ti::app_dl_inferer::common;
 
-int32_t main(int argc, char * argv[])
+int main(int argc, char * argv[])
 {
 
     vector<cv::Mat>         testImages;
@@ -127,7 +127,8 @@ int32_t main(int argc, char * argv[])
             exit(-1);
         }
 
-        printf("\n[MODEL] %s\n" , postProcessConfig.modelName.c_str());
+        string modelName = postProcessConfig.modelName;
+        printf("\n[MODEL] %s\n" , modelName.c_str());
 
         /* Run Inferer. */
         for (int32_t i = 0; i < testImages.size(); i++)
@@ -215,6 +216,8 @@ int32_t main(int argc, char * argv[])
             /* Convert NV12 to BGR and Save */
             cv::cvtColor(nv12Image,bgrImage,cv::COLOR_YUV2BGR_NV12);
             cv::imwrite(imgName,bgrImage);
+            delete inferPipe;
+            delete postProcObj;
         }
 
         printf("\n");

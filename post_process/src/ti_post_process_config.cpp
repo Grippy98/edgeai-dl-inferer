@@ -277,7 +277,7 @@ int32_t PostprocessImageConfig::getConfig(const std::string      &modelBasePath)
 
             outputTensorTypes.push_back(parsedType);
 
-            vector<int64_t> tShape = {};
+            vector<int64_t> tShape;
             const YAML::Node &tShapeNode = outputDetailsNode[i]["shape"];
             for (uint32_t j = 0; j < tShapeNode.size(); j++)
             {

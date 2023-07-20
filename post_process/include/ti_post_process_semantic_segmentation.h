@@ -81,6 +81,16 @@ namespace ti::post_process
              */
             PostprocessSemanticSegmentation &
                 operator=(const PostprocessSemanticSegmentation& rhs) = delete;
+
+            /**
+             * Copy constructor
+             *
+             * Copy constructor is not required and allowed and hence prevent
+             * the compiler from generating a default copy constructor.
+             */
+            PostprocessSemanticSegmentation
+                          (const PostprocessSemanticSegmentation& rhs) = delete;
+
         private:
             /**
              * YUV Color Map based on class is.

@@ -216,6 +216,22 @@ namespace ti::dl_inferer
 
             int32_t run_memcopy(const VecDlTensorPtr &inputs,
                                 VecDlTensorPtr       &outputs);
+
+            /**
+             * Assignment operator.
+             *
+             * Assignment is not required and allowed and hence prevent
+             * the compiler from generating a default assignment operator.
+             */
+            ORTInferer & operator=(const ORTInferer& rhs) = delete;
+
+            /**
+             * Copy constructor
+             *
+             * Copy constructor is not required and allowed and hence prevent
+             * the compiler from generating a default copy constructor.
+             */
+            ORTInferer(const ORTInferer& rhs) = delete;
     };
 
 } // namespace ti::dl_inferer

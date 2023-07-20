@@ -133,14 +133,13 @@ TFLiteInferer::TFLiteInferer(const std::string &modelPath,
     m_enableTidl(enableTidl),
     m_coreNumber(coreNumber)
 {
-    Create_delegate     createPlugin;
-    const char         *keys[2];
-    const char         *values[2];
-    TfLiteDelegate     *dlgPtr;
-    void               *lib;
-    std::string         path;
-    size_t              numOptions = 0;
-    int32_t             status = 0;
+    Create_delegate createPlugin;
+    const char      *keys[2];
+    const char      *values[2];
+    TfLiteDelegate  *dlgPtr;
+    void            *lib;
+    size_t          numOptions = 0;
+    int32_t         status = 0;
 
     m_model = tflite::FlatBufferModel::BuildFromFile(m_modelPath.c_str());
     if (m_model == nullptr)
@@ -164,14 +163,12 @@ TFLiteInferer::TFLiteInferer(const std::string &modelPath,
         // Setup delegate
         if (status == 0)
         {
-            path = "/usr/lib/libtidl_tfl_delegate.so";
-
-            lib = dlopen(path.c_str(), RTLD_NOW);
+            lib = dlopen("/usr/lib/libtidl_tfl_delegate.so", RTLD_NOW);
 
             if (lib == NULL)
             {
                 DL_INFER_LOG_ERROR("Opening TIDL delegate shared library "
-                                "failed [%s].\n", path.c_str());
+                                "failed [/usr/lib/libtidl_tfl_delegate.so].\n");
                 DL_INFER_LOG_ERROR("Error: %s\n", dlerror());
                 status = -1;
             }

@@ -192,9 +192,9 @@ PostprocessSemanticSegmentation::~PostprocessSemanticSegmentation()
 {
     for(int i = 0; i < mMaxColorClass; ++i)
     {
-        delete mYUVColorMap[i];
+        delete[] mYUVColorMap[i];
     }
-    delete mYUVColorMap;
+    delete[] mYUVColorMap;
 }
 
 } // namespace ti::post_process

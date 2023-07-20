@@ -261,7 +261,7 @@ int32_t PreprocessImageConfig::getConfig(const std::string &modelBasePath)
 
             inputTensorTypes.push_back(parsedType);
 
-            vector<int64_t> tShape = {};
+            vector<int64_t> tShape;
             const YAML::Node &tShapeNode = inputDetailsNode[i]["shape"];
             for (uint32_t j = 0; j < tShapeNode.size(); j++)
             {

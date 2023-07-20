@@ -249,9 +249,6 @@ int InferencePipe::runModel(void *inputBuff,void *originalBuff)
 /** Destructor. */
 InferencePipe::~InferencePipe()
 {
-    delete m_inferer;
-    delete m_postProcObj;
-
     m_inferInputBuff.clear();
     m_inferOutputBuff.clear();
 }
