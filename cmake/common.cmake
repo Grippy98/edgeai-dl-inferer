@@ -38,7 +38,6 @@ set(TARGET_OS           LINUX)
 
 set(TENSORFLOW_INSTALL_DIR ${TARGET_FS}/usr/include/tensorflow)
 set(ONNXRT_INSTALL_DIR ${TARGET_FS}/usr/include/onnxruntime)
-set(DLPACK_INSTALL_DIR ${TARGET_FS}/usr/include/dlpack)
 set(TFLITE_INSTALL_DIR ${TARGET_FS}/usr/lib/tflite_2.8)
 
 add_definitions(
@@ -105,7 +104,6 @@ include_directories(${PROJECT_SOURCE_DIR}
                     SYSTEM ${TARGET_FS}/usr/include/opencv4/
                     SYSTEM ${TARGET_FS}/usr/include/processor_sdk/vision_apps/
                     SYSTEM ${TARGET_FS}/usr/include/edgeai-apps-utils/
-                    SYSTEM ${DLPACK_INSTALL_DIR}/include
                     )
 
 if(USE_DLR_RT)

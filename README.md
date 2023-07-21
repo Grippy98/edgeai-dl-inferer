@@ -13,7 +13,6 @@ prior to compiling this library. The associated libraries are needed for success
 - onnxruntime
 - tensorflow
 - neo-ai-dlr
-- dlpack
 
 ## Compilation on target
 

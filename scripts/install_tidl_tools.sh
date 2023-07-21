@@ -76,8 +76,8 @@ fi
 
 if [ `arch` == "aarch64" ]; then
     if grep -qi ubuntu /etc/os-release; then
-        cd edgeai-tidl-tools/dockers/J721E/ubuntu_20.04
-        ./container_setup.sh
+        cd edgeai-tidl-tools/dockers/dependency_build/qemu/
+        ./targetfs_load.sh /
     fi
 fi
 

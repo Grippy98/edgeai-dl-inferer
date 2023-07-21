@@ -40,12 +40,6 @@ exit_setup()
     exit 1
 }
 
-# Install dlpack headers required for cpp apps
-./scripts/install_dlpack.sh $*
-if [ "$?" -ne "0" ]; then
-    exit_setup
-fi
-
 # Clone TIDL tools can install OSRT dependencies
 ./scripts/install_tidl_tools.sh $*
 if [ "$?" -ne "0" ]; then

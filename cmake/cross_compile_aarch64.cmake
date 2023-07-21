@@ -43,12 +43,6 @@ else()
     message("ONNXRT_INSTALL_DIR not defined, using default")
 endif()
 
-if (DEFINED ENV{DLPACK_INSTALL_DIR})
-    set(DLPACK_INSTALL_DIR      $ENV{DLPACK_INSTALL_DIR})
-else()
-    message("DLPACK_INSTALL_DIR not defined, using default")
-endif()
-
 # search programs, headers and, libraries in the target environment
 # programs: make etc
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM ONLY)
@@ -70,7 +64,6 @@ list(APPEND CMAKE_TRY_COMPILE_PLATFORM_VARIABLES
      TOOLCHAIN_PREFIX
      TENSORFLOW_INSTALL_DIR
      ONNXRT_INSTALL_DIR
-     DLPACK_INSTALL_DIR
     )
 
 link_directories(${TARGET_FS}/usr/lib/aarch64-linux

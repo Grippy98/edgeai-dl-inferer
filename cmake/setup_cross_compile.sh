@@ -4,5 +4,3 @@ export CROSS_COMPILER_PREFIX=aarch64-none-linux-gnu-
 export TARGET_FS=${HOME}/GIT_DIR/REPO/targetfs
 export TENSORFLOW_INSTALL_DIR=${HOME}/github/DL/tensorflow
 export ONNXRT_INSTALL_DIR=${HOME}/github/DL/onnxruntime
-export DLPACK_INSTALL_DIR=${HOME}/github/DL/dlpack
-
