@@ -66,9 +66,11 @@ namespace ti::post_process
              *
              * @param frameData Input data frame on which results are overlaid
              * @param results Classification output results from the inference
+             * @param postProcessResult (Optional) Structure to fill post process info
              */
-            void *operator()(void              *frameData,
-                             VecDlTensorPtr    &results);
+            void *operator()(void               *frameData,
+                             VecDlTensorPtr     &results,
+                             PostProcessResult  *postProcessResult = NULL);
 
             /** Destructor. */
             ~PostprocessImageClassification();

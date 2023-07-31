@@ -46,7 +46,7 @@
 
 namespace ti::post_process
 {
-   /** Post-processing for image based object detection.
+    /** Post-processing for image based object detection.
      *
      * \ingroup group_post_process_obj_detection
      */
@@ -66,9 +66,11 @@ namespace ti::post_process
              *
              * @param frameData Input data frame on which results are overlaid
              * @param results Detection output results from the inference
+             * @param PostProcessResult (Optional) Structure to fill post process info
              */
-            void *operator()(void              *frameData,
-                             VecDlTensorPtr    &results);
+            void *operator()(void               *frameData,
+                             VecDlTensorPtr     &results,
+                             PostProcessResult  *postProcessResult = NULL);
 
             /** Destructor. */
             ~PostprocessObjectDetection();

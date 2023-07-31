@@ -40,6 +40,7 @@ using namespace std;
 #define INVOKE_OVERLAY_CLASS_LOGIC(T)                    \
     overlayTopNClasses(frameData,                        \
                        reinterpret_cast<T*>(buff->data), \
+                       postProcessResult,                \
                        m_config.classnames,              \
                        labelOffset,                      \
                        m_config.topN,                    \
@@ -164,8 +165,9 @@ static vector<tuple<T, int32_t>> get_topN(T        *data,
   * @returns original frame with some in-place post processing done
   */
 template <typename T1, typename T2>
-static T1 *overlayTopNClasses(T1                   *frame,
-                              T2                   *results,
+static T1 *overlayTopNClasses(T1                    *frame,
+                              T2                    *results,
+                              PostProcessResult     *postProcessResult,
                               map<int32_t,string>   classnames,
                               int32_t               labelOffset,
                               int32_t               N,
@@ -220,14 +222,19 @@ static T1 *overlayTopNClasses(T1                   *frame,
                      textBgColor,
                      -1);
             drawText(imgHolder,str.c_str(),5,titleYPos+row,textFont,textColor);
+            if (NULL != postProcessResult)
+            {
+                postProcessResult->label.push_back(str);
+            }
         }
     }
 
     return frame;
 }
 
-void *PostprocessImageClassification::operator()(void            *frameData,
-                                                 VecDlTensorPtr  &results)
+void *PostprocessImageClassification::operator()(void               *frameData,
+                                                 VecDlTensorPtr     &results,
+                                                 PostProcessResult  *postProcessResult)
 {
     /* Even though a vector of variants is passed only the first
      * entry is valid.
@@ -235,6 +242,11 @@ void *PostprocessImageClassification::operator()(void            *frameData,
     auto       *buff = results[0];
     void       *ret = frameData;
     int32_t     labelOffset = m_config.labelOffsetMap.at(0);
+
+    if (NULL != postProcessResult)
+    {
+        postProcessResult->label.clear();
+    }
 
     if (buff->type == DlInferType_Int8)
     {

@@ -61,6 +61,25 @@ namespace ti::post_process
 {
     using namespace ti::dl_inferer;
 
+    struct PostProcessResult
+    {
+        /*
+         * Vector to store all labels
+         */
+        std::vector<std::string>        label{};
+
+        /*
+         * Vector to store all scores
+         */
+        std::vector<float>              score{};
+
+        /*
+         * Vector to store all bounding box
+         */
+        std::vector<std::vector<float>> box{};
+
+    };
+
     class PostprocessImage
     {
         /** Base class for images based post-processing. This class forms as a base
@@ -87,8 +106,9 @@ namespace ti::post_process
              * This is the heart of the class. The application uses this
              * interface to execute the functionality provided by this class.
              */
-            virtual void *operator()(void              *frameData,
-                                     VecDlTensorPtr    &results) = 0;
+            virtual void *operator()(void               *frameData,
+                                     VecDlTensorPtr     &results,
+                                     PostProcessResult  *postProcessResult = NULL) = 0;
 
             /** Destructor. */
             virtual ~PostprocessImage();

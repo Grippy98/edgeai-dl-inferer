@@ -67,8 +67,9 @@ namespace ti::post_process
              * @param frameData Input data frame on which results are overlaid
              * @param results Segmentation output results from the inference
              */
-            void *operator()(void              *frameData,
-                             VecDlTensorPtr    &results);
+            void *operator()(void               *frameData,
+                             VecDlTensorPtr     &results,
+                             PostProcessResult  *postProcessResult = NULL);
 
             /** Destructor. */
             ~PostprocessSemanticSegmentation();

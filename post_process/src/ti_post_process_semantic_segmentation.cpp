@@ -143,8 +143,9 @@ static T1 *blendSegMask(T1         *frame,
     return frame;
 }
 
-void *PostprocessSemanticSegmentation::operator()(void             *frameData,
-                                                  VecDlTensorPtr   &results)
+void *PostprocessSemanticSegmentation::operator()(void              *frameData,
+                                                  VecDlTensorPtr    &results,
+                                                  PostProcessResult *postProcessResult)
 {
     /* Even though a vector of variants is passed only the first
      * entry is valid.
