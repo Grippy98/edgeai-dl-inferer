@@ -33,8 +33,6 @@
 current_dir=$(pwd)
 cd $(dirname $0)
 
-export REL=08_06_00_00
-
 if [ `arch` == "aarch64" ]; then
     install_dir="/opt/"
 else
@@ -64,7 +62,7 @@ done
 cd $install_dir
 ls | grep "edgeai-tidl-tools"
 if [ "$?" -ne "0" ]; then
-    git clone --single-branch --branch 08.06.00.01 https://github.com/TexasInstruments/edgeai-tidl-tools.git
+    git clone --single-branch --branch 09_00_00_00 https://github.com/TexasInstruments/edgeai-tidl-tools.git
     if [ "$?" -ne "0" ]; then
         cd $current_dir
         exit 1

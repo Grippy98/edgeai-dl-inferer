@@ -33,7 +33,7 @@
 while getopts ":d" flag; do
     case "${flag}" in
         d)
-            build_flag="--buildtype=debug"
+            build_flag="-DCMAKE_BUILD_TYPE=Debug"
             ;;
         *)
             ;;
