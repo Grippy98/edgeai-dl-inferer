@@ -153,37 +153,40 @@ void *PostprocessSemanticSegmentation::operator()(void              *frameData,
     auto *buff = results[0];
     void *ret  = frameData;
 
-    if (buff->type == DlInferType_Int8)
+    if (NULL != frameData)
     {
-        ret = INVOKE_BLEND_LOGIC(int8_t);
-    }
-    else if (buff->type == DlInferType_UInt8)
-    {
-        ret = INVOKE_BLEND_LOGIC(uint8_t);
-    }
-    else if (buff->type == DlInferType_Int16)
-    {
-        ret = INVOKE_BLEND_LOGIC(int16_t);
-    }
-    else if (buff->type == DlInferType_UInt16)
-    {
-        ret = INVOKE_BLEND_LOGIC(uint16_t);
-    }
-    else if (buff->type == DlInferType_Int32)
-    {
-        ret = INVOKE_BLEND_LOGIC(int32_t);
-    }
-    else if (buff->type == DlInferType_UInt32)
-    {
-        ret = INVOKE_BLEND_LOGIC(uint32_t);
-    }
-    else if (buff->type == DlInferType_Int64)
-    {
-        ret = INVOKE_BLEND_LOGIC(int64_t);
-    }
-    else if (buff->type == DlInferType_Float32)
-    {
-        ret = INVOKE_BLEND_LOGIC(float);
+        if (buff->type == DlInferType_Int8)
+        {
+            ret = INVOKE_BLEND_LOGIC(int8_t);
+        }
+        else if (buff->type == DlInferType_UInt8)
+        {
+            ret = INVOKE_BLEND_LOGIC(uint8_t);
+        }
+        else if (buff->type == DlInferType_Int16)
+        {
+            ret = INVOKE_BLEND_LOGIC(int16_t);
+        }
+        else if (buff->type == DlInferType_UInt16)
+        {
+            ret = INVOKE_BLEND_LOGIC(uint16_t);
+        }
+        else if (buff->type == DlInferType_Int32)
+        {
+            ret = INVOKE_BLEND_LOGIC(int32_t);
+        }
+        else if (buff->type == DlInferType_UInt32)
+        {
+            ret = INVOKE_BLEND_LOGIC(uint32_t);
+        }
+        else if (buff->type == DlInferType_Int64)
+        {
+            ret = INVOKE_BLEND_LOGIC(int64_t);
+        }
+        else if (buff->type == DlInferType_Float32)
+        {
+            ret = INVOKE_BLEND_LOGIC(float);
+        }
     }
 
     return ret;

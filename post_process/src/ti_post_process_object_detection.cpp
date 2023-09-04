@@ -255,9 +255,12 @@ void *PostprocessObjectDetection::operator()(void               *frameData,
         }
         const std::string objectname = m_config.classnames.at(adj_class_id);
 
-        overlayBoundingBox( &m_imageHolder, actBox, objectname,
-                            &m_boxColor, &m_textColor, &m_textBGColor,
-                            &m_textFont);
+        if (NULL != frameData)
+        {
+            overlayBoundingBox( &m_imageHolder, actBox, objectname,
+                                &m_boxColor, &m_textColor, &m_textBGColor,
+                                &m_textFont);
+        }
 
         if (NULL != postProcessResult)
         {

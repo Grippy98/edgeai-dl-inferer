@@ -181,25 +181,26 @@ static T1 *overlayTopNClasses(T1                    *frame,
                               )
 {
     vector<tuple<T2,int32_t>> argmax;
-
-    argmax = get_topN<T2>(results, N, size);
-
-    imgHolder->yRowAddr = (uint8_t *)frame;
-    imgHolder->uvRowAddr = (uint8_t *)frame + (imgHolder->width*imgHolder->height);
-
     std::string title = "Recognized Classes (Top " + std::to_string(N) + "):\0";
-
     int titleYPos = (int)(0.075 * imgHolder->height);
     int yOffset = (titleFont->height) + 12;
 
-    drawRect(imgHolder,
-             0,
-             titleYPos,
-             (titleFont->width * title.length()) + 10,
-             yOffset,
-             textBgColor,
-             -1);
-    drawText(imgHolder,title.c_str(),5,titleYPos,titleFont,titleColor);
+    argmax = get_topN<T2>(results, N, size);
+
+    if (NULL != frame)
+    {
+        imgHolder->yRowAddr = (uint8_t *)frame;
+        imgHolder->uvRowAddr = (uint8_t *)frame + (imgHolder->width*imgHolder->height);
+
+        drawRect(imgHolder,
+                0,
+                titleYPos,
+                (titleFont->width * title.length()) + 10,
+                yOffset,
+                textBgColor,
+                -1);
+        drawText(imgHolder,title.c_str(),5,titleYPos,titleFont,titleColor);
+    }
 
 
     for (int i = 0; i < N; i++)
@@ -212,16 +213,22 @@ static T1 *overlayTopNClasses(T1                    *frame,
             {
                 continue;
             }
+
             string str = classnames.at(index);
-            int32_t row = (i*textFont->height) + yOffset;
-            drawRect(imgHolder,
-                     0,
-                     titleYPos+row,
-                     (textFont->width * str.length()) + 10,
-                     textFont->height,
-                     textBgColor,
-                     -1);
-            drawText(imgHolder,str.c_str(),5,titleYPos+row,textFont,textColor);
+
+            if (NULL != frame)
+            {
+                int32_t row = (i*textFont->height) + yOffset;
+                drawRect(imgHolder,
+                        0,
+                        titleYPos+row,
+                        (textFont->width * str.length()) + 10,
+                        textFont->height,
+                        textBgColor,
+                        -1);
+                drawText(imgHolder,str.c_str(),5,titleYPos+row,textFont,textColor);
+            }
+
             if (NULL != postProcessResult)
             {
                 postProcessResult->label.push_back(str);
