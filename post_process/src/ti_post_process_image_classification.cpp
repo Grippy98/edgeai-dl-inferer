@@ -231,7 +231,8 @@ static T1 *overlayTopNClasses(T1                    *frame,
 
             if (NULL != postProcessResult)
             {
-                postProcessResult->label.push_back(str);
+                postProcessResult->m_imgClResult.m_label.push_back(str);
+                postProcessResult->m_imgClResult.m_labelId.push_back(index);
             }
         }
     }
@@ -252,7 +253,12 @@ void *PostprocessImageClassification::operator()(void               *frameData,
 
     if (NULL != postProcessResult)
     {
-        postProcessResult->label.clear();
+        postProcessResult->m_inputWidth = m_config.inDataWidth;
+        postProcessResult->m_inputHeight = m_config.inDataHeight;
+        postProcessResult->m_outputWidth = m_config.outDataWidth;
+        postProcessResult->m_outputHeight = m_config.outDataHeight;
+        postProcessResult->m_imgClResult.m_label.clear();
+        postProcessResult->m_imgClResult.m_labelId.clear();
     }
 
     if (buff->type == DlInferType_Int8)

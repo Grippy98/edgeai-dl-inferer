@@ -47,6 +47,7 @@ namespace ti::post_process
 #define INVOKE_BLEND_LOGIC(T)                           \
     blendSegMask(reinterpret_cast<uint8_t*>(frameData), \
                  reinterpret_cast<T*>(buff->data),      \
+                 postProcessResult,                     \
                  m_config.inDataWidth,                  \
                  m_config.inDataHeight,                 \
                  m_config.outDataWidth,                 \
@@ -84,15 +85,16 @@ PostprocessSemanticSegmentation::PostprocessSemanticSegmentation(const Postproce
  * @returns original frame with some in-place post processing done
  */
 template <typename T1, typename T2>
-static T1 *blendSegMask(T1         *frame,
-                        T2         *classes,
-                        int32_t     inDataWidth,
-                        int32_t     inDataHeight,
-                        int32_t     outDataWidth,
-                        int32_t     outDataHeight,
-                        float       alpha,
-                        uint8_t    **colorMap,
-                        uint8_t     maxClass)
+static T1 *blendSegMask(T1                  *frame,
+                        T2                  *classes,
+                        PostProcessResult   *postProcessResult,
+                        int32_t             inDataWidth,
+                        int32_t             inDataHeight,
+                        int32_t             outDataWidth,
+                        int32_t             outDataHeight,
+                        float               alpha,
+                        uint8_t             **colorMap,
+                        uint8_t             maxClass)
 {
     uint8_t     a;
     uint8_t     sa;
@@ -110,6 +112,13 @@ static T1 *blendSegMask(T1         *frame,
     a  = alpha * 256;
     sa = (1 - alpha ) * 256;
     int     uvOffset = outDataHeight*outDataWidth;
+
+    if (NULL != postProcessResult)
+    {
+        int32_t res = (outDataHeight/2)*(outDataWidth/2);
+        postProcessResult->m_semSegResult.m_classId.reserve(res);
+    }
+
     // Here, (w, h) iterate over frame and (sw, sh) iterate over classes
     for (h = 0; h < outDataHeight/2; h++)
     {
@@ -138,6 +147,12 @@ static T1 *blendSegMask(T1         *frame,
             v_m = ((*(uvPtr+1) * a) + (v_m * sa)) >> 8;
             *((uint16_t*)uvPtr) = (v_m << 8) | u_m;
             uvPtr += 2;
+
+            if (NULL != postProcessResult)
+            {
+                postProcessResult->m_semSegResult.m_classId.push_back(class_id);
+            }
+
         }
     }
     return frame;
@@ -152,6 +167,15 @@ void *PostprocessSemanticSegmentation::operator()(void              *frameData,
      */
     auto *buff = results[0];
     void *ret  = frameData;
+
+    if (NULL != postProcessResult)
+    {
+        postProcessResult->m_inputWidth = m_config.inDataWidth;
+        postProcessResult->m_inputHeight = m_config.inDataHeight;
+        postProcessResult->m_outputWidth = m_config.outDataWidth;
+        postProcessResult->m_outputHeight = m_config.outDataHeight;
+        postProcessResult->m_semSegResult.m_classId.clear();
+    }
 
     if (NULL != frameData)
     {

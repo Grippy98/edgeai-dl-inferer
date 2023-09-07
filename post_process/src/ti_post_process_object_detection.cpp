@@ -110,13 +110,18 @@ void *PostprocessObjectDetection::operator()(void               *frameData,
     std::vector<int64_t>    lastDims;
     VecDlTensorPtr          resultRo;
     int32_t                 ignoreIndex;
-    void                   *ret     = frameData;
+    void                    *ret     = frameData;
 
     if (NULL != postProcessResult)
     {
-        postProcessResult->label.clear();
-        postProcessResult->score.clear();
-        postProcessResult->box.clear();
+        postProcessResult->m_inputWidth = m_config.inDataWidth;
+        postProcessResult->m_inputHeight = m_config.inDataHeight;
+        postProcessResult->m_outputWidth = m_config.outDataWidth;
+        postProcessResult->m_outputHeight = m_config.outDataHeight;
+        postProcessResult->m_objDetResult.m_label.clear();
+        postProcessResult->m_objDetResult.m_labelId.clear();
+        postProcessResult->m_objDetResult.m_score.clear();
+        postProcessResult->m_objDetResult.m_box.clear();
     }
 
     /* Extract the last dimension from each of the output
@@ -218,11 +223,7 @@ void *PostprocessObjectDetection::operator()(void               *frameData,
     {
         float score;
         int label;
-        float x1,y1,x2,y2;
-        // Array containing the bounding box mapped to image resolution
-        int actBox[4];
-        // Array containing the bounding box in relative co-ordinate
-        vector<float> relBox;
+        int box[4];
 
         score = getVal(i, m_config.formatter[5]);
 
@@ -230,16 +231,11 @@ void *PostprocessObjectDetection::operator()(void               *frameData,
         {
             continue;
         }
-
-        x1 = getVal(i, m_config.formatter[0]);
-        y1 = getVal(i, m_config.formatter[1]);
-        x2 = getVal(i, m_config.formatter[2]);
-        y2 = getVal(i, m_config.formatter[3]);
         
-        actBox[0] = x1 * m_scaleX;
-        actBox[1] = y1 * m_scaleY;
-        actBox[2] = x2 * m_scaleX;
-        actBox[3] = y2 * m_scaleY;
+        box[0] = getVal(i, m_config.formatter[0]) * m_scaleX;
+        box[1] = getVal(i, m_config.formatter[1]) * m_scaleY;
+        box[2] = getVal(i, m_config.formatter[2]) * m_scaleX;
+        box[3] = getVal(i, m_config.formatter[3]) * m_scaleY;
 
         label = getVal(i, m_config.formatter[4]);
 
@@ -257,33 +253,21 @@ void *PostprocessObjectDetection::operator()(void               *frameData,
 
         if (NULL != frameData)
         {
-            overlayBoundingBox( &m_imageHolder, actBox, objectname,
+            overlayBoundingBox( &m_imageHolder, box, objectname,
                                 &m_boxColor, &m_textColor, &m_textBGColor,
                                 &m_textFont);
         }
 
         if (NULL != postProcessResult)
         {
-            postProcessResult->label.push_back(objectname);
-            postProcessResult->score.push_back(score);
-            if (m_config.normDetect)
-            {
-                relBox.push_back(x1);
-                relBox.push_back(y1);
-                relBox.push_back(x2);
-                relBox.push_back(y2);
-            }
-            else
-            {
-                relBox.push_back(x1/m_config.inDataWidth);
-                relBox.push_back(y1/m_config.inDataHeight);
-                relBox.push_back(x2/m_config.inDataWidth);
-                relBox.push_back(y2/m_config.inDataHeight);
-            }
-            postProcessResult->box.push_back(relBox);
+            postProcessResult->m_objDetResult.m_label.push_back(objectname);
+            postProcessResult->m_objDetResult.m_labelId.push_back(label);
+            postProcessResult->m_objDetResult.m_score.push_back(score);
+            postProcessResult->m_objDetResult.m_box.push_back({
+                box[0], box[1], box[2], box[3]
+            });
         }
     }
-
 
     return ret;
 }

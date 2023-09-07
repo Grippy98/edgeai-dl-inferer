@@ -61,23 +61,87 @@ namespace ti::post_process
 {
     using namespace ti::dl_inferer;
 
-    struct PostProcessResult
+    struct ImgClResult
     {
         /*
          * Vector to store all labels
          */
-        std::vector<std::string>        label{};
+        std::vector<std::string>            m_label{};
+
+        /*
+         * Vector to store all label ids
+         */
+        std::vector<int32_t>                m_labelId{};
+    };
+
+    struct ObjDetResult
+    {
+        /*
+         * Vector to store all labels
+         */
+        std::vector<std::string>            m_label{};
+
+        /*
+         * Vector to store all label ids
+         */
+        std::vector<int32_t>                m_labelId{};
 
         /*
          * Vector to store all scores
          */
-        std::vector<float>              score{};
+        std::vector<float>                  m_score{};
 
         /*
-         * Vector to store all bounding box
+         * Vector to store all bounding box [Xmin,Ymin,Xmax,Ymax]
          */
-        std::vector<std::vector<float>> box{};
+        std::vector<std::vector<int32_t>>   m_box{};
 
+    };
+
+    struct SemSegResult
+    {
+        /*
+         * Vector to store all labels
+         */
+        std::vector<int32_t>                m_classId{};
+    };
+
+    struct PostProcessResult
+    {
+        /*
+         * Input data width
+         */
+        int32_t             m_inputWidth;
+
+        /*
+         * Input data height
+         */
+        int32_t             m_inputHeight;
+
+        /*
+         * Output image width
+         */
+        int32_t            m_outputWidth;
+
+        /*
+         * Output image height
+         */
+        int32_t             m_outputHeight;
+
+        /*
+         * Image classification result
+         */
+        struct ImgClResult  m_imgClResult;
+
+        /*
+         * Object detection result
+         */
+        struct ObjDetResult m_objDetResult;
+
+        /*
+         * Semantic Segmentation result
+         */
+        struct SemSegResult m_semSegResult;
     };
 
     class PostprocessImage
