@@ -261,7 +261,7 @@ void *PostprocessObjectDetection::operator()(void               *frameData,
         if (NULL != postProcessResult)
         {
             postProcessResult->m_objDetResult.m_label.push_back(objectname);
-            postProcessResult->m_objDetResult.m_labelId.push_back(label);
+            postProcessResult->m_objDetResult.m_labelId.push_back(adj_class_id);
             postProcessResult->m_objDetResult.m_score.push_back(score);
             postProcessResult->m_objDetResult.m_box.push_back({
                 box[0], box[1], box[2], box[3]
