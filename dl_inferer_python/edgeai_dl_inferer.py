@@ -253,12 +253,21 @@ class ModelConfig:
         self.data_layout = params['preprocess']['data_layout']
         #session params
         self.session_name = params['session']['session_name']
-        if isinstance(params['session']['model_path'], list):
-            self.model_path = self.path + '/' + \
-                                      params['session']['model_path'][0]
+        if 'model_path' in params['session']:
+            if (_os.path.isabs(params['session']['model_path'])):
+                self.model_path = params['session']['model_path']
+            else:
+                self.model_path = _os.path.join(self.path,
+                                                params['session']['model_path'])
+        if 'artifacts_folder' in params['session']:
+            if (_os.path.isabs(params['session']['artifacts_folder'])):
+                self.artifacts = params['session']['artifacts_folder']
+            else:
+                self.artifacts = _os.path.join(self.path,
+                                          params['session']['artifacts_folder'])
         else:
-            self.model_path = self.path + '/' + params['session']['model_path']
-        self.artifacts = self.path + '/' + params['session']['artifacts_folder']
+            self.artifacts = _os.path.join(self.path,"artifacts")
+
         #postprocess params
         self.formatter = None
         if 'formatter' in params['postprocess']:

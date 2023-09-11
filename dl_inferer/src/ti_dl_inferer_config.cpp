@@ -198,18 +198,37 @@ int32_t InfererConfig::getConfig(const std::string  &modelBasePath,
         /* Initialize the inference configuration parameter object. */
         rtType = n["session_name"].as<string>();
 
-        if (rtType == "tvmdlr")
-        {
-            modelFile = modelBasePath + "/model";
-        }
-        else if ((rtType == "tflitert") || (rtType == "onnxrt"))
+        if (n["model_path"])
         {
             const string &modSrc = n["model_path"].as<string>();
-            modelFile = modelBasePath + "/" + modSrc;
+            std::filesystem::path modPath(modSrc);
+            if (modPath.is_relative())
+            {
+                modelFile = modelBasePath + "/" + modSrc;
+            }
+            else
+            {
+                modelFile = modSrc;
+            }
         }
 
-        const string &artSrc = n["artifacts_folder"].as<string>();
-        artifactsPath = modelBasePath + "/artifacts";
+        if (n["artifacts_folder"])
+        {
+            const string &artSrc = n["artifacts_folder"].as<string>();
+            std::filesystem::path artPath(artSrc);
+            if (artPath.is_relative())
+            {
+                artifactsPath = modelBasePath + "/" + artSrc;
+            }
+            else
+            {
+                artifactsPath = artSrc;
+            }
+        }
+        else
+        {
+            artifactsPath = modelBasePath + "/artifacts";
+        }
 
         if (n["device_type"])
         {

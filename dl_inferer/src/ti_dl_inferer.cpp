@@ -222,12 +222,7 @@ DLInferer* DLInferer::makeInferer(const InfererConfig &config)
     DLInferer  *inter = nullptr;
     int32_t     status = 0;
 
-    if (config.modelFile.empty())
-    {
-        DL_INFER_LOG_ERROR("Please specifiy a valid model path.\n");
-        status = -1;
-    }
-    else if (config.rtType.empty())
+    if (config.rtType.empty())
     {
         DL_INFER_LOG_ERROR("Please specifiy a valid run-time API type.\n");
         status = -1;
@@ -238,6 +233,11 @@ DLInferer* DLInferer::makeInferer(const InfererConfig &config)
         if (config.artifactsPath.empty())
         {
             DL_INFER_LOG_ERROR("Missing model artifacts path.\n");
+            status = -1;
+        }
+        else if (config.modelFile.empty())
+        {
+            DL_INFER_LOG_ERROR("Please specifiy a valid model path.\n");
             status = -1;
         }
         else
@@ -296,6 +296,11 @@ DLInferer* DLInferer::makeInferer(const InfererConfig &config)
         if (config.artifactsPath.empty())
         {
             DL_INFER_LOG_ERROR("Missing model artifacts path.\n");
+            status = -1;
+        }
+        else if (config.modelFile.empty())
+        {
+            DL_INFER_LOG_ERROR("Please specifiy a valid model path.\n");
             status = -1;
         }
         else
