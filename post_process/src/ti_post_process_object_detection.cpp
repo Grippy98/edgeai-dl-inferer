@@ -224,6 +224,8 @@ void *PostprocessObjectDetection::operator()(void               *frameData,
         float score;
         int label;
         int box[4];
+        int adj_class_id;
+        std::string objectname;
 
         score = getVal(i, m_config.formatter[5]);
 
@@ -239,17 +241,23 @@ void *PostprocessObjectDetection::operator()(void               *frameData,
 
         label = getVal(i, m_config.formatter[4]);
 
-        if (m_config.labelOffsetMap.find(label) == m_config.labelOffsetMap.end())
+        if (m_config.labelOffsetMap.find(label) != m_config.labelOffsetMap.end())
         {
-            continue;
+            adj_class_id = m_config.labelOffsetMap.at(label);
         }
-        int32_t adj_class_id = m_config.labelOffsetMap.at(label);
+        else
+        {
+            adj_class_id = m_config.labelOffsetMap.at(0) + label;
+        }
 
-        if (m_config.classnames.find(adj_class_id) == m_config.classnames.end())
+        if (m_config.classnames.find(adj_class_id) != m_config.classnames.end())
         {
-            continue;
+            objectname = m_config.classnames.at(adj_class_id);
         }
-        const std::string objectname = m_config.classnames.at(adj_class_id);
+        else
+        {
+            objectname = "UNDEFINED";
+        }
 
         if (NULL != frameData)
         {
