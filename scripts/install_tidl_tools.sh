@@ -33,12 +33,14 @@
 current_dir=$(pwd)
 cd $(dirname $0)
 
+branch_name=09_00_00_00
+
 if [ `arch` == "aarch64" ]; then
     install_dir="/opt/"
 else
     install_dir="../../"
 fi
-while getopts ":i:" flag; do
+while getopts ":i:b:" flag; do
     case "${flag}" in
         i)
             if [ -z $OPTARG ] || [ ! -d $OPTARG ]; then
@@ -47,6 +49,9 @@ while getopts ":i:" flag; do
                 exit 1
             fi
             install_dir="$OPTARG"
+            ;;
+        b)
+            branch_name="$OPTARG"
             ;;
         *)
             if [ $OPTARG == i ]; then
@@ -62,7 +67,7 @@ done
 cd $install_dir
 ls | grep "edgeai-tidl-tools"
 if [ "$?" -ne "0" ]; then
-    git clone --single-branch --branch 09_00_00_00 https://github.com/TexasInstruments/edgeai-tidl-tools.git
+    git clone --single-branch --branch $branch_name https://github.com/TexasInstruments/edgeai-tidl-tools.git
     if [ "$?" -ne "0" ]; then
         cd $current_dir
         exit 1
