@@ -29,6 +29,11 @@
 #  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 #  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import numpy as _np
+import threading as _threading
+import os as _os
+import yaml as _yaml
+
 """
 A class is defined for each Run Time supported by TIDL
 constructor of the classes will load the model and returns
@@ -39,11 +44,6 @@ currently supported Run Times
 2. tflitert
 3. onnxrt
 """
-
-import numpy as _np
-import threading as _threading
-import os as _os
-import yaml as _yaml
 
 try:
     from dlr import DLRModel as _DLRModel
@@ -199,6 +199,15 @@ try:
 except ImportError:
     pass
 
+class DatasetInfo:
+    """
+    Class containing dataset info
+    """
+    def __init__(self, id, supercategory, name):
+        self.id = id
+        self.supercategory = supercategory
+        self.name = name
+
 class ModelConfig:
     """
     Class to parse and store model parameters
@@ -284,7 +293,8 @@ class ModelConfig:
             self.shuffle_indices = params['postprocess']['shuffle_indices']
 
         # dataset
-        self.classnames = self.get_class_names()
+        self.get_dataset_info()
+
         # Task Type
         self.task_type = params['task_type']
 
@@ -325,19 +335,29 @@ class ModelConfig:
             shapes.append(i['shape'])
         return dtypes,shapes
 
-    def get_class_names(self):
+    def get_dataset_info(self):
+
+        self.dataset_info = {}
+
         if (not _os.path.exists(self.path  + '/dataset.yaml')):
-            return None
+            return
 
         with open(self.path  + '/dataset.yaml', 'r') as f:
             dataset = _yaml.safe_load(f)
 
-        classnames = {}
-        classnames[0] = None
         for data in dataset["categories"]:
-            id = data['id']
-            name = data['name']
+            if 'id' in data:
+                id = data['id']
+            else:
+                id = None
+            if 'name' in data:
+                name = data['name']
+            else:
+                name = None
             if 'supercategory' in data:
-                name = data['supercategory'] + '/' + name
-            classnames[id] = name
-        return classnames
+                supercategory = data['supercategory']
+            else:
+                supercategory = None
+            self.dataset_info[id] = DatasetInfo(id,
+                                                supercategory,
+                                                name)

@@ -105,6 +105,24 @@
 namespace ti::post_process
 {
     using namespace ti::dl_inferer;
+
+    /**
+     * \brief Struct to contain dataset information
+     *
+     * \ingroup group_post_process_config
+     */
+    struct DatasetInfo
+    {
+        /** ID */
+        int32_t                                 id{-1};
+
+        /** Supercategory */
+        std::string                             superCategory{""};
+
+        /** Class name */
+        std::string                             name{""};
+    };
+
     /**
      * \brief Configuration for the Post Process.
      *
@@ -187,8 +205,8 @@ namespace ti::post_process
         /** Height of the output data. */
         int32_t                                 outDataHeight{POSTPROC_DEFAULT_HEIGHT};
 
-        /** An array of strings for object class names. */
-        std::map<int32_t, std::string>          classnames{};
+        /** Map containing dataset information. */
+        std::map<int32_t, DatasetInfo>          datasetInfo{};
 
         /** Data type of Output tensors from inferer. */
         std::vector<DlInferType>                outputTensorTypes{};
@@ -204,8 +222,8 @@ namespace ti::post_process
         /** Helper function to parse post process configuration. */
         int32_t getConfig(const std::string &modelBasePath);
 
-        /** Helper function to parse dataset.yaml and get classname from it. */
-        void    getClassNames(const std::string &modelBasePath);
+        /** Helper function to parse dataset.yaml and get info from it. */
+        void    getDatasetInfo(const std::string &modelBasePath);
     };
 
 } // namespace ti::post_process

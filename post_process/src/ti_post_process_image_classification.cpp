@@ -41,7 +41,7 @@ using namespace std;
     overlayTopNClasses(frameData,                        \
                        reinterpret_cast<T*>(buff->data), \
                        postProcessResult,                \
-                       m_config.classnames,              \
+                       m_config.datasetInfo,             \
                        labelOffset,                      \
                        m_config.topN,                    \
                        buff->numElem,                    \
@@ -165,19 +165,19 @@ static vector<tuple<T, int32_t>> get_topN(T        *data,
   * @returns original frame with some in-place post processing done
   */
 template <typename T1, typename T2>
-static T1 *overlayTopNClasses(T1                    *frame,
-                              T2                    *results,
-                              PostProcessResult     *postProcessResult,
-                              map<int32_t,string>   classnames,
-                              int32_t               labelOffset,
-                              int32_t               N,
-                              int32_t               size,
-                              Image                 *imgHolder,
-                              YUVColor              *titleColor,
-                              YUVColor              *textColor,
-                              YUVColor              *textBgColor,
-                              FontProperty          *titleFont,
-                              FontProperty          *textFont
+static T1 *overlayTopNClasses(T1                        *frame,
+                              T2                        *results,
+                              PostProcessResult         *postProcessResult,
+                              map<int32_t,DatasetInfo>  datasetInfo,
+                              int32_t                   labelOffset,
+                              int32_t                   N,
+                              int32_t                   size,
+                              Image                     *imgHolder,
+                              YUVColor                  *titleColor,
+                              YUVColor                  *textColor,
+                              YUVColor                  *textBgColor,
+                              FontProperty              *titleFont,
+                              FontProperty              *textFont
                               )
 {
     vector<tuple<T2,int32_t>> argmax;
@@ -209,12 +209,20 @@ static T1 *overlayTopNClasses(T1                    *frame,
 
         if (index >= 0)
         {
-            if (classnames.find(index) == classnames.end())
-            {
-                continue;
-            }
+            string str;
 
-            string str = classnames.at(index);
+            if (datasetInfo.find(index) != datasetInfo.end())
+            {
+                str = datasetInfo.at(index).name;
+                if ("" != datasetInfo.at(index).superCategory)
+                {
+                    str = datasetInfo.at(index).superCategory + "/" + str;
+                }
+            }
+            else
+            {
+                str = "UNDEFINED";
+            }
 
             if (NULL != frame)
             {

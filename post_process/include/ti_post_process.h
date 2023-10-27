@@ -121,7 +121,7 @@ namespace ti::post_process
         /*
          * Output image width
          */
-        int32_t            m_outputWidth;
+        int32_t             m_outputWidth;
 
         /*
          * Output image height

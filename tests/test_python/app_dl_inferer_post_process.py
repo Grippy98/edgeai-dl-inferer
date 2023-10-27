@@ -89,7 +89,16 @@ class PostProcessClassification(PostProcess):
         row = 3
         print(f"Top {N} classes:")
         for idx in topN_classes:
-            class_name = self.model_config.classnames.get(idx + self.model_config.label_offset)
+            idx = idx + self.model_config.label_offset
+            if idx in self.model_config.dataset_info:
+                class_name = self.model_config.dataset_info[idx].name
+                if not class_name:
+                    class_name = "UNDEFINED"
+                if self.model_config.dataset_info[idx].supercategory:
+                    class_name = self.model_config.dataset_info[idx].supercategory + \
+                                 '/' + class_name
+            else:
+                class_name = "UNDEFINED"
             print(class_name)
             _cv2.putText(frame, \
                 class_name, (5, row_size * row), _cv2.FONT_HERSHEY_SIMPLEX, \
@@ -141,7 +150,21 @@ class PostProcessDetection(PostProcess):
 
         for b in bbox:
             if b[5] > self.model_config.viz_threshold:
-                class_name = self.model_config.classnames[self.model_config.label_offset[int(b[4])]]
+                if type(self.model_config.label_offset) == dict:
+                    class_name_idx = self.model_config.label_offset[int(b[4])]
+                else:
+                    class_name_idx = self.model_config.label_offset + int(b[4])
+
+                if class_name_idx in self.model_config.dataset_info:
+                    class_name = self.model_config.dataset_info[class_name_idx].name
+                    if not class_name:
+                        class_name = "UNDEFINED"
+                    if self.model_config.dataset_info[class_name_idx].supercategory:
+                        class_name = self.model_config.dataset_info[class_name_idx].supercategory + \
+                                    '/' + class_name
+                else:
+                    class_name = "UNDEFINED"
+                print(class_name)
                 img = self.overlay_bounding_box(img, b, class_name)
 
         return img

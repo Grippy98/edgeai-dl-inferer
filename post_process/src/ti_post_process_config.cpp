@@ -265,8 +265,8 @@ int32_t PostprocessImageConfig::getConfig(const std::string      &modelBasePath)
             }
         }
 
-        //Read the dataset name
-        getClassNames(modelBasePath);
+        // Parse dataset file
+        getDatasetInfo(modelBasePath);
 
         // Read the Tensor Details for output from inferer
         const YAML::Node &outputDetailsNode = session["output_details"];
@@ -301,7 +301,7 @@ int32_t PostprocessImageConfig::getConfig(const std::string      &modelBasePath)
     return status;
 }
 
-void PostprocessImageConfig::getClassNames(const std::string &modelBasePath)
+void PostprocessImageConfig::getDatasetInfo(const std::string &modelBasePath)
 {
     const string        &datasetFile = modelBasePath + "/dataset.yaml";
 
@@ -322,22 +322,26 @@ void PostprocessImageConfig::getClassNames(const std::string &modelBasePath)
         return;
     }
 
-    std::string     name;
-    int32_t         id;
-
-    classnames[0] = "None";
-
     for (YAML::Node data : categories)
     {
-        id = data["id"].as<int32_t>();
-        name = data["name"].as<std::string>();
+        DatasetInfo dInfo;
+
+        if (data["id"])
+        {
+            dInfo.id = data["id"].as<int32_t>();
+        }
+
+        if (data["name"])
+        {
+            dInfo.name = data["name"].as<std::string>();
+        }
 
         if (data["supercategory"])
         {
-            name = data["supercategory"].as<std::string>() + "/" + name;
+            dInfo.superCategory = data["supercategory"].as<std::string>();
         }
 
-        classnames[id] = name;
+        datasetInfo[dInfo.id] = dInfo;
     }
 }
 
