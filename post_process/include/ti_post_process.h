@@ -66,12 +66,12 @@ namespace ti::post_process
         /*
          * Vector to store all labels
          */
-        std::vector<std::string>            m_label{};
+        std::vector<std::string>                        m_label{};
 
         /*
          * Vector to store all label ids
          */
-        std::vector<int32_t>                m_labelId{};
+        std::vector<int32_t>                            m_labelId{};
     };
 
     struct ObjDetResult
@@ -79,22 +79,22 @@ namespace ti::post_process
         /*
          * Vector to store all labels
          */
-        std::vector<std::string>            m_label{};
+        std::vector<std::string>                        m_label{};
 
         /*
          * Vector to store all label ids
          */
-        std::vector<int32_t>                m_labelId{};
+        std::vector<int32_t>                            m_labelId{};
 
         /*
          * Vector to store all scores
          */
-        std::vector<float>                  m_score{};
+        std::vector<float>                              m_score{};
 
         /*
          * Vector to store all bounding box [Xmin,Ymin,Xmax,Ymax]
          */
-        std::vector<std::vector<int32_t>>   m_box{};
+        std::vector<std::vector<int32_t>>               m_box{};
 
     };
 
@@ -103,45 +103,78 @@ namespace ti::post_process
         /*
          * Vector to store all labels
          */
-        std::vector<int32_t>                m_classId{};
+        std::vector<int32_t>                            m_classId{};
     };
 
+    struct KeypointDetResult
+    {
+        /*
+         * Vector to store all labels
+         */
+        std::vector<std::string>                        m_label{};
+
+        /*
+         * Vector to store all label ids
+         */
+        std::vector<int32_t>                            m_labelId{};
+
+        /*
+         * Vector to store all scores
+         */
+        std::vector<float>                              m_score{};
+
+        /*
+         * Vector to store all bounding box [Xmin,Ymin,Xmax,Ymax]
+         */
+        std::vector<std::vector<int32_t>>               m_box{};
+
+        /*
+         * Vector to store all Keypoints
+         */
+        std::vector<std::vector<std::vector<int32_t>>>  m_keypoints{};
+
+    };
     struct PostProcessResult
     {
         /*
          * Input data width
          */
-        int32_t             m_inputWidth;
+        int32_t                                         m_inputWidth;
 
         /*
          * Input data height
          */
-        int32_t             m_inputHeight;
+        int32_t                                         m_inputHeight;
 
         /*
          * Output image width
          */
-        int32_t             m_outputWidth;
+        int32_t                                         m_outputWidth;
 
         /*
          * Output image height
          */
-        int32_t             m_outputHeight;
+        int32_t                                         m_outputHeight;
 
         /*
          * Image classification result
          */
-        struct ImgClResult  m_imgClResult;
+        struct ImgClResult                              m_imgClResult;
 
         /*
          * Object detection result
          */
-        struct ObjDetResult m_objDetResult;
+        struct ObjDetResult                             m_objDetResult;
 
         /*
          * Semantic Segmentation result
          */
-        struct SemSegResult m_semSegResult;
+        struct SemSegResult                             m_semSegResult;
+
+        /*
+         * Keypoint detection result
+         */
+        struct KeypointDetResult                        m_keyPointDetResult;
     };
 
     class PostprocessImage

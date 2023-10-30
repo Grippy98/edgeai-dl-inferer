@@ -10,6 +10,7 @@ set(POST_PROCESS_SRCS
     src/ti_post_process_image_classification.cpp
     src/ti_post_process_object_detection.cpp
     src/ti_post_process_semantic_segmentation.cpp
+    src/ti_post_process_keypoint_detection.cpp
     )
 
 build_lib(${PROJECT_NAME}     # Named argument: library name
