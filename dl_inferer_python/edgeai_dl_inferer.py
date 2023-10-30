@@ -203,10 +203,12 @@ class DatasetInfo:
     """
     Class containing dataset info
     """
-    def __init__(self, id, supercategory, name):
+    def __init__(self, id, supercategory, name, keypoints, skeleton):
         self.id = id
         self.supercategory = supercategory
         self.name = name
+        self.keypoints = keypoints
+        self.skeleton = skeleton
 
 class ModelConfig:
     """
@@ -358,6 +360,16 @@ class ModelConfig:
                 supercategory = data['supercategory']
             else:
                 supercategory = None
+            if 'keypoints' in data:
+                keypoints = data['keypoints']
+            else:
+                keypoints = None
+            if 'skeleton' in data:
+                skeleton = data['skeleton']
+            else:
+                skeleton = None
             self.dataset_info[id] = DatasetInfo(id,
                                                 supercategory,
-                                                name)
+                                                name,
+                                                keypoints,
+                                                skeleton)

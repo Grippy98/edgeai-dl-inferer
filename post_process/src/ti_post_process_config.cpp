@@ -341,6 +341,22 @@ void PostprocessImageConfig::getDatasetInfo(const std::string &modelBasePath)
             dInfo.superCategory = data["supercategory"].as<std::string>();
         }
 
+        if (data["supercategory"])
+        {
+            dInfo.superCategory = data["supercategory"].as<std::string>();
+        }
+
+        if (data["keypoints"])
+        {
+            dInfo.keypoints = data["keypoints"].as<std::vector<std::string>>();
+        }
+
+        if (data["skeleton"])
+        {
+            dInfo.skeleton = data["skeleton"].as<std::vector<std::vector<int8_t>>>();
+        }
+
+
         datasetInfo[dInfo.id] = dInfo;
     }
 }

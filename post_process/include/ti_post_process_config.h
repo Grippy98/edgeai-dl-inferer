@@ -121,6 +121,12 @@ namespace ti::post_process
 
         /** Class name */
         std::string                             name{""};
+
+        /** Keypoints */
+        std::vector<std::string>                keypoints{};
+
+        /** Keypoint skeleton */
+        std::vector<std::vector<int8_t>>        skeleton{};
     };
 
     /**
