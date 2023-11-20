@@ -232,11 +232,11 @@ int32_t ORTInferer::populateInputInfo()
         info = &m_inputs[i];
 
         /* Query input name. */
-        info->name = m_session->GetInputName(i, m_allocator);
+        info->name = m_session->GetInputNameAllocated(i, m_allocator).get();
 
         if (info->name == nullptr)
         {
-            DL_INFER_LOG_ERROR("GetInputName(%d) failed.\n", i);
+            DL_INFER_LOG_ERROR("GetInputNameAllocated(%d) failed.\n", i);
             status = -1;
             break;
         }
@@ -294,12 +294,12 @@ int32_t ORTInferer::populateOutputInfo()
 
         info = &m_outputs[i];
 
-        /* Query input name. */
-        info->name = m_session->GetOutputName(i, m_allocator);
+        /* Query output name. */
+        info->name = m_session->GetOutputNameAllocated(i, m_allocator).get();
 
         if (info->name == nullptr)
         {
-            DL_INFER_LOG_ERROR("GetInputName(%d) failed.\n", i);
+            DL_INFER_LOG_ERROR("GetOutputNameAllocated(%d) failed.\n", i);
             status = -1;
             break;
         }
