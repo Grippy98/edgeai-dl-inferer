@@ -234,7 +234,8 @@ int32_t ORTInferer::populateInputInfo()
         info = &m_inputs[i];
 
         /* Query input name. */
-        info->name = m_session->GetInputNameAllocated(i, m_allocator).get();
+        auto inputName = m_session->GetInputNameAllocated(i, m_allocator);
+        info->name = inputName.get();
 
         if (info->name == nullptr)
         {
@@ -244,6 +245,7 @@ int32_t ORTInferer::populateInputInfo()
         }
 
         m_inputNames[i] = info->name;
+        m_inputNamesPtr.push_back(std::move(inputName));
 
         auto typeInfo = m_session->GetInputTypeInfo(i);
         auto tensorInfo = typeInfo.GetTensorTypeAndShapeInfo();
@@ -297,7 +299,8 @@ int32_t ORTInferer::populateOutputInfo()
         info = &m_outputs[i];
 
         /* Query output name. */
-        info->name = m_session->GetOutputNameAllocated(i, m_allocator).get();
+        auto outputName = m_session->GetOutputNameAllocated(i, m_allocator);
+        info->name = outputName.get();
 
         if (info->name == nullptr)
         {
@@ -307,6 +310,7 @@ int32_t ORTInferer::populateOutputInfo()
         }
 
         m_outputNames[i] = info->name;
+        m_outputNamesPtr.push_back(std::move(outputName));
 
         auto typeInfo = m_session->GetOutputTypeInfo(i);
         auto tensorInfo = typeInfo.GetTensorTypeAndShapeInfo();
@@ -490,15 +494,6 @@ const VecDlTensor *ORTInferer::getOutputInfo()
 ORTInferer::~ORTInferer()
 {
     DL_INFER_LOG_DEBUG("DESTRUCTOR\n");
-
-    /* Releast the memory allocated for the strings. */
-    for (const auto &vec : {m_inputNames, m_outputNames})
-    {
-        for (const auto &s : vec)
-        {
-            m_allocator.Free((void*)s);
-        }
-    }
 
     delete m_session;
 }

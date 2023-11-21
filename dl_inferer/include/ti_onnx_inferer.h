@@ -181,8 +181,14 @@ namespace ti::dl_inferer
             /** Input names. */
             std::vector<const char*>                m_inputNames;
 
+            /** Input names ptr. */
+            std::vector<Ort::AllocatedStringPtr>    m_inputNamesPtr;
+
             /** Output names. */
             std::vector<const char*>                m_outputNames;
+
+            /** Output names ptr. */
+            std::vector<Ort::AllocatedStringPtr>    m_outputNamesPtr;
 
             /** Memory information object. */
             Ort::MemoryInfo                         m_memInfo;
