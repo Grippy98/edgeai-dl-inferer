@@ -170,6 +170,8 @@ ORTInferer::ORTInferer(const std::string &modelPath,
     sessionOpts.SetGraphOptimizationLevel(
             GraphOptimizationLevel::ORT_ENABLE_EXTENDED);
 
+    sessionOpts.SetLogSeverityLevel(3);
+
     if (m_enableTidl)
     {
         sessionOpts.SetIntraOpNumThreads(1);

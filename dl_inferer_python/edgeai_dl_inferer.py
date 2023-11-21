@@ -165,6 +165,7 @@ try:
                     "core_number": core_number,
                 }
                 sess_options = _onnxruntime.SessionOptions()
+                sess_options.log_severity_level=3
                 ep_list = ["TIDLExecutionProvider", "CPUExecutionProvider"]
                 self.interpreter = _onnxruntime.InferenceSession(
                     model_path,
