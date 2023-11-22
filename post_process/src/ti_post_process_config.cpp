@@ -289,8 +289,8 @@ int32_t PostprocessImageConfig::getConfig(const std::string      &modelBasePath)
                 }
                 else
                 {
-                    tShape.clear();
-                    break;
+                    DL_INFER_LOG_WARN("Output Shape in params file is not an integer");
+                    tShape.push_back(-1);
                 }
             }
             outputTensorShapes.push_back(tShape);

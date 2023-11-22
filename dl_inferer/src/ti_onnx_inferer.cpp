@@ -149,16 +149,85 @@ int32_t Onnx2TiInferType(ONNXTensorElementDataType  type,
     return size;
 }
 
-ORTInferer::ORTInferer(const std::string &modelPath,
-                       const std::string &artifactPath,
-                       bool               enableTidl,
-                       const int          coreNumber,
-                       bool               allocateOutBuf):
-    m_modelPath(modelPath),
-    m_artifactPath(artifactPath),
-    m_enableTidl(enableTidl),
-    m_coreNumber(coreNumber),
-    m_allocateOutBuf(allocateOutBuf),
+int32_t Ti2OnnxInferType(DlInferType                type,
+                         const char               **typeName,
+                         ONNXTensorElementDataType  &onnxType)
+{
+    int32_t size;
+
+    switch (type)
+    {
+        case DlInferType_Int8:
+            onnxType  = ONNX_TENSOR_ELEMENT_DATA_TYPE_INT8;
+            *typeName = "int8";
+            size      = sizeof(int8_t);
+            break;
+
+        case DlInferType_UInt8:
+            onnxType  = ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT8;
+            *typeName = "uint8";
+            size      = sizeof(uint8_t);
+            break;
+
+        case DlInferType_Int16:
+            onnxType  = ONNX_TENSOR_ELEMENT_DATA_TYPE_INT16;
+            *typeName = "int16";
+            size      = sizeof(int16_t);
+            break;
+
+        case DlInferType_UInt16:
+            onnxType  = ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT16;
+            *typeName = "uint16";
+            size      = sizeof(uint16_t);
+            break;
+
+        case DlInferType_Int32:
+            onnxType  = ONNX_TENSOR_ELEMENT_DATA_TYPE_INT32;
+            *typeName = "int32";
+            size      = sizeof(int32_t);
+            break;
+
+        case DlInferType_UInt32:
+            onnxType  = ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT32;
+            *typeName = "uint32";
+            size      = sizeof(uint32_t);
+            break;
+
+        case DlInferType_Int64:
+            onnxType  = ONNX_TENSOR_ELEMENT_DATA_TYPE_INT64;
+            *typeName = "int64";
+            size      = sizeof(int64_t);
+            break;
+
+        case DlInferType_Float16:
+            onnxType  = ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT16;
+            *typeName = "float16";
+            size      = sizeof(float);
+            break;
+
+        case DlInferType_Float32:
+            onnxType  = ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT;
+            *typeName = "float32";
+            size      = sizeof(float);
+            break;
+
+        default:
+            onnxType  = ONNX_TENSOR_ELEMENT_DATA_TYPE_UNDEFINED;
+            *typeName = "invalid";
+            size      = 0;
+    }
+
+    return size;
+}
+
+ORTInferer::ORTInferer(const InfererConfig &config):
+    m_modelPath(config.modelFile),
+    m_artifactPath(config.artifactsPath),
+    m_enableTidl(config.enableTidl),
+    m_coreNumber(config.coreNumber),
+    m_outputTensorShapes(config.outputTensorShapes),
+    m_outputTensorTypes(config.outputTensorTypes),
+    m_allocateOutBuf(config.allocateOutBuf),
     m_env(ORT_LOGGING_LEVEL_ERROR, __FUNCTION__),
     m_memInfo(Ort::MemoryInfo::CreateCpu(OrtArenaAllocator, OrtMemTypeDefault))
 {
@@ -284,7 +353,7 @@ int32_t ORTInferer::populateOutputInfo()
     int32_t status = 0;
 
     /* Query the number of outputs. */
-    numInfo = m_session->GetOutputCount();
+    numInfo = m_outputTensorShapes.size();
     m_numOutputs = numInfo;
 
     /* Reserve the storage. */
@@ -315,18 +384,34 @@ int32_t ORTInferer::populateOutputInfo()
         auto typeInfo = m_session->GetOutputTypeInfo(i);
         auto tensorInfo = typeInfo.GetTensorTypeAndShapeInfo();
 
-        /* Query input shape. */
-        info->shape = tensorInfo.GetShape();
+        /* Query output shape. */
+        info->shape = m_outputTensorShapes[i];
 
-        /* Query input dimensions. */
-        info->dim     = tensorInfo.GetDimensionsCount();
-        info->numElem = tensorInfo.GetElementCount();
+        /* Query output dimensions. */
+        info->dim     = info->shape.size();
+
+        for (int32_t j = 0; j < info->dim; j++)
+        {
+            if (-1 == info->shape[j])
+            {
+                info->shape[j] = ONNX_NUM_DEFAULT_ELEM;
+            }
+        }
+
+        /* Query output num elements. */
+        info->numElem = 1;
+
+        for (int32_t j = 0; j < info->dim; j++)
+        {
+            info->numElem *= info->shape[j];
+        }
 
         /* Get the type, type name, and size. */
-        m_outputTypes[i] = tensorInfo.GetElementType();
-        info->elemSize   = Onnx2TiInferType(m_outputTypes[i],
+        info->type = m_outputTensorTypes[i];
+
+        info->elemSize   = Ti2OnnxInferType(info->type,
                                             &info->typeName,
-                                            info->type);
+                                            m_outputTypes[i]);
 
         info->size = info->numElem * info->elemSize;
     } // for (int32_t i = 0; i < numInfo; i++)

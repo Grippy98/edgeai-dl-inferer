@@ -91,17 +91,9 @@ namespace ti::dl_inferer
             /**
              * Constructor.
              *
-             * @param modelPath Path to the model.
-             * @param artifactPath Path to the directory containing the model
-             *                     artifacts.
-             * @param enableTidl Enable TIDL Offload.
-             * @param coreNumber Core Number to offload to.
+             * @param config InfererConfig.
              */
-            ORTInferer(const std::string &modelPath,
-                       const std::string &artifactPath,
-                       bool               enableTidl,
-                       const int          coreNumber,
-                       bool               allocateOutBuf);
+            ORTInferer(const InfererConfig &config);
 
             /**
              * Runs the model. This should be called only after all the inputs
@@ -154,10 +146,16 @@ namespace ti::dl_inferer
             bool                                    m_enableTidl;
 
             /** Core Number. */
-            int                                    m_coreNumber;
+            int                                     m_coreNumber;
+
+            /** output tensor shapes. */
+            std::vector<std::vector<int64_t>>       m_outputTensorShapes;
+
+            /** output tensor types. */
+            std::vector<DlInferType>                m_outputTensorTypes;
 
             /** Alocate output buffer.*/
-            bool                                   m_allocateOutBuf;
+            bool                                    m_allocateOutBuf;
 
             /** Environment setup. */
             Ort::Env                                m_env;

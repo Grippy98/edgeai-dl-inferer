@@ -121,16 +121,13 @@ static int32_t type2Size(const char *s, DlInferType &tiType)
     return size;
 }
 
-DLRInferer::DLRInferer(const std::string   &fileName,
-                       int32_t              devType,
-                       int32_t              devId,
-                       bool                 enableTidl,
-                       const int            coreNumber):
-    m_name(fileName),
-    m_devType(devType),
-    m_devId(devId),
-    m_enableTidl(enableTidl),
-    m_coreNumber(coreNumber)
+DLRInferer::DLRInferer(const InfererConfig &config,
+                       int32_t              devType):
+    m_name(config.artifactsPath),
+    m_devId(config.devId),
+    m_enableTidl(config.enableTidl),
+    m_coreNumber(config.coreNumber),
+    m_devType(devType)
 {
     if (m_enableTidl == false)
     {

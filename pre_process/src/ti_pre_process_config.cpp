@@ -273,8 +273,8 @@ int32_t PreprocessImageConfig::getConfig(const std::string &modelBasePath)
                 }
                 else
                 {
-                    tShape.clear();
-                    break;
+                    DL_INFER_LOG_WARN("Input Shape in params file is not an integer");
+                    tShape.push_back(-1);
                 }
             }
 

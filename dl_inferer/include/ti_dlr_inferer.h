@@ -91,20 +91,13 @@ namespace ti::dl_inferer
             /**
              * Constructor.
              *
-             * @param fileName Name of the directory containing the model files.
+             * @param config   InfererConfig
              * @param devType  Type of the device. Please refer to the DLR API
              *                 documentation for the possib;e values this can
              *                 take.
-             * @param devId    Id of the device. Please refer to the DLR API
-             *                 documentation for the valid range of this field.
-             * @param enableTidl Enable TIDL Offload.
-             * @param coreNumber Core Number to offload to.
              */
-            DLRInferer(const std::string &fileName, 
-                       int32_t            devType, 
-                       int32_t            devId,
-                       bool               enableTidl,
-                       const int          coreNumber);
+            DLRInferer(const InfererConfig &config,
+                       int32_t              devType);
 
             /**
              * Runs the model. This should be called only after all the inputs

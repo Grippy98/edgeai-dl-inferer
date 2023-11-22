@@ -124,14 +124,11 @@ DlInferType Tflite2TiInferType(TfLiteType type)
     return tiType;
 }
 
-TFLiteInferer::TFLiteInferer(const std::string &modelPath,
-                             const std::string &artifactPath,
-                             bool               enableTidl,
-                             const int          coreNumber):
-    m_modelPath(modelPath),
-    m_artifactPath(artifactPath),
-    m_enableTidl(enableTidl),
-    m_coreNumber(coreNumber)
+TFLiteInferer::TFLiteInferer(const InfererConfig &config):
+    m_modelPath(config.modelFile),
+    m_artifactPath(config.artifactsPath),
+    m_enableTidl(config.enableTidl),
+    m_coreNumber(config.coreNumber)
 {
     Create_delegate createPlugin;
     const char      *keys[2];
