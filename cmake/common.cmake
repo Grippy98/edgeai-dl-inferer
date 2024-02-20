@@ -137,6 +137,7 @@ set(SYSTEM_LINK_LIBS
     yaml-cpp
     pthread
     dl
+    tivision_apps
     )
 
 if(USE_DLR_RT)
