@@ -32,6 +32,53 @@ if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set(CMAKE_INSTALL_PREFIX /usr CACHE PATH "Installation Prefix" FORCE)
 endif()
 
+if (NOT DEFINED ENV{SOC})
+    message(FATAL_ERROR "SOC not defined.")
+endif()
+
+set(TARGET_SOC_LOWER $ENV{SOC})
+
+if ("${TARGET_SOC_LOWER}" STREQUAL "j721e")
+    set(TARGET_PLATFORM     J7)
+    set(TARGET_CPU          A72)
+    set(TARGET_OS           LINUX)
+    set(TARGET_SOC          J721E)
+elseif ("${TARGET_SOC_LOWER}" STREQUAL "j721s2")
+    set(TARGET_PLATFORM     J7)
+    set(TARGET_CPU          A72)
+    set(TARGET_OS           LINUX)
+    set(TARGET_SOC          J721S2)
+elseif ("${TARGET_SOC_LOWER}" STREQUAL "j784s4")
+    set(TARGET_PLATFORM     J7)
+    set(TARGET_CPU          A72)
+    set(TARGET_OS           LINUX)
+    set(TARGET_SOC          J784S4)
+elseif ("${TARGET_SOC_LOWER}" STREQUAL "j722s")
+    set(TARGET_PLATFORM     J7)
+    set(TARGET_CPU          A53)
+    set(TARGET_OS           LINUX)
+    set(TARGET_SOC          J722S)
+elseif ("${TARGET_SOC_LOWER}" STREQUAL "am62a")
+    set(TARGET_PLATFORM     SITARA)
+    set(TARGET_CPU          A53)
+    set(TARGET_OS           LINUX)
+    set(TARGET_SOC          AM62A)
+elseif ("${TARGET_SOC_LOWER}" STREQUAL "am62x")
+    set(TARGET_PLATFORM     SITARA)
+    set(TARGET_CPU          A53)
+    set(TARGET_OS           LINUX)
+    set(TARGET_SOC          AM62X)
+elseif ("${TARGET_SOC_LOWER}" STREQUAL "am62p")
+    set(TARGET_PLATFORM     SITARA)
+    set(TARGET_CPU          A53)
+    set(TARGET_OS           LINUX)
+    set(TARGET_SOC          AM62P)
+else()
+    message(FATAL_ERROR "SOC ${TARGET_SOC_LOWER} is not supported.")
+endif()
+
+message("SOC=${TARGET_SOC_LOWER}")
+
 set(TARGET_PLATFORM     J7)
 set(TARGET_CPU          A72)
 set(TARGET_OS           LINUX)
@@ -137,8 +184,14 @@ set(SYSTEM_LINK_LIBS
     yaml-cpp
     pthread
     dl
-    tivision_apps
     )
+
+if ("${TARGET_SOC}" STREQUAL "J721E" OR "${TARGET_SOC}" STREQUAL "J721S2" OR "${TARGET_SOC}" STREQUAL "J722S" OR "${TARGET_SOC}" STREQUAL "J784S4" OR "${TARGET_SOC}" STREQUAL "AM62A")
+    list(APPEND
+         SYSTEM_LINK_LIBS
+         tivision_apps)
+endif()
+
 
 if(USE_DLR_RT)
 set(SYSTEM_LINK_LIBS ${SYSTEM_LINK_LIBS} dlr)
