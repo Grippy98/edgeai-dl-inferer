@@ -60,11 +60,6 @@
  *
  */
 
-extern "C"
-{
-    #include <edgeai_nv12_drawing_utils.h>
-}
-
 /* Standard headers. */
 #include <string>
 #include <filesystem>
@@ -75,6 +70,11 @@ extern "C"
 /* Module headers. */
 #include <ti_post_process_config.h>
 #include <ti_dl_inferer_logger.h>
+
+#define CLIP(X) ( (X) > 255 ? 255 : (X) < 0 ? 0 : X)
+#define RGB2Y(R, G, B) CLIP(( ( 66*(R) + 129*(G) + 25*(B) + 128) >>8 ) + 16)
+#define RGB2U(R, G, B) CLIP(( ( -38*(R) - 74*(G) + 112*(B) + 128) >>8) + 128)
+#define RGB2V(R, G, B) CLIP((( 112*(R) - 94*(G) - 18*(B) + 128) >> 8) + 128)
 
 using namespace std;
 using namespace ti::dl_inferer::utils;
@@ -384,18 +384,22 @@ void PostprocessImageConfig::getDatasetInfo(const std::string &modelBasePath)
                 const YAML::Node &color = *color_map_it;
                 if(color)
                 {
-                    YUVColor yuv_color;
                     dInfo.rgbColor = color.as<std::vector<uint8_t>>();
 
-                    getColor(&yuv_color,
-                             dInfo.rgbColor[0],
-                             dInfo.rgbColor[1],
-                             dInfo.rgbColor[2]);
+                    uint8_t Y = RGB2Y(dInfo.rgbColor[0],
+                                      dInfo.rgbColor[1],
+                                      dInfo.rgbColor[2]);
+                    uint8_t U = RGB2Y(dInfo.rgbColor[0],
+                                      dInfo.rgbColor[1],
+                                      dInfo.rgbColor[2]);
+                    uint8_t V = RGB2Y(dInfo.rgbColor[0],
+                                      dInfo.rgbColor[1],
+                                      dInfo.rgbColor[2]);
 
                     dInfo.yuvColor.clear();
-                    dInfo.yuvColor.push_back(yuv_color.Y);
-                    dInfo.yuvColor.push_back(yuv_color.U);
-                    dInfo.yuvColor.push_back(yuv_color.V);
+                    dInfo.yuvColor.push_back(Y);
+                    dInfo.yuvColor.push_back(U);
+                    dInfo.yuvColor.push_back(V);
                 }
             }
             color_map_it++;
