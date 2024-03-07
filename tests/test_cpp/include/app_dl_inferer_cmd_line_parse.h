@@ -53,7 +53,7 @@ namespace ti::app_dl_inferer::common
             float                       vizThreshold{0.6f};
 
             /** Alpha value for blending for semantic segmentation. */
-            float                       alpha{0.4f};
+            float                       alpha{0.2f};
 
             /** Number of classification results to pick from the top of the model output. */
             int32_t                     topN{5};

@@ -230,7 +230,7 @@ class ModelConfig:
         self.core_number = core_number
 
         # Set Default values of some viz parameters
-        self.alpha = 0.4
+        self.alpha = 0.2
         self.viz_threshold = 0.5
         self.topN = 5
 

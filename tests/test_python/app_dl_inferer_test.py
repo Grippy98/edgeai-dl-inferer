@@ -85,7 +85,7 @@ def parse_command_line_args():
     if args.alpha:
         alpha = args.alpha
     else:
-        alpha = 0.4
+        alpha = 0.2
 
     # Confidence threashold for visualization of bounding boxes in Object Detection
     if args.viz_threshold:

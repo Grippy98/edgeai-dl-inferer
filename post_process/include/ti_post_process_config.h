@@ -194,7 +194,7 @@ namespace ti::post_process
         /** Alpha value for blending. This is used for semantic segmentation
          *  post-processing only.
          */
-        float                                   alpha{0.5f};
+        float                                   alpha{0.2f};
 
         /** Number of classification results to pick from the top of the model output. */
         int32_t                                 topN{5};
