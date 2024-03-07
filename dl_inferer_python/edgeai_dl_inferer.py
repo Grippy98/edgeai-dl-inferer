@@ -204,10 +204,11 @@ class DatasetInfo:
     """
     Class containing dataset info
     """
-    def __init__(self, id, supercategory, name, keypoints, skeleton):
+    def __init__(self, id, supercategory, name, rgb_color, keypoints, skeleton):
         self.id = id
         self.supercategory = supercategory
         self.name = name
+        self.rgb_color = rgb_color
         self.keypoints = keypoints
         self.skeleton = skeleton
 
@@ -348,7 +349,7 @@ class ModelConfig:
         with open(self.path  + '/dataset.yaml', 'r') as f:
             dataset = _yaml.safe_load(f)
 
-        for data in dataset["categories"]:
+        for i,data in enumerate(dataset["categories"]):
             if 'id' in data:
                 id = data['id']
             else:
@@ -369,8 +370,15 @@ class ModelConfig:
                 skeleton = data['skeleton']
             else:
                 skeleton = None
+
+            rgb_color = (20,220,20)
+            if 'color_map' in dataset:
+                if i < len(dataset['color_map']):
+                    rgb_color = tuple(dataset['color_map'][i])
+
             self.dataset_info[id] = DatasetInfo(id,
                                                 supercategory,
                                                 name,
+                                                rgb_color,
                                                 keypoints,
                                                 skeleton)
