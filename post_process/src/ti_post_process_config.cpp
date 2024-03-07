@@ -389,10 +389,10 @@ void PostprocessImageConfig::getDatasetInfo(const std::string &modelBasePath)
                     uint8_t Y = RGB2Y(dInfo.rgbColor[0],
                                       dInfo.rgbColor[1],
                                       dInfo.rgbColor[2]);
-                    uint8_t U = RGB2Y(dInfo.rgbColor[0],
+                    uint8_t U = RGB2U(dInfo.rgbColor[0],
                                       dInfo.rgbColor[1],
                                       dInfo.rgbColor[2]);
-                    uint8_t V = RGB2Y(dInfo.rgbColor[0],
+                    uint8_t V = RGB2V(dInfo.rgbColor[0],
                                       dInfo.rgbColor[1],
                                       dInfo.rgbColor[2]);
 
@@ -401,8 +401,8 @@ void PostprocessImageConfig::getDatasetInfo(const std::string &modelBasePath)
                     dInfo.yuvColor.push_back(U);
                     dInfo.yuvColor.push_back(V);
                 }
+                color_map_it++;
             }
-            color_map_it++;
         }
 
         datasetInfo[dInfo.id] = dInfo;
