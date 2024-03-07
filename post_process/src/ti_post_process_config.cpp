@@ -59,6 +59,12 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
+extern "C"
+{
+    #include <edgeai_nv12_drawing_utils.h>
+}
+
 /* Standard headers. */
 #include <string>
 #include <filesystem>
@@ -303,7 +309,8 @@ int32_t PostprocessImageConfig::getConfig(const std::string      &modelBasePath)
 
 void PostprocessImageConfig::getDatasetInfo(const std::string &modelBasePath)
 {
-    const string        &datasetFile = modelBasePath + "/dataset.yaml";
+    int32_t         count = 0;
+    const string    &datasetFile = modelBasePath + "/dataset.yaml";
 
     if (!std::filesystem::exists(datasetFile))
     {
@@ -311,15 +318,21 @@ void PostprocessImageConfig::getDatasetInfo(const std::string &modelBasePath)
         return;
     }
 
-    const YAML::Node    yaml = YAML::LoadFile(datasetFile.c_str());
-
-    const YAML::Node   &categories = yaml["categories"];
+    const YAML::Node        yaml = YAML::LoadFile(datasetFile.c_str());
+    const YAML::Node        &categories = yaml["categories"];
+    const YAML::Node        &color_map = yaml["color_map"];
+    YAML::const_iterator    color_map_it;
 
     // Validate the parsed yaml configuration
     if (!categories)
     {
         DL_INFER_LOG_WARN("Parameter categories missing in dataset file.\n");
         return;
+    }
+
+    if(color_map)
+    {
+        color_map_it = color_map.begin();
     }
 
     for (YAML::Node data : categories)
@@ -356,8 +369,40 @@ void PostprocessImageConfig::getDatasetInfo(const std::string &modelBasePath)
             dInfo.skeleton = data["skeleton"].as<std::vector<std::vector<int8_t>>>();
         }
 
+        dInfo.rgbColor.push_back(0);
+        dInfo.rgbColor.push_back(255);
+        dInfo.rgbColor.push_back(0);
+
+        dInfo.yuvColor.push_back(149);
+        dInfo.yuvColor.push_back(43);
+        dInfo.yuvColor.push_back(21);
+
+        if(color_map)
+        {
+            if(color_map_it != color_map.end())
+            {
+                const YAML::Node &color = *color_map_it;
+                if(color)
+                {
+                    YUVColor yuv_color;
+                    dInfo.rgbColor = color.as<std::vector<uint8_t>>();
+
+                    getColor(&yuv_color,
+                             dInfo.rgbColor[0],
+                             dInfo.rgbColor[1],
+                             dInfo.rgbColor[2]);
+
+                    dInfo.yuvColor.clear();
+                    dInfo.yuvColor.push_back(yuv_color.Y);
+                    dInfo.yuvColor.push_back(yuv_color.U);
+                    dInfo.yuvColor.push_back(yuv_color.V);
+                }
+            }
+            color_map_it++;
+        }
 
         datasetInfo[dInfo.id] = dInfo;
+        count++;
     }
 }
 

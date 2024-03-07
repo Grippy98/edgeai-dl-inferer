@@ -259,6 +259,21 @@ void *PostprocessObjectDetection::operator()(void               *frameData,
                              "/" +
                              objectname;
             }
+
+            m_boxColor.Y = m_config.datasetInfo.at(adj_class_id).yuvColor[0];
+            m_boxColor.U = m_config.datasetInfo.at(adj_class_id).yuvColor[1];
+            m_boxColor.V = m_config.datasetInfo.at(adj_class_id).yuvColor[2];
+            m_textBGColor.Y = m_boxColor.Y;
+            m_textBGColor.U = m_boxColor.U;
+            m_textBGColor.V = m_boxColor.V;
+            if(m_textBGColor.Y >= 128 )
+            {
+                getColor(&m_textColor, 0, 0, 0);
+            }
+            else
+            {
+                getColor(&m_textColor, 255, 255, 255);
+            }
         }
         else
         {

@@ -122,6 +122,12 @@ namespace ti::post_process
         /** Class name */
         std::string                             name{""};
 
+        /** RGB Color */
+        std::vector<uint8_t>                    rgbColor{};
+
+        /** YUV Color */
+        std::vector<uint8_t>                    yuvColor{};
+
         /** Keypoints */
         std::vector<std::string>                keypoints{};
 

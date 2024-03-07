@@ -91,18 +91,6 @@ namespace ti::post_process
              */
             PostprocessSemanticSegmentation
                           (const PostprocessSemanticSegmentation& rhs) = delete;
-
-        private:
-            /**
-             * YUV Color Map based on class is.
-             */
-            uint8_t    **mYUVColorMap;
-
-            /**
-             * Max number of classes the color map can support. If class if
-             * is more than max supported class, black is overlayed by default.
-             */
-            uint8_t    mMaxColorClass;
     };
 
 } // namespace ti::post_process

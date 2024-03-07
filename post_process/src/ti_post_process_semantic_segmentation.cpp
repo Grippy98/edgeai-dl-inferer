@@ -32,15 +32,17 @@
 
 /* Module headers. */
 #include <ti_post_process_semantic_segmentation.h>
-uint8_t RGB_COLOR_MAP[26][3] = {{255,0,0},{0,255,0},{73,102,92},
-                                {255,255,0},{0,255,255},{0,99,245},
-                                {255,127,0},{0,255,100},{235,117,117},
-                                {242,15,109},{118,194,167},{255,0,255},
-                                {231,200,255},{255,186,239},{0,110,0},
-                                {0,0,255},{110,0,0},{110,110,0},
-                                {100,0,50},{90,60,0},{255,255,255} ,
-                                {170,0,255},{204,255,0},{78,69,128},
-                                {133,133,74},{0,0,110}};
+
+/* Default YUV Color map. */
+uint8_t YUV_COLOR_MAP[26][3] = {{76,84,255},{149,43,21},{92,127,114},
+                                {255,0,148},{178,171,0},{86,217,66},
+                                {150,42,202},{161,93,13},{152,108,187},
+                                {93,126,233},{168,127,92},{105,212,234},
+                                {215,150,139},{214,141,156},{64,91,81},
+                                {29,255,107},{32,109,183},{97,73,136},
+                                {35,136,173},{62,92,147},{255,128,128} ,
+                                {79,226,192},{210,9,123},{78,155,127},
+                                {126,98,132},{12,183,119}};
 
 namespace ti::post_process
 {
@@ -53,25 +55,12 @@ namespace ti::post_process
                  m_config.outDataWidth,                 \
                  m_config.outDataHeight,                \
                  m_config.alpha,                        \
-                 mYUVColorMap,                          \
-                 mMaxColorClass)
+                 m_config.datasetInfo)
 
 PostprocessSemanticSegmentation::PostprocessSemanticSegmentation(const PostprocessImageConfig   &config):
     PostprocessImage(config)
 {
-    /* Generate YUV Color map from RGB Color Map. */
-    mMaxColorClass = sizeof(RGB_COLOR_MAP)/sizeof(RGB_COLOR_MAP[0]);
-    mYUVColorMap = new uint8_t*[mMaxColorClass];
-    for(int i = 0; i < mMaxColorClass; ++i)
-    {
-        mYUVColorMap[i] = new uint8_t[3];
-        uint8_t R = RGB_COLOR_MAP[i][0];
-        uint8_t G = RGB_COLOR_MAP[i][1];
-        uint8_t B = RGB_COLOR_MAP[i][2];
-        mYUVColorMap[i][0] = RGB2Y(R,G,B);
-        mYUVColorMap[i][1] = RGB2U(R,G,B);
-        mYUVColorMap[i][2] = RGB2V(R,G,B);
-    }
+
 }
 
 /**
@@ -85,16 +74,15 @@ PostprocessSemanticSegmentation::PostprocessSemanticSegmentation(const Postproce
  * @returns original frame with some in-place post processing done
  */
 template <typename T1, typename T2>
-static T1 *blendSegMask(T1                  *frame,
-                        T2                  *classes,
-                        PostProcessResult   *postProcessResult,
-                        int32_t             inDataWidth,
-                        int32_t             inDataHeight,
-                        int32_t             outDataWidth,
-                        int32_t             outDataHeight,
-                        float               alpha,
-                        uint8_t             **colorMap,
-                        uint8_t             maxClass)
+static T1 *blendSegMask(T1                              *frame,
+                        T2                              *classes,
+                        PostProcessResult               *postProcessResult,
+                        int32_t                         inDataWidth,
+                        int32_t                         inDataHeight,
+                        int32_t                         outDataWidth,
+                        int32_t                         outDataHeight,
+                        float                           alpha,
+                        std::map<int32_t, DatasetInfo>  datasetInfo)
 {
     uint8_t     a;
     uint8_t     sa;
@@ -112,6 +100,8 @@ static T1 *blendSegMask(T1                  *frame,
     a  = alpha * 256;
     sa = (1 - alpha ) * 256;
     int     uvOffset = outDataHeight*outDataWidth;
+
+    uint32_t maxClass = sizeof(YUV_COLOR_MAP)/sizeof(YUV_COLOR_MAP[0]);
 
     if (NULL != postProcessResult)
     {
@@ -133,16 +123,21 @@ static T1 *blendSegMask(T1                  *frame,
             sw = (int32_t)(w * inDataWidth / outDataWidth);
             index = (int32_t)(rowOffset + sw);
             class_id =  classes[index];
-            if (class_id < maxClass)
+
+            u_m = 128;
+            v_m = 128;
+
+            if (datasetInfo.find(class_id) != datasetInfo.end())
             {
-                u_m = colorMap[class_id][1];
-                v_m = colorMap[class_id][2];
+                u_m = datasetInfo.at(class_id).yuvColor[1];
+                v_m = datasetInfo.at(class_id).yuvColor[2];
             }
-            else
+            else if (class_id < maxClass)
             {
-                u_m = 128;
-                v_m = 128;
+                u_m = YUV_COLOR_MAP[class_id][1];
+                v_m = YUV_COLOR_MAP[class_id][2];
             }
+
             u_m = ((*(uvPtr) * a) + (u_m * sa)) >> 8;
             v_m = ((*(uvPtr+1) * a) + (v_m * sa)) >> 8;
             *((uint16_t*)uvPtr) = (v_m << 8) | u_m;
@@ -218,11 +213,7 @@ void *PostprocessSemanticSegmentation::operator()(void              *frameData,
 
 PostprocessSemanticSegmentation::~PostprocessSemanticSegmentation()
 {
-    for(int i = 0; i < mMaxColorClass; ++i)
-    {
-        delete[] mYUVColorMap[i];
-    }
-    delete[] mYUVColorMap;
+
 }
 
 } // namespace ti::post_process
