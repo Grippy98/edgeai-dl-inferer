@@ -85,7 +85,7 @@ set(TARGET_OS           LINUX)
 
 set(TENSORFLOW_INSTALL_DIR ${TARGET_FS}/usr/include/tensorflow)
 set(ONNXRT_INSTALL_DIR ${TARGET_FS}/usr/include/onnxruntime)
-set(TFLITE_INSTALL_DIR ${TARGET_FS}/usr/lib/tflite_2.8)
+set(TFLITE_INSTALL_DIR ${TARGET_FS}/usr/lib/tflite_2.12)
 
 add_definitions(
     -DTARGET_CPU=${TARGET_CPU}
@@ -121,7 +121,7 @@ link_directories(${TENSORFLOW_INSTALL_DIR}/tensorflow/lite/tools/make/gen/linux_
                  ${TFLITE_INSTALL_DIR}/fft2d-build
                  ${TFLITE_INSTALL_DIR}/cpuinfo-build
                  ${TFLITE_INSTALL_DIR}/flatbuffers-build
-                 ${TFLITE_INSTALL_DIR}/clog-build
+                 ${TFLITE_INSTALL_DIR}/abseil-cpp-build
                  ${TFLITE_INSTALL_DIR}/farmhash-build
 )
 endif()
@@ -204,7 +204,6 @@ set(SYSTEM_LINK_LIBS ${SYSTEM_LINK_LIBS}
                      fft2d_fftsg2d
                      fft2d_fftsg
                      cpuinfo
-                     clog
                      farmhash
                      ruy_allocator
                      ruy_apply_multiplier
