@@ -40,8 +40,8 @@ exit_setup()
     exit 1
 }
 
-# Clone TIDL tools can install OSRT dependencies
-./scripts/install_tidl_tools.sh $*
+# Install OSRT dependencies
+./scripts/install_osrt.sh $*
 if [ "$?" -ne "0" ]; then
     exit_setup
 fi
