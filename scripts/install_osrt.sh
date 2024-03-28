@@ -34,6 +34,19 @@ REL=09_02_03_00
 SCRIPTDIR=`pwd`
 TARGET_FS_PATH=/
 
+INSTALL_OPENCV=1
+while test $# -gt 0; do
+  case "$1" in
+    --no-opencv*)
+      INSTALL_OPENCV=0
+      shift
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
 if [ `arch` == "aarch64" ]; then
     if grep -qi ubuntu /etc/os-release; then
         echo "Installing dependedcies at $TARGET_FS_PATH"
@@ -77,19 +90,6 @@ if [ `arch` == "aarch64" ]; then
             echo "To redo the setup delete: /usr/include/tensorflow and run this script again"
         fi
 
-        if [  ! -d $TARGET_FS_PATH/usr/include/opencv-4.2.0 ];then
-            wget --proxy off https://software-dl.ti.com/jacinto7/esd/tidl-tools/$REL/OSRT_TOOLS/ARM_LINUX/ARAGO/opencv_4.2.0_aragoj7.tar.gz
-            tar -xf opencv_4.2.0_aragoj7.tar.gz
-            rm opencv_4.2.0_aragoj7.tar.gz
-            cp -r opencv_4.2.0_aragoj7/opencv $TARGET_FS_PATH/usr/lib/
-            mv opencv_4.2.0_aragoj7/opencv-4.2.0 $TARGET_FS_PATH/usr/include/
-            cd $TARGET_FS_PATH/$HOME
-            rm -r opencv_4.2.0_aragoj7
-        else
-            echo "skipping opencv-4.2.0 setup: found /usr/include/opencv-4.2.0"
-            echo "To redo the setup delete: /usr/include/opencv-4.2.0 and run this script again"
-        fi
-
         if [  ! -d $TARGET_FS_PATH/usr/include/onnxruntime ];then
             wget --proxy off https://software-dl.ti.com/jacinto7/esd/tidl-tools/$REL/OSRT_TOOLS/ARM_LINUX/ARAGO/onnx_1.14.0_aragoj7.tar.gz
             tar xf onnx_1.14.0_aragoj7.tar.gz
@@ -128,6 +128,21 @@ if [ `arch` == "aarch64" ]; then
             cd  $TARGET_FS_PATH/usr/lib/
             ln -s -r $TARGET_FS_PATH/usr/dlr/libdlr.so libdlr.so
             cd  $TARGET_FS_PATH/$HOME
+        fi
+
+        if [ 1 == $INSTALL_OPENCV ]; then
+            if [  ! -d $TARGET_FS_PATH/usr/include/opencv-4.2.0 ];then
+                wget --proxy off https://software-dl.ti.com/jacinto7/esd/tidl-tools/$REL/OSRT_TOOLS/ARM_LINUX/ARAGO/opencv_4.2.0_aragoj7.tar.gz
+                tar -xf opencv_4.2.0_aragoj7.tar.gz
+                rm opencv_4.2.0_aragoj7.tar.gz
+                cp -r opencv_4.2.0_aragoj7/opencv $TARGET_FS_PATH/usr/lib/
+                mv opencv_4.2.0_aragoj7/opencv-4.2.0 $TARGET_FS_PATH/usr/include/
+                cd $TARGET_FS_PATH/$HOME
+                rm -r opencv_4.2.0_aragoj7
+            else
+                echo "skipping opencv-4.2.0 setup: found /usr/include/opencv-4.2.0"
+                echo "To redo the setup delete: /usr/include/opencv-4.2.0 and run this script again"
+            fi
         fi
 
         #Cleanup
