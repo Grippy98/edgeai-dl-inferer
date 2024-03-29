@@ -130,6 +130,12 @@ if [ `arch` == "aarch64" ]; then
             cd  $TARGET_FS_PATH/$HOME
         fi
 
+        if [  ! -f  $TARGET_FS_PATH/usr/include/neo-ai-dlr ];then
+            mkdir  $TARGET_FS_PATH/usr/include/neo-ai-dlr
+            ln -s -r $TARGET_FS_PATH/$PYTHONPATH/dlr/include /usr/include/neo-ai-dlr/include
+            cd  $TARGET_FS_PATH/$HOME
+        fi
+
         if [ 1 == $INSTALL_OPENCV ]; then
             if [  ! -d $TARGET_FS_PATH/usr/include/opencv-4.2.0 ];then
                 wget --proxy off https://software-dl.ti.com/jacinto7/esd/tidl-tools/$REL/OSRT_TOOLS/ARM_LINUX/ARAGO/opencv_4.2.0_aragoj7.tar.gz
