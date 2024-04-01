@@ -33,6 +33,7 @@
 REL=09_02_00_00
 SCRIPTDIR=`pwd`
 TARGET_FS_PATH=/
+PYTHON_DIST=/usr/local/lib/python3.10/dist-packages
 
 INSTALL_OPENCV=1
 while test $# -gt 0; do
@@ -63,27 +64,27 @@ if [ `arch` == "aarch64" ]; then
 
         cd $TARGET_FS_PATH/$HOME/arago_j7_pywhl
 
-        wget --proxy off https://software-dl.ti.com/jacinto7/esd/tidl-tools/$REL/OSRT_TOOLS/ARM_LINUX/ARAGO/dlr-1.13.0-py3-none-any.whl
-        wget --proxy off https://software-dl.ti.com/jacinto7/esd/tidl-tools/$REL/OSRT_TOOLS/ARM_LINUX/ARAGO/onnxruntime_tidl-1.14.0-cp310-cp310-linux_aarch64.whl
-        wget --proxy off https://software-dl.ti.com/jacinto7/esd/tidl-tools/$REL/OSRT_TOOLS/ARM_LINUX/ARAGO/tflite_runtime-2.12.0-cp310-cp310-linux_aarch64.whl
+        wget -q --no-proxy https://software-dl.ti.com/jacinto7/esd/tidl-tools/$REL/OSRT_TOOLS/ARM_LINUX/ARAGO/dlr-1.13.0-py3-none-any.whl
+        wget -q --no-proxy https://software-dl.ti.com/jacinto7/esd/tidl-tools/$REL/OSRT_TOOLS/ARM_LINUX/ARAGO/onnxruntime_tidl-1.14.0-cp310-cp310-linux_aarch64.whl
+        wget -q --no-proxy https://software-dl.ti.com/jacinto7/esd/tidl-tools/$REL/OSRT_TOOLS/ARM_LINUX/ARAGO/tflite_runtime-2.12.0-cp310-cp310-linux_aarch64.whl
 
-        ln -s /usr/bin/pip3 /usr/bin/pip3.10
-        pip3 install --upgrade --force-reinstall dlr-1.13.0-py3-none-any.whl  -t $PYTHONPATH --disable-pip-version-check
-        pip3 install onnxruntime_tidl-1.14.0-cp310-cp310-linux_aarch64.whl  -t $PYTHONPATH --disable-pip-version-check
-        pip3 install --upgrade --force-reinstall tflite_runtime-2.12.0-cp310-cp310-linux_aarch64.whl -t $PYTHONPATH --disable-pip-version-check
-        pip3 install --upgrade --force-reinstall --no-cache-dir numpy -t $PYTHONPATH --disable-pip-version-check
+        # ln -s /usr/bin/pip3 /usr/bin/pip3.10
+        pip3 install --upgrade --force-reinstall dlr-1.13.0-py3-none-any.whl -t $PYTHON_DIST --disable-pip-version-check
+        pip3 install onnxruntime_tidl-1.14.0-cp310-cp310-linux_aarch64.whl -t $PYTHON_DIST --disable-pip-version-check
+        pip3 install --upgrade --force-reinstall tflite_runtime-2.12.0-cp310-cp310-linux_aarch64.whl -t $PYTHON_DIST --disable-pip-version-check
+        pip3 install --upgrade --force-reinstall --no-cache-dir numpy -t $PYTHON_DIST --disable-pip-version-check
 
         cd $TARGET_FS_PATH/$HOME
         rm -r $TARGET_FS_PATH/$HOME/arago_j7_pywhl
 
         if [  ! -d $TARGET_FS_PATH/usr/include/tensorflow ];then
-            wget --proxy off https://software-dl.ti.com/jacinto7/esd/tidl-tools/$REL/OSRT_TOOLS/ARM_LINUX/ARAGO/tflite_2.12_aragoj7.tar.gz
+            wget -q --no-proxy https://software-dl.ti.com/jacinto7/esd/tidl-tools/$REL/OSRT_TOOLS/ARM_LINUX/ARAGO/tflite_2.12_aragoj7.tar.gz
             tar xf tflite_2.12_aragoj7.tar.gz
             rm tflite_2.12_aragoj7.tar.gz
             mv tflite_2.12_aragoj7/tensorflow  $TARGET_FS_PATH/usr/include
             mv tflite_2.12_aragoj7/tflite_2.12  $TARGET_FS_PATH/usr/lib/
             cp tflite_2.12_aragoj7/libtensorflow-lite.a $TARGET_FS_PATH/usr/lib/
-            rm -r tflite_2.12_aragoj7 
+            rm -r tflite_2.12_aragoj7
             cd $TARGET_FS_PATH/$HOME
         else
             echo "skipping tensorflow setup: found /usr/include/tensorflow"
@@ -91,7 +92,7 @@ if [ `arch` == "aarch64" ]; then
         fi
 
         if [  ! -d $TARGET_FS_PATH/usr/include/onnxruntime ];then
-            wget --proxy off https://software-dl.ti.com/jacinto7/esd/tidl-tools/$REL/OSRT_TOOLS/ARM_LINUX/ARAGO/onnx_1.14.0_aragoj7.tar.gz
+            wget -q --no-proxy https://software-dl.ti.com/jacinto7/esd/tidl-tools/$REL/OSRT_TOOLS/ARM_LINUX/ARAGO/onnx_1.14.0_aragoj7.tar.gz
             tar xf onnx_1.14.0_aragoj7.tar.gz
             rm onnx_1.14.0_aragoj7.tar.gz
             cp -r  onnx_1.14.0_aragoj7/libonnxruntime.so*   $TARGET_FS_PATH/usr/lib/
@@ -120,7 +121,7 @@ if [ `arch` == "aarch64" ]; then
         if [  ! -f  $TARGET_FS_PATH/usr/dlr/libdlr.so ];then
             mkdir   $TARGET_FS_PATH/usr/dlr/
             cd  $TARGET_FS_PATH/usr/dlr/
-            ln -s -r  $TARGET_FS_PATH/$PYTHONPATH/dlr/libdlr.so libdlr.so
+            ln -s -r  $TARGET_FS_PATH/$PYTHON_DIST/dlr/libdlr.so libdlr.so
             cd  $TARGET_FS_PATH/$HOME
         fi
 
@@ -132,13 +133,13 @@ if [ `arch` == "aarch64" ]; then
 
         if [  ! -f  $TARGET_FS_PATH/usr/include/neo-ai-dlr ];then
             mkdir  $TARGET_FS_PATH/usr/include/neo-ai-dlr
-            ln -s -r $TARGET_FS_PATH/$PYTHONPATH/dlr/include /usr/include/neo-ai-dlr/include
+            ln -s -r $TARGET_FS_PATH/$PYTHON_DIST/dlr/include /usr/include/neo-ai-dlr/include
             cd  $TARGET_FS_PATH/$HOME
         fi
 
         if [ 1 == $INSTALL_OPENCV ]; then
             if [  ! -d $TARGET_FS_PATH/usr/include/opencv-4.2.0 ];then
-                wget --proxy off https://software-dl.ti.com/jacinto7/esd/tidl-tools/$REL/OSRT_TOOLS/ARM_LINUX/ARAGO/opencv_4.2.0_aragoj7.tar.gz
+                wget -q --no-proxy https://software-dl.ti.com/jacinto7/esd/tidl-tools/$REL/OSRT_TOOLS/ARM_LINUX/ARAGO/opencv_4.2.0_aragoj7.tar.gz
                 tar -xf opencv_4.2.0_aragoj7.tar.gz
                 rm opencv_4.2.0_aragoj7.tar.gz
                 cp -r opencv_4.2.0_aragoj7/opencv $TARGET_FS_PATH/usr/lib/
