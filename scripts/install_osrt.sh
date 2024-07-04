@@ -33,7 +33,7 @@
 REL=09_02_00_00
 SCRIPTDIR=`pwd`
 TARGET_FS_PATH=/
-PYTHON_DIST=/usr/local/lib/python3.10/dist-packages
+PYTHON_DIST=/usr/local/lib/python3.12/dist-packages
 
 INSTALL_OPENCV=1
 while test $# -gt 0; do
