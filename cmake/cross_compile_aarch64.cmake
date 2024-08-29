@@ -74,7 +74,7 @@ list(APPEND CMAKE_TRY_COMPILE_PLATFORM_VARIABLES
     )
 
 link_directories(${TARGET_FS}/usr/lib/aarch64-linux
-                 ${TARGET_FS}/usr/lib/python3.8/site-packages/dlr
+                 ${TARGET_FS}/usr/lib/python${PYTHON_MAJOR_VERSION}.${PYTHON_MINOR_VERSION}/site-packages/dlr
                  ${TARGET_FS}/usr/lib
                  ${TARGET_FS}/lib
                  )
